@@ -1,28 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
 public class HexGridManager : MonoBehaviour 
 {
-    public int size = 64;
-    public int nbHeightSteps = 32;
+    public int mapSize = 64;
     public int chunkSize = 8;
     
     public GameObject cellPrefab;
     public FeatureGenerator featureGenerator;
 
     public HeightMapSettings HeightMapSettings;
-    public HeightMapSettings MoistureMapSettings;
+    public MoistureMapSettings MoistureMapSettings;
     public TemperatureMapSettings TemperatureMapSettings;
     public List<DataMapSettings> allFeatureMapSettings;
 
-    private CellFactory cellFactory;
-    public DataMapManager dataMapManager;
-    public HexMapData hexMapData;
+    public CellFactory cellFactory;
+    public NoiseManager noiseManager;
     public ChunkHandler chunkHandler;
 
-    private BiomeHandling biomeHandling;
+    public BiomeHandler biomeHandler;
     public Biome defaultBiome;  // Drag and drop in the inspector
     public Biome[] allBiomes;   // Drag and drop in the inspector
+
+    public Material terrainMaterial;
 
 
     void Awake() 
@@ -31,21 +34,22 @@ public class HexGridManager : MonoBehaviour
     }
 
 
-    public void InitializeGridManager() 
+    public void InitializeGridManager()
     {
         // Ensure data maps are initialized
         InitializeDataMaps();
 
-        cellFactory = new CellFactory(cellPrefab, transform);
+        //must generate chunks before creating cells
+        chunkHandler = new ChunkHandler(mapSize, chunkSize, transform, terrainMaterial, this);
+        // chunkHandler.GenerateAllChunks();
 
-        cellFactory.CreateAllCells(dataMapManager, biomeHandling, hexMapData);
-
-        chunkHandler = new ChunkHandler(hexMapData, chunkSize, transform);
-        chunkHandler.GenerateAllChunks();
+        cellFactory = new CellFactory(cellPrefab, noiseManager, biomeHandler);
+        // cellFactory.GenerateAllChunksCells();
 
 
-        featureGenerator = new FeatureGenerator(dataMapManager.featureMaps, hexMapData);
-        featureGenerator.GenerateFeatures();
+
+        featureGenerator = new FeatureGenerator(noiseManager);
+        // featureGenerator.GenerateFeatures();
     }
 
 
@@ -53,11 +57,18 @@ public class HexGridManager : MonoBehaviour
     {
         // generate the DataMaps for Features
 
+        Texture2D atlas = TextureGenerator.GenerateAtlasTexture(allBiomes, 64, 64);
+        Texture2D blurredAtlas = TextureGenerator.ApplyGaussianBlur(atlas, 2);
+        blurredAtlas = TextureGenerator.ApplyGaussianBlur(blurredAtlas, 3);
+        // atlas = blurredAtlas;
+        TextureGenerator.WriteTexture(atlas, "Assets/Textures/Atlas.jpeg");
+        terrainMaterial.SetTexture("_Atlas", blurredAtlas);
+        TextureGenerator.WriteTexture(blurredAtlas, "Assets/Textures/BlurredAtlas.jpeg");
 
-        dataMapManager = new DataMapManager(HeightMapSettings, MoistureMapSettings, TemperatureMapSettings, allFeatureMapSettings, size);
-        biomeHandling = new BiomeHandling(allBiomes, defaultBiome);
-        hexMapData = new HexMapData(size, nbHeightSteps, chunkSize);
 
-        dataMapManager.GenerateDataMaps();
+        
+        Debug.Log("Atlas generated");
+        noiseManager = new NoiseManager(HeightMapSettings, MoistureMapSettings, TemperatureMapSettings, allFeatureMapSettings, mapSize);
+        biomeHandler = new BiomeHandler(allBiomes, defaultBiome);
     }
 }
