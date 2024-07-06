@@ -16,12 +16,4 @@ public class TemperatureMapSettings : DataMapSettings
 
     [Range(-1f, 1f)]
     public float equatorBias = 0f;
-    
-    #if UNITY_EDITOR
-    protected override void OnValidate()
-    {
-        base.OnValidate();
-    }
-    #endif
-
 }

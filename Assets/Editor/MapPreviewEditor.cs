@@ -10,7 +10,7 @@ public class MapPreviewEditor : Editor
 
         if (DrawDefaultInspector()) 
         {
-            if (mapPreview.autoUpdate) 
+            if (mapPreview.AutoUpdate) 
             {
                 mapPreview.UpdateMapPreview();
             }

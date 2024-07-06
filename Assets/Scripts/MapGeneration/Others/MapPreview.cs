@@ -1,161 +1,129 @@
+using System.Collections.Generic;
+using Biome;
+using Unity.Mathematics;
 using UnityEngine;
+
+public enum NoiseMapType
+{
+    HeightMap,
+    MoistureMap,
+    TemperatureMap,
+    BiomeMap,
+}
 
 [ExecuteInEditMode, RequireComponent(typeof(MeshRenderer))]
 public class MapPreview : MonoBehaviour 
 {
-    public HexGridManager hexGridManager;
-    public bool autoUpdate;
+    public bool AutoUpdate;
+    public bool WriteTexture;
 
-    public enum NoiseMapType
-    {
-        HeightMap,
-        MoistureMap,
-        TemperatureMap,
-        featureMaps
-    }
 
-    public DataMapSettings featureMapToDraw;
-    public NoiseMapType selectedNoiseMapType;
+    public BiomeManager BiomeManager;
+    public HeightMapSettings HeightMapSettings;
+    public MoistureMapSettings MoistureMapSettings;
+    public TemperatureMapSettings TemperatureMapSettings;
+
+    
+
+    public NoiseMapType SelectedNoiseMapType;
+
 
     public bool IsThresholdTexture;
     [Range(0, 1)]
-    public float thresholdValue = 0.5f;
+    public float MinThresholdValue = 0;
+    [Range(0, 1)]
+    public float MaxThresholdValue = 1;
 
     public void UpdateMapPreview()
     {
-        if (hexGridManager == null) return;
-
-        // Ensure only data maps of HexGridManager are initialized
-        hexGridManager.InitializeDataMaps();
-        hexGridManager.noiseManager.InitialiseNoiseGenerators();
-
-        float[,] noiseMap;
-
-        switch (selectedNoiseMapType)
-        {
-            case NoiseMapType.HeightMap:
-                noiseMap = CreateHeightValuesArray(hexGridManager.mapSize);
-                break;
-
-            case NoiseMapType.MoistureMap:
-                noiseMap = CreateMoistureValuesArray(hexGridManager.mapSize);
-                break;
-
-            case NoiseMapType.TemperatureMap:
-                noiseMap = CreateTemperatureValuesArray(hexGridManager.mapSize);
-                break;
-            case NoiseMapType.featureMaps:
-                noiseMap = CreateFeatureMapValuesArray(hexGridManager.mapSize, featureMapToDraw);
-                break;
-
-            default:
-                return;  // Handle any unexpected cases
-        }
+        NoiseManager noiseManager = new NoiseManager(HeightMapSettings, MoistureMapSettings, TemperatureMapSettings, BiomeManager);
 
         Texture2D texture;
-        if(IsThresholdTexture)
-        {
-            texture = TextureFromDataMap(noiseMap, thresholdValue);
-        }else{
 
-            // Convert the noise map to a texture.
-            texture = TextureFromDataMap(noiseMap);
+
+        if (SelectedNoiseMapType != NoiseMapType.BiomeMap){
+            float[,] noiseMap;
+            switch (SelectedNoiseMapType)
+            {
+                case NoiseMapType.HeightMap:
+                    noiseMap = noiseManager.GetFullHeightDataMap().Values;
+                    break;
+
+                case NoiseMapType.MoistureMap:
+                    noiseMap = noiseManager.GetFullMoistureDataMap().Values;
+                    break;
+
+                case NoiseMapType.TemperatureMap:
+                    noiseMap = noiseManager.GetFullTemperatureDataMap().Values;
+                    break;
+
+                default:
+                    Debug.LogError("Unexpected noise map type: " + SelectedNoiseMapType);
+                    return;
+            }
+
+            if(IsThresholdTexture)
+                noiseMap = BinaryNoiseMap(noiseMap);
+
+            texture = TextureGenerator.TextureFromNoiseMap(noiseMap);
+
+        }
+        else{
+            BiomeData[,] biomeTypeMap = noiseManager.GetFullBiomeMap();
+            Color[] biomeColorMap = BiomeColorMap(biomeTypeMap);
+
+            texture = TextureGenerator.TextureFromColourMap(biomeColorMap, HexMetrics.MapSize);
+        }
+
+
+        
+
+        
+        
+
+        if (WriteTexture){
+            switch (SelectedNoiseMapType)
+            {
+                case NoiseMapType.HeightMap:
+                    TextureGenerator.WriteTexture(texture, "Assets/Textures/HeightMap.jpeg");
+                    break;
+
+                case NoiseMapType.MoistureMap:
+                    TextureGenerator.WriteTexture(texture, "Assets/Textures/MoistureMap.jpeg");
+                    break;
+
+                case NoiseMapType.TemperatureMap:
+                    TextureGenerator.WriteTexture(texture, "Assets/Textures/TemperatureMap.jpeg");
+                    break;
+            }
         }
         
         // Apply texture to the MeshRenderer.
         GetComponent<MeshRenderer>().sharedMaterial.mainTexture = texture;
     }
 
-
-
-
-    Texture2D TextureFromDataMap(float[,] heightMap)
-    {
-        int width = heightMap.GetLength(0);
-        int height = heightMap.GetLength(1);
-        
-        Texture2D texture = new Texture2D(width, height);
-        
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                float value = heightMap[x, y];
-                Color color = new Color(value, value, value, 1);
-                texture.SetPixel(x, y, color);
-            }
-        }
-        
-        texture.Apply();
-        return texture;
-    }
-
-    Texture2D TextureFromDataMap(float[,] heightMap, float thresholdValue)
-    {
-        int width = heightMap.GetLength(0);
-        int height = heightMap.GetLength(1);
-        
-        Texture2D texture = new Texture2D(width, height);
-        
+    float[,] BinaryNoiseMap(float[,] noiseMap)
+    {        
         // Loop through all pixels in the texture
-        for (int y = 0; y < height; y++)
+        for (int y = 0; y < HexMetrics.MapSize; y++)
         {
-            for (int x = 0; x < width; x++) 
+            for (int x = 0; x < HexMetrics.MapSize; x++) 
             {
-                float value = heightMap[x, y];
-                Color color = value > thresholdValue ? Color.white : Color.black;
-                texture.SetPixel(x, y, color);
+                float value = noiseMap[x, y];
+                value = (value >= MinThresholdValue && value <= MaxThresholdValue) ? 1 : 0;
+                noiseMap[x,y] = value;
             }
         }
-        
-        texture.Apply();
-        return texture;
+        return noiseMap;
     }
 
-
-    private float [,] CreateHeightValuesArray(int size){
-        float[,] noise = new float[size, size ];
-
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetHeightNoiseValue(i,j);
+    Color[] BiomeColorMap(BiomeData[,] biomeDatas){
+        Color[] colors = new Color[HexMetrics.MapSize * HexMetrics.MapSize];
+        for (int y = 0; y < HexMetrics.MapSize; y++){
+            for (int x = 0; x < HexMetrics.MapSize; x++){
+                colors[y * HexMetrics.MapSize + x] = biomeDatas[x,y].biomeColor;
             }
         }
-        return noise;
+        return colors;
     }
-
-
-    private float [,] CreateMoistureValuesArray(int size){
-        float[,] noise = new float[size, size ];
-
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetMoistureNoiseValue(i,j);
-            }
-        }
-        return noise;
-    }
-
-    private float [,] CreateTemperatureValuesArray(int size){
-        float[,] noise = new float[size, size ];
-
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetTemperatureNoiseValue(i,j);
-            }
-        }
-        return noise;
-    }
-
-    private float [,] CreateFeatureMapValuesArray(int size, DataMapSettings featureMapSettings){
-        float[,] noise = new float[size, size ];
-
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetFeatureNoiseValue(featureMapSettings, i,j);
-            }
-        }
-        return noise;
-    }
-
 }

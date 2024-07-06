@@ -15,31 +15,45 @@ public class TemperatureNoiseGenerator : NoiseGenerator
         this.baseTemperature = settings.baseTemperature;
     }
 
-    public override float GetNormalizedNoiseValue(int x, int y, int size){
-        float normalizedValue = Mathf.InverseLerp(base.cache.minValue, base.cache.maxValue, GetNoiseValue(x, y, size));
+    public void GenerateFullNoiseMap(int mapSize){
+ 
+        float[,] noiseMap = GenerateNoiseMap(mapSize);
 
-        if(normalizedValue > 1) Debug.Log("Noise value > 1 in MoistureNoiseGenerator");
-        if(normalizedValue < 0) Debug.Log("Noise value < 0 in MoistureNoiseGenerator");
+        float minLatitudeEffect = 0;
+        float maxLatitudeEffect = latitudeSensitivity * 0.5f;
+        float minElevationEffect = -elevationSensitivity;
+        float maxElevationEffect = 0;
 
-        return normalizedValue;
-    }
+        float minFinalValue = 1 - maxLatitudeEffect + equatorBias + minElevationEffect + 0;
+        float maxFinalValue = 1 - minLatitudeEffect + equatorBias + maxElevationEffect + 1;
 
+        for (int y = 0; y < mapSize; y++)
+        {
+            for (int x = 0; x < mapSize; x++)
+            {
+                float rawNoise = noiseMap[x, y];
+                float latitudeEffect = Mathf.Abs((float)y / mapSize - 0.5f) * latitudeSensitivity;
+                float latitudeAdjustedNoise = 1 - latitudeEffect + equatorBias;
 
-    public override float GetNoiseValue(int x, int y, int size)
-    {
-        float rawNoise = base.GetNoiseValue(x, y, size); // represent the height value
+                latitudeAdjustedNoise -= rawNoise * elevationSensitivity;
 
-        float latitudeEffect = Mathf.Abs((float)y / size - 0.5f) * latitudeSensitivity;
-        float latitudeAdjustedNoise = (1 - latitudeEffect) + equatorBias;
+                float finalValue = latitudeAdjustedNoise + rawNoise + baseTemperature;
 
-        latitudeAdjustedNoise -= rawNoise * elevationSensitivity;
+                // UpdateCacheValues(finalValue);
+                // noiseMap[x, y] = finalValue;
+                finalValue = Mathf.InverseLerp(minFinalValue, maxFinalValue, finalValue);
 
-        float finalValue = latitudeAdjustedNoise + rawNoise * baseTemperature;
+                finalValue = Mathf.Clamp(finalValue, 0, 1);
+                noiseMap[x, y] = finalValue;
 
-        return finalValue;
+                // if (normalizedValue > 1) Debug.Log("Noise value > 1 in TemperatureNoiseGenerator");
+                // if (normalizedValue < 0) Debug.Log("Noise value < 0 in TemperatureNoiseGenerator");
+            }
+        }
+        DataMap.Values = noiseMap;
     }
 
     public NoiseCache GetCache(){
-        return base.cache;
+        return base._cache;
     }
 }

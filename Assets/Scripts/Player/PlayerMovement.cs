@@ -14,8 +14,8 @@ public class PlayerMovement : MonoBehaviour
     public float airMultiplier;
     bool readyToJump;
 
-    [HideInInspector] public float walkSpeed;
-    [HideInInspector] public float sprintSpeed;
+    private float walkSpeed;
+    private float sprintSpeed;
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -36,6 +36,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        walkSpeed = moveSpeed;
+        sprintSpeed = moveSpeed * 2;
+
         characterController = GetComponent<CharacterController>();
 
         readyToJump = true;
@@ -75,6 +78,11 @@ public class PlayerMovement : MonoBehaviour
 
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+        if(Input.GetKey(KeyCode.LeftShift))
+            moveSpeed = sprintSpeed;
+        else
+            moveSpeed = walkSpeed;
     }
 
     private void MovePlayer()
