@@ -1,25 +1,34 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Terrain/Biome")]
 public class Biome : ScriptableObject
 {
-    public BiomeLevel[] levels;
+    // public BiomeLevel[] levels;
+    public int subBiomeCount = 1; // default to 1
 
     [Header("Moisture Thresholds")]
-    public float minMoisture;
-    public float maxMoisture;
+    public float[] minMoisture;
+    public float[] maxMoisture;
 
     [Header("Temperature Thresholds")]
-    public float minTemperature;
-    public float maxTemperature;
+    public float[] minTemperature;
+    public float[] maxTemperature;
 
-    [Header("Allowed Features")]
+    public Biome()
+    {
+        minMoisture = new float[subBiomeCount];
+        maxMoisture = new float[subBiomeCount];
+        minTemperature = new float[subBiomeCount];
+        maxTemperature = new float[subBiomeCount];
+    }
 
-    public Color biomeTint = Color.white;
+    // [Header("Allowed Features")]
 
-    public List<BiomeFeatureData> biomeFeatureData;
+    // public Color biomeTint = Color.white;
 
+    // public List<BiomeFeatureData> biomeFeatureData;
     
 }
 

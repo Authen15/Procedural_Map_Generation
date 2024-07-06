@@ -15,18 +15,30 @@ public static class TextureGenerator {
 	}
 
 
-	public static Texture2D TextureFromHeightMap(DataMap heightMap) {
-		int size = heightMap.size;
+	// public static Texture2D TextureFromHeightMap(DataMap heightMap) {
+	// 	int size = heightMap.size;
 
+	// 	Color[] colourMap = new Color[size * size];
+	// 	for (int y = 0; y < size; y++) {
+	// 		for (int x = 0; x < size; x++) {
+	// 			colourMap [y * size + x] = Color.Lerp (Color.black, Color.white, Mathf.InverseLerp(heightMap.minValue,heightMap.maxValue,heightMap.values [x, y]));
+	// 		}
+	// 	}
+
+	// 	return TextureFromColourMap (colourMap, size);
+	// }
+
+	public static Texture2D TextureFromNoiseMap(float[,] noiseMap) {
+		int size = noiseMap.GetLength (0);
 		Color[] colourMap = new Color[size * size];
 		for (int y = 0; y < size; y++) {
 			for (int x = 0; x < size; x++) {
-				colourMap [y * size + x] = Color.Lerp (Color.black, Color.white, Mathf.InverseLerp(heightMap.minValue,heightMap.maxValue,heightMap.values [x, y]));
+				colourMap [y * size + x] = Color.Lerp (Color.black, Color.white, noiseMap[x, y]);
 			}
 		}
-
 		return TextureFromColourMap (colourMap, size);
 	}
+
 
     public static void WriteTexture(Texture2D texture, string pathToFile){
         // byte[] bytes = texture.EncodeToPNG();
@@ -37,51 +49,51 @@ public static class TextureGenerator {
     }
 
 
-	public static Texture2D GenerateAtlasTexture(Biome[] biomes, int atlasWidth, int atlasHeight)
-	{
-		Texture2D atlas = new Texture2D(atlasWidth, atlasHeight);
+	// public static Texture2D GenerateAtlasTexture(Biome[] biomes, int atlasWidth, int atlasHeight)
+	// {
+	// 	Texture2D atlas = new Texture2D(atlasWidth, atlasHeight);
 
-		for (int y = 0; y < atlasHeight; y++)
-		{
-			for (int x = 0; x < atlasWidth; x++)
-			{
-				float temperature = (float)x / (atlasWidth - 1);
-				float humidity = (float)y / (atlasHeight - 1);
+	// 	for (int y = 0; y < atlasHeight; y++)
+	// 	{
+	// 		for (int x = 0; x < atlasWidth; x++)
+	// 		{
+	// 			float temperature = (float)x / (atlasWidth - 1);
+	// 			float humidity = (float)y / (atlasHeight - 1);
 
-				Color pixelColor = Color.clear; // Set a default transparent color
-				foreach (Biome biome in biomes)
-				{
-					if(temperature > 1 || temperature < 0)
-								Debug.Log("heightValue: " + temperature);
-					if(humidity > 1 || humidity < 0)
-								Debug.Log("heightValue: " + humidity);
-					if (biome.minTemperature <= temperature && biome.maxTemperature >= temperature &&
-						biome.minMoisture <= humidity && biome.maxMoisture >= humidity)
-					{
-						// Determine height value based on position in the texture
-						float heightValue = Mathf.Lerp(0, 1, (float)y / (atlasHeight - 1));
+	// 			Color pixelColor = Color.clear; // Set a default transparent color
+	// 			foreach (Biome biome in biomes)
+	// 			{
+	// 				if(temperature > 1 || temperature < 0)
+	// 							Debug.Log("heightValue: " + temperature);
+	// 				if(humidity > 1 || humidity < 0)
+	// 							Debug.Log("heightValue: " + humidity);
+	// 				if (biome.minTemperature <= temperature && biome.maxTemperature >= temperature &&
+	// 					biome.minMoisture <= humidity && biome.maxMoisture >= humidity)
+	// 				{
+	// 					// Determine height value based on position in the texture
+	// 					float heightValue = Mathf.Lerp(0, 1, (float)y / (atlasHeight - 1));
 
-						// Determine the level based on heightValue
-						foreach (BiomeLevel level in biome.levels)
-						{
-							if(heightValue > 1 || heightValue < 0)
-								Debug.Log("heightValue: " + heightValue);
-							if (heightValue >= level.minHeight && heightValue <= level.maxHeight)
-							{
-								pixelColor = level.color;
-								break;
-							}
-						}
-						break; // Once we find a matching biome, we break out of the loop
-					}
-				}
-				atlas.SetPixel(x, y, pixelColor);
-			}
-		}
+	// 					// Determine the level based on heightValue
+	// 					foreach (BiomeLevel level in biome.levels)
+	// 					{
+	// 						if(heightValue > 1 || heightValue < 0)
+	// 							Debug.Log("heightValue: " + heightValue);
+	// 						if (heightValue >= level.minHeight && heightValue <= level.maxHeight)
+	// 						{
+	// 							pixelColor = level.color;
+	// 							break;
+	// 						}
+	// 					}
+	// 					break; // Once we find a matching biome, we break out of the loop
+	// 				}
+	// 			}
+	// 			atlas.SetPixel(x, y, pixelColor);
+	// 		}
+	// 	}
 
-		atlas.Apply();
-		return atlas;
-	}
+	// 	atlas.Apply();
+	// 	return atlas;
+	// }
 
 
 	public static Texture2D ApplyGaussianBlur(Texture2D source, int radius)

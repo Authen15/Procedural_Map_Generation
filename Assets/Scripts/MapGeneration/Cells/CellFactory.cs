@@ -1,20 +1,23 @@
-using System.IO.Compression;
+using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Diagnostics;
 
 public class CellFactory 
 {
-    private GameObject cellPrefab;
+    private GameObject _cellPrefab;
     // private CellBlur cellBlur;
 
-    private NoiseManager noiseManager;
-    private BiomeHandler biomeHandler;
+    private BiomeHandler _biomeHandler;
+    private float[,] _heightMap;
+    private float[,] _moistureMap;
+    private float[,] _temperatureMap;
 
-    public CellFactory(GameObject cellPrefab, NoiseManager noiseManager, BiomeHandler biomeHandler)
+    public CellFactory(GameObject cellPrefab, BiomeHandler biomeHandler, float[,] heightMap, float[,] moistureMap, float[,] temperatureMap)
     {
-        this.noiseManager = noiseManager;
-        this.biomeHandler = biomeHandler;
-        this.cellPrefab = cellPrefab;
+        this._biomeHandler = biomeHandler;
+        this._cellPrefab = cellPrefab;
+        this._heightMap = heightMap;
+        this._moistureMap = moistureMap;
+        this._temperatureMap = temperatureMap;
     }
 
     public void GenerateChunkCells(Chunk chunk){
@@ -27,23 +30,26 @@ public class CellFactory
         {
             for (int j = 0; j < chunk.size; j++)
             {
-                int absoluteX = chunk.x * chunk.size + i;
-                int absoluteZ = chunk.z * chunk.size + j;
-
-                float height = NoiseUtils.RoundToNearestHeightStep(noiseManager.GetHeightNoiseValue(absoluteX, absoluteZ), HexMetrics.nbHeightSteps);
-                float moisture = NoiseUtils.RoundToNearestHeightStep(noiseManager.GetMoistureNoiseValue(absoluteX, absoluteZ), HexMetrics.nbHeightSteps);
-                float temperature = NoiseUtils.RoundToNearestHeightStep(noiseManager.GetTemperatureNoiseValue(absoluteX, absoluteZ), HexMetrics.nbHeightSteps);
-
+                int offsetX = chunk.x * chunk.size;
+                int offsetY = chunk.z * chunk.size;
+                float height = NoiseUtils.RoundToNearestHeightStep(_heightMap[i + offsetX, j + offsetY], HexMetrics.nbHeightSteps);
+                float moisture = NoiseUtils.RoundToNearestHeightStep(_moistureMap[i + offsetX, j + offsetY], HexMetrics.nbHeightSteps);
+                float temperature = NoiseUtils.RoundToNearestHeightStep(_temperatureMap[i + offsetX, j + offsetY], HexMetrics.nbHeightSteps);
+                // float height = NoiseUtils.RoundToNearestHeightStep(heightMap[i,j], HexMetrics.nbHeightSteps);
+                // float moisture = NoiseUtils.RoundToNearestHeightStep(moistureMap[i,j], HexMetrics.nbHeightSteps);
+                // float temperature = NoiseUtils.RoundToNearestHeightStep(temperatureMap[i,j], HexMetrics.nbHeightSteps);
+                
+                // Debug.Log("Height: " + height + " Moisture: " + moisture + " Temperature: " + temperature);
                 GameObject cellObj = InstantiateCell(new Vector3(i, height, j), chunk);
                 if (cellObj != null)
                 {
                     HexCell cell = cellObj.AddComponent<HexCell>();
-                    cell.Initialize(absoluteX, absoluteZ);
+                    cell.Initialize(i, j);
 
                     cell.CellObject = cellObj;
-                    cell.Biome = biomeHandler.GetBiome(moisture, temperature);
+                    cell.Biome = _biomeHandler.GetBiome(moisture, temperature);
 
-                    AdjustUVsForCell(cellObj, temperature, moisture);
+                    // AdjustUVsForCell(cellObj, temperature, moisture);
 
                     // MeshRenderer meshRenderer = cellObj.GetComponent<MeshRenderer>();
                     // BiomeLevel level = biomeHandler.GetBiomeLevel(cell.Biome, height);
@@ -70,7 +76,7 @@ public class CellFactory
         // Vector3 scale = new Vector3(1, y * HexMetrics.heightMultiplier, 1);  //TODO Check if it's better to modify scale
 
 
-        GameObject cell = Object.Instantiate(cellPrefab);
+        GameObject cell = Object.Instantiate(_cellPrefab);
         cell.transform.SetParent(chunk.gameObject.transform, false);
         cell.transform.localPosition = cellPos;
         // cell.transform.localScale = scale;

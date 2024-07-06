@@ -2,20 +2,23 @@ using UnityEngine;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine.PlayerLoop;
+using System.Drawing;
 
 public class NoiseGenerator
 {
-    protected NoiseCache cache;
+    protected NoiseCache _cache;
 
     public NoiseGenerator(DataMapSettings dataMapSettings)
     {
-        cache = new NoiseCache(dataMapSettings);
+        _cache = new NoiseCache(dataMapSettings);
     }
 
-    public virtual float GetNormalizedNoiseValue(int x, int y, int size)
-    {
-        float normalizedValue = Mathf.InverseLerp(cache.minValue, cache.maxValue, GetNoiseValue(x, y, size));
-        return normalizedValue;
+    // public virtual float[,] GetNoiseMap(int size, int xOffset, int yOffset){
+    //     return CreateNoiseMap(size, xOffset, yOffset, false, true);
+    // }
+
+    public virtual float[,] GetNoiseMap(int size){
+        return CreateNoiseMap(size, 0, 0, false, true);
     }
 
     public virtual float GetNoiseValue(int x, int y, int size)
@@ -26,24 +29,43 @@ public class NoiseGenerator
         float halfWidth = size / 2f;
         float halfHeight = size / 2f;
 
-        for (int i = 0; i < cache.Settings.octaves; i++)
+        for (int i = 0; i < _cache.Settings.octaves; i++)
         {
-            float sampleX = (x - halfWidth + cache.OctaveOffsets[i].x) / cache.Settings.scale * frequency;
-            float sampleY = (y - halfHeight + cache.OctaveOffsets[i].y) / cache.Settings.scale * frequency;
+            float sampleX = (x - halfWidth + _cache.OctaveOffsets[i].x) / _cache.Settings.scale * frequency;
+            float sampleY = (y - halfHeight + _cache.OctaveOffsets[i].y) / _cache.Settings.scale * frequency;
             float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
             noiseValue += perlinValue * amplitude;
-            amplitude *= cache.Settings.persistance;
-            frequency *= cache.Settings.lacunarity;
+            amplitude *= _cache.Settings.persistance;
+            frequency *= _cache.Settings.lacunarity;
         }
-
 
         return noiseValue;
     }
 
-    public void UpdateMinMax(float value)
+    public void UpdateCacheValues(float value)
     {
-        if (value < cache.minValue) cache.minValue = value;
-        if (value > cache.maxValue) cache.maxValue = value;
+        if (value < _cache.minValue) _cache.minValue = value;
+        if (value > _cache.maxValue) _cache.maxValue = value;
+    }
+
+    public virtual void UpdateNoiseGlobalMinMax(int size){
+        CreateNoiseMap(size, 0, 0, true, false);
+    }
+
+    private float[,] CreateNoiseMap(int size, int xOffset = 0, int yOffset = 0, bool doUpdateMinMax = false, bool doNormalize = false)
+    {
+        float[,] noiseMap = new float[size, size];
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float noiseValue = GetNoiseValue(x + xOffset, y + yOffset, size);
+                if(doUpdateMinMax)UpdateCacheValues(noiseValue);
+                if(doNormalize)noiseValue = Mathf.InverseLerp(_cache.minValue, _cache.maxValue, noiseValue);
+                noiseMap[x, y] = noiseValue;
+            }
+        }
+        return noiseMap;
     }
 }
 

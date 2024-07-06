@@ -1,31 +1,28 @@
-using System.Linq;
-
 public class BiomeHandler
 {
-    private Biome defaultBiome;
-    private Biome[] allBiomes;
+    private Biome _defaultBiome;
+    private Biome[] _allBiomes;
 
     public BiomeHandler(Biome[] allBiomes, Biome defaultBiome)
     {
-        this.allBiomes = allBiomes;
-        this.defaultBiome = defaultBiome;
+        this._allBiomes = allBiomes;
+        this._defaultBiome = defaultBiome;
     }
 
     public Biome GetBiome(float moisture, float temperature)
     {
-        Biome matchingBiome = allBiomes.FirstOrDefault(biome =>
-            moisture >= biome.minMoisture && moisture <= biome.maxMoisture &&
-            temperature >= biome.minTemperature && temperature <= biome.maxTemperature);
-
-        return matchingBiome ?? defaultBiome;
+        for(int i = 0; i < _allBiomes.Length; i++){
+            for(int j = 0; j < _allBiomes[i].subBiomeCount; j++)
+                if(moisture >= _allBiomes[i].minMoisture[j] && moisture <= _allBiomes[i].maxMoisture[j] &&
+                temperature >= _allBiomes[i].minTemperature[j] && temperature <= _allBiomes[i].maxTemperature[j]){
+                    return _allBiomes[i];
+                }
+        }
+        UnityEngine.Debug.Log("No biome found for moisture: " + moisture + " and temperature: " + temperature);
+        return _defaultBiome;
     }
 
     // public Biome GetBiomeFromPosition(){
         
     // }
-
-    public BiomeLevel GetBiomeLevel(Biome biome, float height)
-    {
-        return biome.levels.FirstOrDefault(level => height >= level.minHeight && height <= level.maxHeight);
-    }
 }

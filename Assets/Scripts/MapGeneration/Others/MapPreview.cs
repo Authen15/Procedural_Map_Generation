@@ -1,10 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode, RequireComponent(typeof(MeshRenderer))]
 public class MapPreview : MonoBehaviour 
 {
-    public HexGridManager hexGridManager;
-    public bool autoUpdate;
+    // public HexGridManager HexGridManager;
+    public bool AutoUpdate;
+    // public int TextureSize;
+
+    public HeightMapSettings heightMapSettings;
+    public MoistureMapSettings moistureMapSettings;
+    public TemperatureMapSettings temperatureMapSettings;
+    public List<DataMapSettings> featureMapSettings;
 
     public enum NoiseMapType
     {
@@ -23,32 +30,48 @@ public class MapPreview : MonoBehaviour
 
     public void UpdateMapPreview()
     {
-        if (hexGridManager == null) return;
+        int TextureSize = HexMetrics.MapSize;
+
+        NoiseManager noiseManager = new NoiseManager(heightMapSettings, moistureMapSettings, temperatureMapSettings, featureMapSettings, TextureSize);
+
+        DataMap heightMap = new DataMap(new float[TextureSize, TextureSize]);
+        DataMap moistureMap = new DataMap(new float[TextureSize, TextureSize]);
+        DataMap temperatureMap = new DataMap(new float[TextureSize, TextureSize]);
+        DataMap featureMap = new DataMap(new float[TextureSize, TextureSize]);
+
+        noiseManager.GetFullHeightDataMap(heightMap);
+        noiseManager.GetFullMoistureDataMap(moistureMap);
+        noiseManager.GetFullTemperatureDataMap(temperatureMap);
+        // noiseManager.GetFullFeatureDataMap(featureMap, featureMapToDraw);
+        
+        // if (HexGridManager == null) return;
 
         // Ensure only data maps of HexGridManager are initialized
-        hexGridManager.InitializeDataMaps();
-        hexGridManager.noiseManager.InitialiseNoiseGenerators();
+        // HexGridManager.InitializeDataMaps(heightMap, moistureMap, temperatureMap);
+        // HexGridManager.noiseManager.InitialiseNoiseGenerators();
+
 
         float[,] noiseMap;
 
         switch (selectedNoiseMapType)
         {
             case NoiseMapType.HeightMap:
-                noiseMap = CreateHeightValuesArray(hexGridManager.mapSize);
+                noiseMap = heightMap.values;
                 break;
 
             case NoiseMapType.MoistureMap:
-                noiseMap = CreateMoistureValuesArray(hexGridManager.mapSize);
+                noiseMap = moistureMap.values;
                 break;
 
             case NoiseMapType.TemperatureMap:
-                noiseMap = CreateTemperatureValuesArray(hexGridManager.mapSize);
+                noiseMap = temperatureMap.values;
                 break;
             case NoiseMapType.featureMaps:
-                noiseMap = CreateFeatureMapValuesArray(hexGridManager.mapSize, featureMapToDraw);
+                noiseMap = featureMap.values;
                 break;
 
             default:
+                Debug.LogError("Unexpected noise map type: " + selectedNoiseMapType);
                 return;  // Handle any unexpected cases
         }
 
@@ -113,49 +136,52 @@ public class MapPreview : MonoBehaviour
     }
 
 
-    private float [,] CreateHeightValuesArray(int size){
-        float[,] noise = new float[size, size ];
+    // private float [,] CreateHeightValuesArray(int size){
+    //     float[,] noise = new float[size, size ];
 
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetHeightNoiseValue(i,j);
-            }
-        }
-        return noise;
-    }
+    //     // for(int i = 0; i < size; i++){
+    //     //     for(int j = 0; j < size; j++){
+    //     //         noise[i, j] =  hexGridManager.noiseManager.GetHeightNoiseValue(i,j);
+    //     //     }
+    //     // }
+    //     noise = hexGridManager.noiseManager.GetFullHeightMap().values;
+    //     return noise;
+    // }
 
 
-    private float [,] CreateMoistureValuesArray(int size){
-        float[,] noise = new float[size, size ];
+    // private float [,] CreateMoistureValuesArray(int size){
+    //     float[,] noise = new float[size, size ];
 
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetMoistureNoiseValue(i,j);
-            }
-        }
-        return noise;
-    }
+    //     // for(int i = 0; i < size; i++){
+    //     //     for(int j = 0; j < size; j++){
+    //     //         noise[i, j] =  hexGridManager.noiseManager.GetMoistureNoiseValue(i,j);
+    //     //     }
+    //     // }
+    //     noise = hexGridManager.noiseManager.GetFullMoistureMap().values;
+    //     return noise;
+    // }
 
-    private float [,] CreateTemperatureValuesArray(int size){
-        float[,] noise = new float[size, size ];
+    // private float [,] CreateTemperatureValuesArray(int size){
+    //     float[,] noise = new float[size, size ];
 
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetTemperatureNoiseValue(i,j);
-            }
-        }
-        return noise;
-    }
+    //     // for(int i = 0; i < size; i++){
+    //     //     for(int j = 0; j < size; j++){
+    //     //         noise[i, j] =  hexGridManager.noiseManager.GetTemperatureNoiseValue(i,j);
+    //     //     }
+    //     // }
+    //     noise = hexGridManager.noiseManager.GetFullTemperatureMap().values;
+    //     return noise;
+    // }
 
-    private float [,] CreateFeatureMapValuesArray(int size, DataMapSettings featureMapSettings){
-        float[,] noise = new float[size, size ];
+    // private float [,] CreateFeatureMapValuesArray(int size, DataMapSettings featureMapSettings){
+    //     float[,] noise = new float[size, size ];
 
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                noise[i, j] =  hexGridManager.noiseManager.GetFeatureNoiseValue(featureMapSettings, i,j);
-            }
-        }
-        return noise;
-    }
+    //     for(int i = 0; i < size; i++){
+    //         for(int j = 0; j < size; j++){
+    //             noise[i, j] =  hexGridManager.noiseManager.GetFeatureNoiseValue(featureMapSettings, i,j);
+    //         }
+    //     }
+    //     return noise;
+    // }
 
 }
