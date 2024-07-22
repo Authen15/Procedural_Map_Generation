@@ -5,10 +5,12 @@ namespace Biome {
     public enum BiomeType
     {
         Default = -1,
-        Boreal = 0,
+        Desert = 0,
         Mesa = 1,
-        Desert = 2,
-        Ice = 3,
+        Boreal = 2,
+        Jungle = 3,
+        Toundra = 4,
+        Ice = 5,
     }
 
     public class BiomeManager : MonoBehaviour

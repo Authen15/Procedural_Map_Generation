@@ -27,13 +27,14 @@ public class MoistureNoiseGenerator : NoiseGenerator
 
         for(int y = 0; y < mapSize; y++){
             for(int x = 0; x < mapSize; x++){
-                float finalValue = noiseMap[x, y];
-                finalValue += baseMoisture;
+                float rawNoise = noiseMap[x, y];
+                rawNoise = NoiseUtils.CDF(rawNoise, 0.5f, 0.2f);
+                rawNoise += baseMoisture;
                 
                 // UpdateCacheValues(finalValue);
                 // if(finalValue > 1) Debug.Log("Noise value > 1 in MoistureNoiseGenerator");
                 // if(finalValue < 0) Debug.Log("Noise value < 0 in MoistureNoiseGenerator");
-                finalValue = Mathf.Clamp(finalValue, 0, 1);
+                float finalValue = Mathf.Clamp(rawNoise, 0, 1);
                 noiseMap[x, y] = finalValue;
             }
         } 

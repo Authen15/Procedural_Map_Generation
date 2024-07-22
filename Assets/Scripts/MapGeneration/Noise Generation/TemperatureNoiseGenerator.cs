@@ -32,18 +32,20 @@ public class TemperatureNoiseGenerator : NoiseGenerator
             for (int x = 0; x < mapSize; x++)
             {
                 float rawNoise = noiseMap[x, y];
-                float latitudeEffect = Mathf.Abs((float)y / mapSize - 0.5f) * latitudeSensitivity;
-                float latitudeAdjustedNoise = 1 - latitudeEffect + equatorBias;
+                rawNoise = NoiseUtils.CDF(rawNoise, 0.5f, 0.2f);
 
-                latitudeAdjustedNoise -= rawNoise * elevationSensitivity;
+                // float latitudeEffect = Mathf.Abs((float)y / mapSize - 0.5f) * latitudeSensitivity;
+                // float latitudeAdjustedNoise = 1 - latitudeEffect + equatorBias;
 
-                float finalValue = latitudeAdjustedNoise + rawNoise + baseTemperature;
+                // latitudeAdjustedNoise -= rawNoise * elevationSensitivity;
+
+                // float finalValue = latitudeAdjustedNoise + rawNoise + baseTemperature;
 
                 // UpdateCacheValues(finalValue);
                 // noiseMap[x, y] = finalValue;
-                finalValue = Mathf.InverseLerp(minFinalValue, maxFinalValue, finalValue);
+                // finalValue = Mathf.InverseLerp(minFinalValue, maxFinalValue, finalValue);
 
-                finalValue = Mathf.Clamp(finalValue, 0, 1);
+                float finalValue = Mathf.Clamp(rawNoise, 0, 1);
                 noiseMap[x, y] = finalValue;
 
                 // if (normalizedValue > 1) Debug.Log("Noise value > 1 in TemperatureNoiseGenerator");
