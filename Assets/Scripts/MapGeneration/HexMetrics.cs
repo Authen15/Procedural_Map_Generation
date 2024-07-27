@@ -1,45 +1,58 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public static class HexMetrics {
 
-	public const int MapSize = 1024;
+	public const int MapSize = 6;
+	public const int ChunkSize = 17; //max 119 // must be odd number
 	public const float heightMultiplier = 30f; //multiply the y scale of the hex by this value
-	public const float outerRadius = 2f;
+	public const float outerRadius = 1f;
 	public const float innerRadius = outerRadius * 0.866025404f;
+
 	public const int nbHeightSteps = 40;
 
-	public static Vector3Int WorldPositionToCellPosition(Vector3 position){
-		float x = position.x;
-		float y = position.y;
-		float z = position.z;
 
-        int cellX = (int) ((x / (HexMetrics.innerRadius * 2f)) + z / 2 - z * 0.5f) +1;
-        int cellY = (int) (y * HexMetrics.heightMultiplier / 2); 
-        int cellZ = (int) (z / (HexMetrics.outerRadius * 1.5f));
+	private const float DistanceBetweenIslands = 3f;
 
-        return new Vector3Int(cellX, cellY, cellZ);
+	public const float ChunkInnerRadius = ChunkSize/2 * outerRadius * 1.5f + outerRadius + DistanceBetweenIslands*outerRadius;
+	public const float ChunkOuterRadius = ChunkInnerRadius / 0.866025404f;
+
+
+	// public static Vector3Int WorldPositionToCellPosition(Vector3 position){
+	// 	float x = position.x;
+	// 	float y = position.y;
+	// 	float z = position.z;
+
+    //     int cellX = (int) ((x / (HexMetrics.innerRadius * 2f)) + z / 2 - z * 0.5f) +1;
+    //     int cellY = (int) (y * HexMetrics.heightMultiplier / 2); 
+    //     int cellZ = (int) (z / (HexMetrics.outerRadius * 1.5f));
+
+    //     return new Vector3Int(cellX, cellY, cellZ);
+	// }
+
+	public static Vector3 HexToWorld(HexCellCoordinates hexCellCoordinates)
+	{
+		float x = hexCellCoordinates.X;
+		float z = hexCellCoordinates.Z;
+		Vector3 position;
+
+		position.x = x * (innerRadius * 2f) + z * innerRadius;
+		position.y = 0;
+		position.z = z * (outerRadius * 1.5f);
+		return position;
 	}
 
-	// public static Vector3 CellPositionToWorldPosition(Vector3 position)
-    // {
-	// 	int x = (int)position.x;
-	// 	float y = position.y;
-	// 	int z = (int)position.z;
-		
-
-    //     float posX = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
-    //     float posY = y * HexMetrics.heightMultiplier / 2; 
-    //     float posZ = z * (HexMetrics.outerRadius * 1.5f);
-
-    //     return new Vector3(posX, posY, posZ);
-    // }
-
-	public static Vector3 CellGridToWorldPos(int x, float y, int z)
+	public static Vector3 HexChunkToWorld(HexChunkCoordinates hexChunkCoordinates)
 	{
+		float x = hexChunkCoordinates.X;
+		float z = hexChunkCoordinates.Z;
 		Vector3 position;
-		position.x = (x + z * 0.5f - z / 2) * (innerRadius * 2f);
-		position.y = y * heightMultiplier;
-		position.z = z * (outerRadius * 1.5f);
+
+		position.x = x * (ChunkOuterRadius * 1.5f);
+		position.y = 0;
+		position.z = z * (ChunkInnerRadius * 2f) + x * ChunkInnerRadius;
+
 		return position;
 	}
 

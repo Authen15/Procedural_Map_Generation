@@ -5,8 +5,8 @@ using Biome;
 public class HexMeshGrid : MonoBehaviour
 {
 	private int _mapSize = HexMetrics.MapSize; // size of the map in chunks
-	[SerializeField]
-	private int _chunkSize = 32;
+
+	private int _chunkSize = HexMetrics.ChunkSize;
 
 	private HexChunk _hexMesh;
 
@@ -67,17 +67,21 @@ public class HexMeshGrid : MonoBehaviour
 
 	void GenerateMap(DataMap heightMap, DataMap moistureMap)
 	{
-		for (int chunkZ = 0; chunkZ < _mapSize / _chunkSize; chunkZ++)
+
+		// HexChunk chunk = Instantiate(_hexMesh, new Vector3(0,0,0), Quaternion.identity, transform);
+		// chunk.Initialize(0, 0, _chunkSize, _mapSize, heightMap.Values);
+		// chunk.GenerateMesh();
+
+
+		for (int chunkZ = 0; chunkZ < _mapSize; chunkZ++)
 		{
-			for (int chunkX = 0; chunkX < _mapSize / _chunkSize; chunkX++)
+			for (int chunkX = 0; chunkX < _mapSize; chunkX++)
 			{
 				// Vector3[] chunkCellsPositions = new Vector3[_chunkSize * _chunkSize];
-				float chunkWorldPosX = chunkX * _chunkSize * HexMetrics.innerRadius * 2;
-				float chunkWorldPosZ = chunkZ * _chunkSize *  HexMetrics.outerRadius * 1.5f;
-				Vector3 chunWorldPos = new Vector3(chunkWorldPosX, 0, chunkWorldPosZ);
+				// Vector3 chunWorldPos = new Vector3(chunkWorldPosX, 0, chunkWorldPosZ);
+				Vector3 chunkHexPos = HexMetrics.HexChunkToWorld(new HexChunkCoordinates(chunkX,chunkZ));
 
-
-				HexChunk chunk = Instantiate(_hexMesh, chunWorldPos, Quaternion.identity, transform);
+				HexChunk chunk = Instantiate(_hexMesh, chunkHexPos, Quaternion.identity, transform);
 				// for (int z = 0; z < _chunkSize; z++)
 				// {
 				// 	for (int x = 0; x < _chunkSize; x++)
@@ -90,17 +94,13 @@ public class HexMeshGrid : MonoBehaviour
 				// }
 				chunk.Initialize(chunkX, chunkZ, _chunkSize, _mapSize, heightMap.Values);
 				chunk.GenerateMesh();
-				ApplyMaterial(chunk, chunkX, chunkZ, heightMap, moistureMap);
+				ApplyMaterial(chunk);
 			}
 		}
 	}
 
-	void ApplyMaterial(HexChunk chunkMesh, int chunkX, int chunkZ, DataMap heightMap, DataMap moistureMap)
+	void ApplyMaterial(HexChunk chunkMesh)
 	{
-		float[,] grassVisibilityMap = _noiseManager.GetChunkVisibilityNoiseMap(heightMap, moistureMap, new Vector2Int(chunkX, chunkZ), _chunkSize);
-		Texture2D grassVisibilityTexture = TextureGenerator.TextureFromNoiseMap(grassVisibilityMap);
-		grassVisibilityTexture.filterMode = FilterMode.Trilinear;
-		// chunkMesh.ApplyMaterial(_terrainMaterial, _grassMaterial, grassVisibilityTexture);
-		chunkMesh.ApplyMaterial(_terrainMaterial, null, grassVisibilityTexture);
+		chunkMesh.ApplyMaterial(_terrainMaterial);
 	}
 }
