@@ -4,111 +4,24 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexChunk : MonoBehaviour {
 
-	private HexCellCoordinates _hexCellCoord;
+	private int _chunkX;
+	private int _chunkZ; 
     private int _size;
-	private int _mapSize;
-    private Vector3[] _chunkCellsPositions;
-
-	private float[,] _heightMapValues;
-
+	private HeightMapSettings _heightMapSettings; // temporary, then will be contained in Biome data
 
 	Mesh hexMesh;
 	List<Vector3> vertices;
 	List<int> triangles;
 	List<Vector2> uvs;
 
-    public void Initialize(int x, int z, int size, int mapSize, float[,] heightMapValues)
+    public void Initialize(int x, int z, int size, HeightMapSettings heightMapSettings)
     {
-		_hexCellCoord = new HexCellCoordinates(x, z);
+		_chunkX = x;
+		_chunkZ = z;
         _size = size;
-		_mapSize = mapSize;
-		_heightMapValues = heightMapValues;
 
-		InitializeCellsPositions();
+		_heightMapSettings = heightMapSettings;
     }
-
-	// private void InitializeCellsPositions(float[,] heightMapValues){
-	// 	_chunkCellsPositions = new Vector3[_size * _size];
-		
-	// 	for (int cellZ = 0; cellZ < _size; cellZ++)
-	// 	{
-	// 		for (int cellX = 0; cellX < _size; cellX++)
-	// 		{
-	// 			int xSample = cellX + _x * _size;
-	// 			int zSample = cellZ + _z * _size;
-	// 			float y = heightMapValues[xSample, zSample];
-	// 			// _chunkCellsPositions[cellZ * _size + cellX] = HexMetrics.CellGridToWorldPos(xSample, y, zSample);
-	// 			_chunkCellsPositions[cellZ * _size + cellX] = HexMetrics.CellGridToWorldPos(cellX, y, cellZ);				
-	// 		}
-	// 	}
-	// }
-
-	// private void InitializeCellsPositions(float[,] heightMapValues){
-	// 	_chunkCellsPositions = new Vector3[_size * _size];
-		
-	// 	for (int cellZ = 0; cellZ < _size; cellZ++)
-	// 	{
-	// 		for (int cellX = 0; cellX < _size; cellX++)
-	// 		{
-	// 			int xSample = cellX + _x * _size;
-	// 			int zSample = cellZ + _z * _size;
-	// 			float y = heightMapValues[xSample, zSample];
-	// 			// _chunkCellsPositions[cellZ * _size + cellX] = HexMetrics.CellGridToWorldPos(xSample, y, zSample);
-	// 			_chunkCellsPositions[cellZ * _size + cellX] = HexMetrics.CellGridToWorldPos(cellX, y, cellZ);				
-	// 		}
-	// 	}
-	// }
-
-	private void InitializeCellsPositions(){
-		int radius = _size / 2;
-
-		//Total cell number is can be calcultated using the radius
-		//first the center cell + 6 cells around it
-		//then 12(R=2 * 6) cells to make another ring around, then 18(R=3 * 6) ...
-		// SUM(1->R : R) = R(R+1)/2
-		int totalCells = 1 + 6 * (radius * (radius + 1) / 2);
-		_chunkCellsPositions = new Vector3[totalCells];
-		
-		// Define axial directions
-		HexCellCoordinates[] directions = { //TODO use HexCoordinates instead
-			new HexCellCoordinates(0, -1), // bottom left
-			new HexCellCoordinates(-1, 0), 	// left
-			new HexCellCoordinates(-1, 1), 	// top left
-			new HexCellCoordinates(0, 1), 	// top right
-			new HexCellCoordinates(1, 0), 	// right
-			new HexCellCoordinates(1, -1) 	// bottom right
-		};
-
-		int index = 0;
-		
-		// Add center cell
-		// float height = _heightMapValues[radius, radius]; // the center of the heightMap
-		_chunkCellsPositions[index++] = HexMetrics.HexToWorld(new HexCellCoordinates(radius, radius));
-		// _chunkCellsPositions[index++] = new Vector3(radius, 0, radius);
-
-		// Iterate through rings
-		for (int r = 1; r <= radius; r++) {
-			// Start at (r, 0) for the current ring
-			// height = _heightMapValues[_radius+r, _radius];
-			// Vector3 current = new Vector3(r, height, 0);
-			HexCellCoordinates current = new HexCellCoordinates(radius + r, radius);
-
-			for (int d = 0; d < 6; d++) {  // 6 directions
-				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
-					// Debug.Log("_radius = " + _radius + " +(int)current.x = " +  +(int)current.x + " (int)current.z = " + (int)current.z);
-					// Debug.Log("d= " + d + " r= " + r);
-					// Debug.Log("current= " + current + " index = " + index);
-					// height = _heightMapValues[_radius+(int)current.x, _radius+(int)current.z];
-					// current.y = height;
-					current += directions[d];
-					_chunkCellsPositions[index++] = HexMetrics.HexToWorld(new HexCellCoordinates(current.X, current.Z));
-					// _chunkCellsPositions[index++] = new Vector3(current.X, 0, current.Z);
-					// Move to the next cell in the current direction
-				}
-			}
-		}
-	}
-
 
 	public void GenerateMesh () {
 		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
@@ -131,51 +44,8 @@ public class HexChunk : MonoBehaviour {
 		triangles.Clear();
 		uvs.Clear();
 
-		for (int i = 0; i < _chunkCellsPositions.Length; i++) {
-			// int cellXGlobalIndex = i % _radius + _x * _radius;
-			// int cellZGlobalIndex = i / _radius + _z * _radius;
-
-			// float rightNeighborHeightOffset = 0;
-			// float topRightNeighborHeightOffset = 0;
-			// float topLeftNeighborHeightOffset = 0;
-
-			// // right neighbor
-			// if(cellXGlobalIndex != _mapSize-1) // if is not last right cell in map
-			// {
-			// 	//add the right side of the cell
-			// 	rightNeighborHeightOffset = _heightMapValues[cellXGlobalIndex + 1, cellZGlobalIndex] * HexMetrics.heightMultiplier - _chunkCellsPositions[i].y;
-
-				
-			// }
-
-			// if(cellZGlobalIndex != _mapSize-1){ // if is not last line in map
-			// 	// EVEN ROW
-			// 	if(cellZGlobalIndex % 2 == 0)
-			// 	{
-			// 		// TOP RIGHT
-			// 		topRightNeighborHeightOffset = _heightMapValues[cellXGlobalIndex, cellZGlobalIndex + 1] * HexMetrics.heightMultiplier - _chunkCellsPositions[i].y;
-			// 		// TOP LEFT
-			// 		if(cellXGlobalIndex > 0) // if is not first left cell in line
-			// 		{
-			// 			topLeftNeighborHeightOffset = _heightMapValues[cellXGlobalIndex -1, cellZGlobalIndex+1] * HexMetrics.heightMultiplier - _chunkCellsPositions[i].y;
-						
-			// 		}
-					
-			// 	}else{ // ODD ROW
-			// 		// TOP RIGHT
-			// 		if(cellXGlobalIndex != _mapSize-1) // if is not last right cell in line
-			// 		{
-			// 			topRightNeighborHeightOffset = _heightMapValues[cellXGlobalIndex + 1, cellZGlobalIndex+1] * HexMetrics.heightMultiplier - _chunkCellsPositions[i].y;
-			// 		}
-			// 		// TOP LEFT
-			// 		topLeftNeighborHeightOffset = _heightMapValues[cellXGlobalIndex, cellZGlobalIndex+1] * HexMetrics.heightMultiplier - _chunkCellsPositions[i].y;
-			// 	}
-			// }
-
-
-			// TriangulateCell(_chunkCellsPositions[i], i, rightNeighborHeightOffset, topRightNeighborHeightOffset, topLeftNeighborHeightOffset, _radius);
-			TriangulateCell(_chunkCellsPositions[i]);
-		}
+		TriangulateCellTopFaces();
+		TriangulateCellSides();
 
 		hexMesh.vertices = vertices.ToArray();
 		hexMesh.triangles = triangles.ToArray();
@@ -185,118 +55,161 @@ public class HexChunk : MonoBehaviour {
 
 	}
 
-	// void TriangulateCell(Vector3 cellPos, int cellIndex, float rightNeighborHeightOffset, float topRightNeighborHeightOffset, float topLeftNeighborHeightOffset, int chunkSize) {
-	void TriangulateCell(Vector3 cellPos){
-		int vertexIndex = vertices.Count;
+	void TriangulateCellTopFaces(){
+		float[,] heightMap = NoiseGenerator.GenerateChunkHeightMap(_heightMapSettings);
 
-		Vector3[] corners = HexMetrics.corners;
-		for (int i = 0; i < 6; i++) {
-			vertices.Add(cellPos + corners[i]);
+		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
+			int vertexIndex = vertices.Count;
+
+			int xHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].x;
+			int zHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].z;
+			float height = heightMap[xHeight,zHeight];
+
+			Vector3 cellPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex] + new Vector3(0,height,0));
+
+			Vector3[] corners = HexMetrics.corners;
+			for (int i = 0; i < 6; i++) {
+				vertices.Add(cellPos + corners[i]);
+			}
+
+			AddTriangle(vertexIndex + 0, vertexIndex + 1, vertexIndex + 5);
+			AddTriangle(vertexIndex + 1, vertexIndex + 4, vertexIndex + 5);	
+			AddTriangle(vertexIndex + 1, vertexIndex + 2, vertexIndex + 4);
+			AddTriangle(vertexIndex + 2, vertexIndex + 3, vertexIndex + 4);
+
+			Vector2[] uvCorners = HexMetrics.uvCorners;
+			for (int i = 0; i < 6; i++) {
+				Vector2 uv = uvCorners[i] / _size;
+				// Calculate the UV offset based on the cell position
+				int column = cellIndex % _size;
+				int row = cellIndex / _size;
+				float uvOffsetX = column * (1f / _size);
+				float uvOffsetY = row * (1f / _size);
+				// Apply the UV offset to the UV coordinates
+				uv.x += uvOffsetX;
+				uv.y += uvOffsetY;
+				uvs.Add(uv);
+			}
 		}
+	}
 
-		AddTriangle(vertexIndex + 0, vertexIndex + 1, vertexIndex + 5);
-		AddTriangle(vertexIndex + 1, vertexIndex + 4, vertexIndex + 5);
-		AddTriangle(vertexIndex + 1, vertexIndex + 2, vertexIndex + 4);
-		AddTriangle(vertexIndex + 2, vertexIndex + 3, vertexIndex + 4);
+	void TriangulateCellSides(){
 
-		//each cell needs to compare the right, top right and top left cells to triangulate the side of the cell to the height of the neighbor cell
+		// handle center cell
+		TriangulateBotLeftSide(0,0);
+		TriangulateLeftSide(0,0);
+		TriangulateTopLeftSide(0,0);
+		TriangulateTopRightSide(0,0);
+		TriangulateRightSide(0,0);
+		TriangulateBotRightSide(0,0);
 
+		// re-use the vertices from the top faces to connect the cells by creating the side faces
+		// the current cell won't create the side between itself and the cell(s) in the center direction
+		// and it won't create the side between itself and the cell in the previous direction
+		int cellIndex = 1;
+		int radius = _size / 2;
+		for (int r = 1; r <= radius; r++) {
+			for (int d = 0; d < 6; d++) {  // 6 directions
+				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
+					int vertexIndex = cellIndex * 6; // index to the first vertex of the cell (there are 6 vertices per cells)
+					switch(d){
+						case 0 :
+							TriangulateRightSide(cellIndex, vertexIndex);
+							TriangulateBotRightSide(cellIndex, vertexIndex);
+							TriangulateBotLeftSide(cellIndex, vertexIndex);
+							TriangulateLeftSide(cellIndex, vertexIndex);
+							break;
+						case 1 :
+							TriangulateBotRightSide(cellIndex, vertexIndex);
+							TriangulateBotLeftSide(cellIndex, vertexIndex);
+							TriangulateLeftSide(cellIndex, vertexIndex);
+							TriangulateTopLeftSide(cellIndex, vertexIndex);
+							break;
+						case 2 :
+							TriangulateBotLeftSide(cellIndex, vertexIndex);
+							TriangulateLeftSide(cellIndex, vertexIndex);
+							TriangulateTopLeftSide(cellIndex, vertexIndex);
+							TriangulateTopRightSide(cellIndex, vertexIndex);
+							break;
+						case 3 :
+							TriangulateLeftSide(cellIndex, vertexIndex);
+							TriangulateTopLeftSide(cellIndex, vertexIndex);
+							TriangulateTopRightSide(cellIndex, vertexIndex);
+							TriangulateRightSide(cellIndex, vertexIndex);
+							break;
+						case 4 :
+							TriangulateTopLeftSide(cellIndex, vertexIndex);
+							TriangulateTopRightSide(cellIndex, vertexIndex);
+							TriangulateRightSide(cellIndex, vertexIndex);
+							TriangulateBotRightSide(cellIndex, vertexIndex);
+							break;
+						case 5 :
+							TriangulateTopRightSide(cellIndex, vertexIndex);
+							TriangulateRightSide(cellIndex, vertexIndex);
+							TriangulateBotRightSide(cellIndex, vertexIndex);
+							TriangulateBotLeftSide(cellIndex, vertexIndex);
+							break;
+					}
+					cellIndex ++;
+				}
+			}
+		}
+	}	
 
-		// if(topLeftNeighborHeightOffset == 0){
-		// 	//TODO optimize using only 1 vertex if two neighbor are lower for vertex [7,8] or/and [9,10]
-		// 	vertices.Add(cellPos + corners[5] + new Vector3(0, topLeftNeighborHeightOffset, 0)); // vertex 6  // top left vertex that connect to the TOP LEFT neighbor cell
-		// 	vertices.Add(cellPos + corners[0] + new Vector3(0, topLeftNeighborHeightOffset, 0)); // vertex 7 // top vertex that connect to the TOP LEFT neighbor cell
+	private void TriangulateBotLeftSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(4,3,1);
+		Vector3Int secondTriIndices = new Vector3Int(4,1,0);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.BottomLeft);
+	}
 
-		// 	AddTriangle(vertexIndex + 5, vertexIndex + 6, vertexIndex + 7); 
-		// 	AddTriangle(vertexIndex + 5, vertexIndex + 7, vertexIndex + 0);
-		// }
+	private void TriangulateLeftSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(5,4,2);
+		Vector3Int secondTriIndices = new Vector3Int(5,2,1);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.Left);
+	}
 
-		// if(topRightNeighborHeightOffset == 0){
-		// 	vertices.Add(cellPos + corners[0] + new Vector3(0, topRightNeighborHeightOffset, 0)); // vertex 8 // top vertex that connect to the TOP RIGHT neighbor cell
-		// 	vertices.Add(cellPos + corners[1] + new Vector3(0, topRightNeighborHeightOffset, 0)); // vertex 9 // top right vertex that connect to the TOP RIGHT neighbor cell
+	private void TriangulateTopLeftSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(0,5,3);
+		Vector3Int secondTriIndices = new Vector3Int(0,3,2);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.TopLeft);
+	}
 
-		// 	AddTriangle(vertexIndex + 0, vertexIndex + 8, vertexIndex + 9);
-		// 	AddTriangle(vertexIndex + 0, vertexIndex + 9, vertexIndex + 1);
-		// }
+	private void TriangulateTopRightSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(1,0,4);
+		Vector3Int secondTriIndices = new Vector3Int(1,4,3);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.TopRight);
+	}
 
-		// if(rightNeighborHeightOffset == 0){
-		// 	vertices.Add(cellPos + corners[1] + new Vector3(0, rightNeighborHeightOffset, 0)); // vertex 10 // top right vertex that connect to the RIGHT neighbor cell
-		// 	vertices.Add(cellPos + corners[2] + new Vector3(0, rightNeighborHeightOffset, 0)); // vertex 11 // bottom right vertex that connect to the RIGHT neighbor cell
+	private void TriangulateRightSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(2,1,5);
+		Vector3Int secondTriIndices = new Vector3Int(2,5,4);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.Right);
+	}
 
+	private void TriangulateBotRightSide(int cellIndex, int vertexIndex){
+		Vector3Int firstTriIndices = new Vector3Int(3,2,0);
+		Vector3Int secondTriIndices = new Vector3Int(3,0,5);
+		TriangulateSide(cellIndex, vertexIndex, firstTriIndices, secondTriIndices, HexGridUtils.Dir.BottomRight);
+	}
 
+	private void TriangulateSide(int cellIndex, int vertexIndex, Vector3Int firstTriIndices, Vector3Int secondTriIndices, HexGridUtils.Dir dir){
+		Vector3 sideCellPos = HexGridUtils.ChunkCellsPositions[cellIndex] + HexGridUtils.GetDir[(int)dir];
+		if(!HexGridUtils.CellIndexDict.ContainsKey(sideCellPos)){
+			// Debug.LogWarning("Should add vertex to connect toward the bottom ");
+			return;
+		} 
+		int sideCellIndex = HexGridUtils.CellIndexDict[sideCellPos];
+		int sideCellVertexIndex = sideCellIndex*6;
 
-		// 	AddTriangle(vertexIndex + 1, vertexIndex + 10, vertexIndex + 11);
-		// 	AddTriangle(vertexIndex + 1, vertexIndex + 11, vertexIndex + 2);
-		// }
-
-		//TODO optimize using only 1 vertex if two neighbor are lower for vertex [7,8] or/and [9,10]
-		// int vertexIndexOffset = 6;
-		// if(topLeftNeighborHeightOffset != 0){
-		// 	vertices.Add(cellPos + corners[5] + new Vector3(0, topLeftNeighborHeightOffset, 0)); // vertex 6  // top left vertex that connect to the TOP LEFT neighbor cell
-		// 	vertices.Add(cellPos + corners[0] + new Vector3(0, topLeftNeighborHeightOffset, 0)); // vertex 7 // top vertex that connect to the TOP LEFT neighbor cell
-
-		// 	AddTriangle(vertexIndex + 5, vertexIndex + vertexIndexOffset, vertexIndex + vertexIndexOffset + 1); 
-		// 	AddTriangle(vertexIndex + 5, vertexIndex + vertexIndexOffset + 1, vertexIndex + 0);
-
-		// 	vertexIndexOffset += 2;
-		// }
-
-		// if(topRightNeighborHeightOffset != 0){
-		// 	vertices.Add(cellPos + corners[0] + new Vector3(0, topRightNeighborHeightOffset, 0)); // vertex 8 // top vertex that connect to the TOP RIGHT neighbor cell
-		// 	vertices.Add(cellPos + corners[1] + new Vector3(0, topRightNeighborHeightOffset, 0)); // vertex 9 // top right vertex that connect to the TOP RIGHT neighbor cell
-
-		// 	AddTriangle(vertexIndex + 0, vertexIndex + vertexIndexOffset, vertexIndex + vertexIndexOffset + 1);
-		// 	AddTriangle(vertexIndex + 0, vertexIndex + vertexIndexOffset + 1, vertexIndex + 1);
-
-		// 	vertexIndexOffset += 2;
-		// }
-
-		// if(rightNeighborHeightOffset != 0){
-		// 	vertices.Add(cellPos + corners[1] + new Vector3(0, rightNeighborHeightOffset, 0)); // vertex 10 // top right vertex that connect to the RIGHT neighbor cell
-		// 	vertices.Add(cellPos + corners[2] + new Vector3(0, rightNeighborHeightOffset, 0)); // vertex 11 // bottom right vertex that connect to the RIGHT neighbor cell
-
-		// 	AddTriangle(vertexIndex + 1, vertexIndex + vertexIndexOffset, vertexIndex + vertexIndexOffset + 1);
-		// 	AddTriangle(vertexIndex + 1, vertexIndex + vertexIndexOffset + 1, vertexIndex + 2);
-
-		// 	vertexIndexOffset += 2;
-		// }
-
-		
-		// Vector2[] uvCorners = HexMetrics.uvCorners;
-		// for (int i = 0; i < vertexIndexOffset; i++) {
-		// 	Vector2 uv = uvCorners[i] / chunkSize;
-		// 	// Calculate the UV offset based on the cell position
-		// 	int column = cellIndex % chunkSize;
-		// 	int row = cellIndex / chunkSize;
-		// 	float uvOffsetX = column * (1f / chunkSize);
-		// 	float uvOffsetY = row * (1f / chunkSize);
-		// 	// Apply the UV offset to the UV coordinates
-		// 	uv.x += uvOffsetX;
-		// 	uv.y += uvOffsetY;
-		// 	uvs.Add(uv);
-		// }
-
-		// uv for whole the map
-		// Vector2[] uvCorners = HexMetrics.uvCorners;
-		// for (int i = 0; i < vertexIndexOffset; i++) {
-		// 	Vector2 uv = uvCorners[i] / chunkSize;
-
-		// 	// Calculate the UV offset based on the cell position
-		// 	int column = (cellIndex % chunkSize) // cell column in chunk
-		// 				 + chunkSize * _x; // add offset to get cell column in whole map
+		AddTriangle(
+			vertexIndex + firstTriIndices.x, 
+			vertexIndex + firstTriIndices.y, 
+			sideCellVertexIndex + firstTriIndices.z);
 			
-		// 	int row = (cellIndex / chunkSize) + // get the row in the chunk
-		// 				 + chunkSize * _z; // add offset to get row in whole map
-
-		// 	float uvOffsetX = column * (1f / HexMetrics.MapSize); //divide by mapSize to normalize
-		// 	float uvOffsetY = row * (1f / HexMetrics.MapSize);
-
-		// 	// Apply the UV offset to the UV coordinates
-		// 	uv.x += uvOffsetX;
-		// 	uv.y += uvOffsetY;
-		// 	uvs.Add(uv);
-		// }
-
+		AddTriangle(
+			vertexIndex + secondTriIndices.x, 
+			sideCellVertexIndex + secondTriIndices.y, 
+			sideCellVertexIndex + secondTriIndices.z);
 	}
 
 	void AddTriangle (int v1, int v2, int v3) {

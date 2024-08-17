@@ -1,68 +1,30 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public static class HexMetrics {
 
-	public const int MapSize = 6;
-	public const int ChunkSize = 17; //max 119 // must be odd number
-	public const float heightMultiplier = 30f; //multiply the y scale of the hex by this value
-	public const float outerRadius = 1f;
-	public const float innerRadius = outerRadius * 0.866025404f;
+	public const int MapSize = 5; // size of the map in chunks
+	public const int ChunkSize = 119; // must be odd number
+	public const int MapCellGridSize = MapSize * ChunkSize;
+	public const float HeightMultiplier = 10f; //multiply the y scale of the hex by this value
+	public const float OuterRadius = 1f;
+	public const float InnerRadius = OuterRadius * 0.866025404f;
 
-	public const int nbHeightSteps = 40;
-
+	public const int NbHeightSteps = 40;
 
 	private const float DistanceBetweenIslands = 3f;
 
-	public const float ChunkInnerRadius = ChunkSize/2 * outerRadius * 1.5f + outerRadius + DistanceBetweenIslands*outerRadius;
+	public const float ChunkInnerRadius = ChunkSize/2 * OuterRadius * 1.5f + OuterRadius + DistanceBetweenIslands*OuterRadius;
 	public const float ChunkOuterRadius = ChunkInnerRadius / 0.866025404f;
 
 
-	// public static Vector3Int WorldPositionToCellPosition(Vector3 position){
-	// 	float x = position.x;
-	// 	float y = position.y;
-	// 	float z = position.z;
-
-    //     int cellX = (int) ((x / (HexMetrics.innerRadius * 2f)) + z / 2 - z * 0.5f) +1;
-    //     int cellY = (int) (y * HexMetrics.heightMultiplier / 2); 
-    //     int cellZ = (int) (z / (HexMetrics.outerRadius * 1.5f));
-
-    //     return new Vector3Int(cellX, cellY, cellZ);
-	// }
-
-	public static Vector3 HexToWorld(HexCellCoordinates hexCellCoordinates)
-	{
-		float x = hexCellCoordinates.X;
-		float z = hexCellCoordinates.Z;
-		Vector3 position;
-
-		position.x = x * (innerRadius * 2f) + z * innerRadius;
-		position.y = 0;
-		position.z = z * (outerRadius * 1.5f);
-		return position;
-	}
-
-	public static Vector3 HexChunkToWorld(HexChunkCoordinates hexChunkCoordinates)
-	{
-		float x = hexChunkCoordinates.X;
-		float z = hexChunkCoordinates.Z;
-		Vector3 position;
-
-		position.x = x * (ChunkOuterRadius * 1.5f);
-		position.y = 0;
-		position.z = z * (ChunkInnerRadius * 2f) + x * ChunkInnerRadius;
-
-		return position;
-	}
 
 	public static Vector3[] corners = {
-		new Vector3(0f, 0f, outerRadius), //top vertex
-		new Vector3(innerRadius, 0f, 0.5f * outerRadius), // top right vertex
-		new Vector3(innerRadius, 0f, -0.5f * outerRadius), // bottom right vertex
-		new Vector3(0f, 0f, -outerRadius), // bottom vertex
-		new Vector3(-innerRadius, 0f, -0.5f * outerRadius), // bottom left vertex
-		new Vector3(-innerRadius, 0f, 0.5f * outerRadius), // top left vertex
+		new Vector3(0f, 0f, OuterRadius), //top vertex
+		new Vector3(InnerRadius, 0f, 0.5f * OuterRadius), // top right vertex
+		new Vector3(InnerRadius, 0f, -0.5f * OuterRadius), // bottom right vertex
+		new Vector3(0f, 0f, -OuterRadius), // bottom vertex
+		new Vector3(-InnerRadius, 0f, -0.5f * OuterRadius), // bottom left vertex
+		new Vector3(-InnerRadius, 0f, 0.5f * OuterRadius), // top left vertex
 	};
 
 	public static Vector2[] uvCorners = {

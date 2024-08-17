@@ -4,4 +4,12 @@
 public class DataMapSettings : ScriptableObject 
 {
     public NoiseSettings noiseSettings;
+    
+	#if UNITY_EDITOR
+
+	protected virtual void OnValidate() {
+		noiseSettings.ValidateValues ();
+	}
+
+	#endif
 }
