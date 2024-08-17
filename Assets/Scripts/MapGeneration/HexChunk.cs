@@ -52,7 +52,6 @@ public class HexChunk : MonoBehaviour {
 		hexMesh.RecalculateNormals();
 		hexMesh.uv = uvs.ToArray(); //TODO possible optimisation using an array
 		gameObject.AddComponent<MeshCollider>();
-
 	}
 
 	void TriangulateCellTopFaces(){
@@ -94,61 +93,87 @@ public class HexChunk : MonoBehaviour {
 	}
 
 	void TriangulateCellSides(){
-
-		// handle center cell
-		TriangulateBotLeftSide(0,0);
-		TriangulateLeftSide(0,0);
-		TriangulateTopLeftSide(0,0);
-		TriangulateTopRightSide(0,0);
-		TriangulateRightSide(0,0);
-		TriangulateBotRightSide(0,0);
-
 		// re-use the vertices from the top faces to connect the cells by creating the side faces
-		// the current cell won't create the side between itself and the cell(s) in the center direction
-		// and it won't create the side between itself and the cell in the previous direction
+		// the current cell won't create the side between itself and the cell(s) in next direction
+		// for the exterior cells, add new vertices at y=0
 		int cellIndex = 1;
 		int radius = _size / 2;
 		for (int r = 1; r <= radius; r++) {
 			for (int d = 0; d < 6; d++) {  // 6 directions
 				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
 					int vertexIndex = cellIndex * 6; // index to the first vertex of the cell (there are 6 vertices per cells)
-					switch(d){
-						case 0 :
-							TriangulateRightSide(cellIndex, vertexIndex);
-							TriangulateBotRightSide(cellIndex, vertexIndex);
-							TriangulateBotLeftSide(cellIndex, vertexIndex);
-							TriangulateLeftSide(cellIndex, vertexIndex);
-							break;
-						case 1 :
-							TriangulateBotRightSide(cellIndex, vertexIndex);
-							TriangulateBotLeftSide(cellIndex, vertexIndex);
-							TriangulateLeftSide(cellIndex, vertexIndex);
-							TriangulateTopLeftSide(cellIndex, vertexIndex);
-							break;
-						case 2 :
-							TriangulateBotLeftSide(cellIndex, vertexIndex);
-							TriangulateLeftSide(cellIndex, vertexIndex);
-							TriangulateTopLeftSide(cellIndex, vertexIndex);
-							TriangulateTopRightSide(cellIndex, vertexIndex);
-							break;
-						case 3 :
-							TriangulateLeftSide(cellIndex, vertexIndex);
-							TriangulateTopLeftSide(cellIndex, vertexIndex);
-							TriangulateTopRightSide(cellIndex, vertexIndex);
-							TriangulateRightSide(cellIndex, vertexIndex);
-							break;
-						case 4 :
-							TriangulateTopLeftSide(cellIndex, vertexIndex);
-							TriangulateTopRightSide(cellIndex, vertexIndex);
-							TriangulateRightSide(cellIndex, vertexIndex);
-							TriangulateBotRightSide(cellIndex, vertexIndex);
-							break;
-						case 5 :
-							TriangulateTopRightSide(cellIndex, vertexIndex);
-							TriangulateRightSide(cellIndex, vertexIndex);
-							TriangulateBotRightSide(cellIndex, vertexIndex);
-							TriangulateBotLeftSide(cellIndex, vertexIndex);
-							break;
+					if (r%2 == 1 || r == radius){
+						switch(d){
+							case (int)HexGridUtils.Dir.BottomLeft :
+								// TriangulateBotLeftSide(cellIndex, vertexIndex);
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								TriangulateRightSide(cellIndex, vertexIndex);
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.Left :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								// TriangulateLeftSide(cellIndex, vertexIndex);
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								TriangulateRightSide(cellIndex, vertexIndex);
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.TopLeft :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								// TriangulateTopLeftSide(cellIndex, vertexIndex);
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								TriangulateRightSide(cellIndex, vertexIndex);
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.TopRight :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								// TriangulateTopRightSide(cellIndex, vertexIndex);
+								TriangulateRightSide(cellIndex, vertexIndex);
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.Right :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								// TriangulateRightSide(cellIndex, vertexIndex);
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.BottomRight :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								TriangulateRightSide(cellIndex, vertexIndex);
+								// TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+						}
+					}else{
+						switch(d){
+							case (int)HexGridUtils.Dir.BottomLeft :
+								TriangulateBotLeftSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.Left :
+								TriangulateLeftSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.TopLeft :
+								TriangulateTopLeftSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.TopRight :
+								TriangulateTopRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.Right :
+								TriangulateRightSide(cellIndex, vertexIndex);
+								break;
+							case (int)HexGridUtils.Dir.BottomRight :
+								TriangulateBotRightSide(cellIndex, vertexIndex);
+								break;
+						}
 					}
 					cellIndex ++;
 				}
@@ -194,12 +219,32 @@ public class HexChunk : MonoBehaviour {
 
 	private void TriangulateSide(int cellIndex, int vertexIndex, Vector3Int firstTriIndices, Vector3Int secondTriIndices, HexGridUtils.Dir dir){
 		Vector3 sideCellPos = HexGridUtils.ChunkCellsPositions[cellIndex] + HexGridUtils.GetDir[(int)dir];
+		int sideCellVertexIndex;
 		if(!HexGridUtils.CellIndexDict.ContainsKey(sideCellPos)){
-			// Debug.LogWarning("Should add vertex to connect toward the bottom ");
-			return;
-		} 
-		int sideCellIndex = HexGridUtils.CellIndexDict[sideCellPos];
-		int sideCellVertexIndex = sideCellIndex*6;
+			Debug.Log("Should add vertex to connect toward the bottom " + "cellIndex : "+ cellIndex);
+			// sideCellVertexIndex = vertices.Count; // we will add new vertices, so the offset is the actual number of vertices
+			// Vector3 firstVertex = vertices[vertexIndex+firstTriIndices.x];
+			// firstVertex.y = - HexMetrics.HeightMultiplier;
+			// firstTriIndices.z = 0;
+			// vertices.Add(firstVertex);
+
+			// Vector3 secondVertex = vertices[vertexIndex+firstTriIndices.y];
+			// secondVertex.y = - HexMetrics.HeightMultiplier;
+			// secondTriIndices.y = 1;
+			// vertices.Add(secondVertex);
+
+			// Vector3 thirdVertex = vertices[vertexIndex+firstTriIndices.z];
+			// thirdVertex.y = - HexMetrics.HeightMultiplier;
+			// secondTriIndices.z = 2;
+			// vertices.Add(thirdVertex);
+			return; //TODO manage the uvs (maybe it would be better to add the cells in the TriangulateTopFaces, as an other crown but only for interior vertices )
+		}else{
+			// Debug.Log("everyting is fine " + "cellIndex : "+ cellIndex);
+			int sideCellIndex = HexGridUtils.CellIndexDict[sideCellPos];
+			sideCellVertexIndex = sideCellIndex*6;
+		}
+
+		
 
 		AddTriangle(
 			vertexIndex + firstTriIndices.x, 

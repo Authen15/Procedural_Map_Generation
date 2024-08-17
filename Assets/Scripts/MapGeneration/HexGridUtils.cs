@@ -57,9 +57,9 @@ public static class HexGridUtils {
 
 			for (int d = 0; d < 6; d++) {  // 6 directions
 				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
-					current += GetDir[d];
-					positions[index] = current;
                     if (populateDict) CellIndexDict.Add(current, index);
+					positions[index] = current;
+					current += GetDir[d];
                     index++;
 				}
 			}

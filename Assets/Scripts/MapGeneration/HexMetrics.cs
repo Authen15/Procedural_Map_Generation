@@ -2,8 +2,8 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 5; // size of the map in chunks
-	public const int ChunkSize = 119; // must be odd number
+	public const int MapSize = 1; // size of the map in chunks
+	public const int ChunkSize = 5; // must be odd number
 	public const int MapCellGridSize = MapSize * ChunkSize;
 	public const float HeightMultiplier = 10f; //multiply the y scale of the hex by this value
 	public const float OuterRadius = 1f;
