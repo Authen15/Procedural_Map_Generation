@@ -3,20 +3,20 @@ using Biome;
 
 public class HexMeshGrid : MonoBehaviour
 {
-	private HexChunk _hexMesh;
+	private HexIsland _hexMesh;
 
-	[SerializeField]
-	private HeightMapSettings _heightMapSettings;
+	// [SerializeField]
+	// private HeightMapSettings _heightMapSettings;
 	// [SerializeField]
 	// private MoistureMapSettings _moistureMapSettings;
 	// [SerializeField]
 	// private TemperatureMapSettings _temperatureMapSettings;
 	
-	[SerializeField]
-	private Material _terrainMaterial;
+	// [SerializeField]
+	// private Material _terrainMaterial;
 
-	[SerializeField]
-	private BiomeManager _biomeManager;
+	// [SerializeField]
+	// private BiomeManager _biomeManager;
 
 	private NoiseManager _noiseManager;
 
@@ -30,7 +30,7 @@ public class HexMeshGrid : MonoBehaviour
 		TMP_CAMERA.transform.position = camPos;
 
 
-		_hexMesh = GetComponentInChildren<HexChunk>();
+		_hexMesh = GetComponentInChildren<HexIsland>();
 		// _noiseManager = new NoiseManager(_heightMapSettings, _moistureMapSettings, _temperatureMapSettings, _biomeManager);
 
 		// DataMap heightMap = _noiseManager.GetFullHeightDataMap();
@@ -47,8 +47,9 @@ public class HexMeshGrid : MonoBehaviour
 
 		// SetMaterialTextures(heightMapTexture, moistureMapTexture, temperatureMapTexture);
 		// SetMaterialProperties();
-
+		float startTime = Time.realtimeSinceStartup;
 		GenerateMap();
+		Debug.Log("Generating time " + (Time.realtimeSinceStartup - startTime).ToString(".0###########"));
 	}
 
 	// void SetMaterialTextures(Texture2D heightMapTexture, Texture2D moistureMapTexture, Texture2D temperatureMapTexture)
@@ -71,23 +72,23 @@ public class HexMeshGrid : MonoBehaviour
 	{
 		// Vector3[] chunksPositions = HexGridUtils.GenerateCellsPositions(_mapSize);
 		// Vector3[] chunksPositions = HexGridUtils.GetMapChunksPositions();
-		Vector3[] chunksPositions = HexGridUtils.MapChunksPositions;
+		Vector2[] chunksPositions = HexGridUtils.MapChunksPositions;
 
-		foreach (Vector3 chunkCoordinates in chunksPositions )
+		foreach (Vector2 chunkCoordinates in chunksPositions )
 		{
-			
-			Vector3 chunkHexPos = HexGridUtils.HexChunkToWorld(new Vector3((int)chunkCoordinates.x, 0, (int)chunkCoordinates.z));
+			// convert to vector3 for world position
+			Vector3 chunkHexPos = HexGridUtils.HexChunkToWorld(new Vector2((int)chunkCoordinates.x, (int)chunkCoordinates.y));
 
-			HexChunk chunk = Instantiate(_hexMesh, chunkHexPos, Quaternion.identity, transform);
+			HexIsland chunk = Instantiate(_hexMesh, chunkHexPos, Quaternion.identity, transform);
 
-			chunk.Initialize((int)chunkCoordinates.x, (int)chunkCoordinates.z, HexMetrics.ChunkSize, _heightMapSettings);
+			chunk.Initialize((int)chunkCoordinates.x, (int)chunkCoordinates.y);
 			chunk.GenerateMesh();
-			ApplyMaterial(chunk);
+			// ApplyMaterial(chunk);
 		}
 	}
 
-	void ApplyMaterial(HexChunk chunkMesh)
-	{
-		chunkMesh.ApplyMaterial(_terrainMaterial);
-	}
+	// void ApplyMaterial(HexIsland chunkMesh)
+	// {
+	// 	chunkMesh.ApplyMaterial(_terrainMaterial);
+	// }
 }

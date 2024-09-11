@@ -11,30 +11,29 @@ public static class HexGridUtils {
         BottomRight = 5
     };
 
-    public static Vector3[] GetDir = {
-        new Vector3(0, 0, -1), // bottom left
-        new Vector3(-1, 0, 0), 	// left
-        new Vector3(-1, 0, 1), 	// top left
-        new Vector3(0, 0, 1), 	// top right
-        new Vector3(1, 0, 0), 	// right
-        new Vector3(1, 0, -1) 	// bottom right
+    public static Vector2[] GetDir = {
+        new Vector2(0, -1), 	// bottom left
+        new Vector2(-1, 0), 	// left
+        new Vector2(-1, 1), 	// top left
+        new Vector2(0, 1), 		// top right
+        new Vector2(1, 0), 		// right
+        new Vector2(1, -1) 		// bottom right
     };
     
 
     public static Dictionary<Vector3, int> CellIndexDict; // contaiu the index of a cell in an array using it's coordinates in the grid
     
-    public static Vector3[] ChunkCellsPositions;
+    public static Vector2[] ChunkCellsPositions;
 
-    public static Vector3[] MapChunksPositions;
+    public static Vector2[] MapChunksPositions;
 
     static HexGridUtils(){
         CellIndexDict = new Dictionary<Vector3, int>();
-        ChunkCellsPositions = GenerateGridPositions(HexMetrics.ChunkSize, true);
+        ChunkCellsPositions = GenerateGridPositions(HexMetrics.IslandSize, true);
         MapChunksPositions = GenerateGridPositions(HexMetrics.MapSize);
-
     }
 
-	private static Vector3[] GenerateGridPositions(int size, bool populateDict = false){
+	private static Vector2[] GenerateGridPositions(int size, bool populateDict = false){
 		int radius = size / 2;
 
 		//Total cell number is can be calcultated using the radius
@@ -42,10 +41,10 @@ public static class HexGridUtils {
 		//then 12(R=2 * 6) cells to make another ring around, then 18(R=3 * 6) ...
 		// SUM(1->R : R) = R(R+1)/2
 		int cellsNumber = 1 + 6 * (radius * (radius + 1) / 2);
-		Vector3[] positions = new Vector3[cellsNumber];
+		Vector2[] positions = new Vector2[cellsNumber];
 		
 		// Add center cell
-        Vector3 centerCell = new Vector3(radius, 0, radius);
+        Vector2 centerCell = new Vector2(0, 0);
 		positions[0] = centerCell;
         if (populateDict) CellIndexDict.Add(centerCell, 0);
 
@@ -53,7 +52,7 @@ public static class HexGridUtils {
         int index = 1;
 		for (int r = 1; r <= radius; r++) {
 			// Start at (r, 0) for the current ring
-			Vector3 current = new Vector3(radius + r, 0, radius);
+			Vector2 current = new Vector2(0 + r, 0);
 
 			for (int d = 0; d < 6; d++) {  // 6 directions
 				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
@@ -67,29 +66,51 @@ public static class HexGridUtils {
 		return positions;
 	}
 
-    public static Vector3 HexToWorld(Vector3 cellCoordinates)
+    public static Vector3 HexToWorld(Vector2 cellCoordinates, float height)
 	{
 		float x = cellCoordinates.x;
-		float y = cellCoordinates.y;
-		float z = cellCoordinates.z;
+		float y = height;
+		float z = cellCoordinates.y;
 		Vector3 position;
 
 		position.x = x * (HexMetrics.InnerRadius * 2f) + z * HexMetrics.InnerRadius;
 		position.y = y * HexMetrics.HeightMultiplier;
-		// position.y = 0;
 		position.z = z * (HexMetrics.OuterRadius * 1.5f);
 		return position;
 	}
 
-	public static Vector3 HexChunkToWorld(Vector3 chunkCoordinates)
+	public static Vector2 HexToWorld(Vector2 cellCoordinates)
+	{
+		float x = cellCoordinates.x;
+		float y = cellCoordinates.y;
+		Vector2 position;
+
+		position.x = x * (HexMetrics.InnerRadius * 2f) + y * HexMetrics.InnerRadius;
+		position.y = y * (HexMetrics.OuterRadius * 1.5f);
+		return position;
+	}
+
+	public static Vector2 HexToUV(Vector2 cellCoordinates, float distanceBetweenCells)
+	{
+		float outerRadius = HexMetrics.OuterRadius + distanceBetweenCells*HexMetrics.OuterRadius;
+		float innerRadius = outerRadius * 0.866025404f;
+		float x = cellCoordinates.x;
+		float y = cellCoordinates.y;
+		Vector2 position;
+
+		position.x = x * (innerRadius * 2f) + y * innerRadius;
+		position.y = y * (outerRadius * 1.5f);
+		return position;
+	}
+
+	public static Vector3 HexChunkToWorld(Vector2 chunkCoordinates)
 	{
 		float x = chunkCoordinates.x;
-        float y = chunkCoordinates.y;
-		float z = chunkCoordinates.z;
+		float z = chunkCoordinates.y;
 		Vector3 position;
 
 		position.x = x * (HexMetrics.ChunkOuterRadius * 1.5f);
-		position.y = y;
+		position.y = 0;
 		position.z = z * (HexMetrics.ChunkInnerRadius * 2f) + x * HexMetrics.ChunkInnerRadius;
 
 		return position;

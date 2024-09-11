@@ -3,14 +3,14 @@ using UnityEngine;
 public static class FallOffMapGenerator{
     public static float[,] GenerateChunkFalloffMap(HeightMapSettings heightMapSettings)
     {
-        float[,] map = new float[HexMetrics.ChunkSize, HexMetrics.ChunkSize];
+        float[,] map = new float[HexMetrics.IslandSize, HexMetrics.IslandSize];
 
-        for (int y = 0; y < HexMetrics.ChunkSize; y++)
+        for (int y = 0; y < HexMetrics.IslandSize; y++)
         {
-            for (int x = 0; x < HexMetrics.ChunkSize; x++)
+            for (int x = 0; x < HexMetrics.IslandSize; x++)
             {
-                float nx = x / (float)HexMetrics.ChunkSize * 2 - 1;
-                float ny = y / (float)HexMetrics.ChunkSize * 2 - 1;
+                float nx = x / (float)HexMetrics.IslandSize * 2 - 1;
+                float ny = y / (float)HexMetrics.IslandSize * 2 - 1;
 
                 float value = Mathf.Max(Mathf.Abs(nx), Mathf.Abs(ny));
                 map[x, y] = Evaluate(heightMapSettings, value);

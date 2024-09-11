@@ -1,26 +1,33 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Biome;
+
+struct HexIslandMeshData
+{
+	
+}
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class HexChunk : MonoBehaviour {
+public class HexIsland : MonoBehaviour {
 
-	private int _chunkX;
-	private int _chunkZ; 
-    private int _size;
-	private HeightMapSettings _heightMapSettings; // temporary, then will be contained in Biome data
+	public int IslandX;
+	public int IslandZ; 
+    private int _size = HexMetrics.IslandSize;
+	private int _radius;
+	public BiomeData IslandBiome;
 
 	Mesh hexMesh;
-	List<Vector3> vertices;
+	List<Vector3> vertices; // Todo Reuse vertices and triangles as all islands are the same, just modify vertices height
 	List<int> triangles;
-	List<Vector2> uvs;
+	static Vector2[] uvs;
 
-    public void Initialize(int x, int z, int size, HeightMapSettings heightMapSettings)
+    public void Initialize(int x, int z)
     {
-		_chunkX = x;
-		_chunkZ = z;
-        _size = size;
+		IslandX = x;
+		IslandZ = z;
+		_radius = _size / 2;
 
-		_heightMapSettings = heightMapSettings;
+		IslandBiome = BiomeManager.Instance.GetBiome();
     }
 
 	public void GenerateMesh () {
@@ -28,67 +35,59 @@ public class HexChunk : MonoBehaviour {
 		hexMesh.name = "Hex Mesh";
 		vertices = new List<Vector3>();
 		triangles = new List<int>();
-		uvs = new List<Vector2>();
 		Triangulate();
+		ApplyMaterial();
 	}
 
-	public void ApplyMaterial (Material material) {
+	public void ApplyMaterial () {
 		MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-		meshRenderer.material = material;
+		meshRenderer.sharedMaterial = IslandBiome.BiomeMaterial;
+		SetMaterialProperties(meshRenderer.sharedMaterial);
+	}
 
+	void SetMaterialProperties(Material material)
+	{
+		material.SetFloat("_MinHeight", 0);
+		material.SetFloat("_MaxHeight", HexMetrics.HeightMultiplier);
+		material.SetFloat("_IslandSize", HexMetrics.IslandSize);
 	}
 
 	public void Triangulate () {
 		hexMesh.Clear();
 		vertices.Clear();
 		triangles.Clear();
-		uvs.Clear();
 
 		TriangulateCellTopFaces();
 		TriangulateCellSides();
+		GenerateUVs();
 
 		hexMesh.vertices = vertices.ToArray();
 		hexMesh.triangles = triangles.ToArray();
 		hexMesh.RecalculateNormals();
-		hexMesh.uv = uvs.ToArray(); //TODO possible optimisation using an array
+		hexMesh.uv = uvs;
 		gameObject.AddComponent<MeshCollider>();
 	}
 
 	void TriangulateCellTopFaces(){
-		float[,] heightMap = NoiseGenerator.GenerateChunkHeightMap(_heightMapSettings);
-
+		float[,] heightMap = NoiseGenerator.GenerateIslandHeightMap(this);
 		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
 			int vertexIndex = vertices.Count;
 
-			int xHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].x;
-			int zHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].z;
-			float height = heightMap[xHeight,zHeight];
+			int xHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].x + _radius; // + _radius to normalized because cells coord can be negative
+			int yHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].y + _radius;
+			float height = heightMap[xHeight,yHeight];
 
-			Vector3 cellPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex] + new Vector3(0,height,0));
+			Vector3 cellWorldPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex], height);
 
 			Vector3[] corners = HexMetrics.corners;
 			for (int i = 0; i < 6; i++) {
-				vertices.Add(cellPos + corners[i]);
+				vertices.Add(cellWorldPos + corners[i]);
 			}
 
 			AddTriangle(vertexIndex + 0, vertexIndex + 1, vertexIndex + 5);
 			AddTriangle(vertexIndex + 1, vertexIndex + 4, vertexIndex + 5);	
 			AddTriangle(vertexIndex + 1, vertexIndex + 2, vertexIndex + 4);
 			AddTriangle(vertexIndex + 2, vertexIndex + 3, vertexIndex + 4);
-
-			Vector2[] uvCorners = HexMetrics.uvCorners;
-			for (int i = 0; i < 6; i++) {
-				Vector2 uv = uvCorners[i] / _size;
-				// Calculate the UV offset based on the cell position
-				int column = cellIndex % _size;
-				int row = cellIndex / _size;
-				float uvOffsetX = column * (1f / _size);
-				float uvOffsetY = row * (1f / _size);
-				// Apply the UV offset to the UV coordinates
-				uv.x += uvOffsetX;
-				uv.y += uvOffsetY;
-				uvs.Add(uv);
-			}
 		}
 	}
 
@@ -97,12 +96,11 @@ public class HexChunk : MonoBehaviour {
 		// the current cell won't create the side between itself and the cell(s) in next direction
 		// for the exterior cells, add new vertices at y=0
 		int cellIndex = 1;
-		int radius = _size / 2;
-		for (int r = 1; r <= radius; r++) {
+		for (int r = 1; r <= _radius; r++) {
 			for (int d = 0; d < 6; d++) {  // 6 directions
 				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
 					int vertexIndex = cellIndex * 6; // index to the first vertex of the cell (there are 6 vertices per cells)
-					if (r%2 == 1 || r == radius){
+					if (r%2 == 1 || r == _radius){
 						switch(d){
 							case (int)HexGridUtils.Dir.BottomLeft :
 								// TriangulateBotLeftSide(cellIndex, vertexIndex);
@@ -221,7 +219,7 @@ public class HexChunk : MonoBehaviour {
 		Vector3 sideCellPos = HexGridUtils.ChunkCellsPositions[cellIndex] + HexGridUtils.GetDir[(int)dir];
 		int sideCellVertexIndex;
 		if(!HexGridUtils.CellIndexDict.ContainsKey(sideCellPos)){
-			Debug.Log("Should add vertex to connect toward the bottom " + "cellIndex : "+ cellIndex);
+			Debug.LogWarning("Should add vertex to connect toward the bottom " + "cellIndex : "+ cellIndex);
 			// sideCellVertexIndex = vertices.Count; // we will add new vertices, so the offset is the actual number of vertices
 			// Vector3 firstVertex = vertices[vertexIndex+firstTriIndices.x];
 			// firstVertex.y = - HexMetrics.HeightMultiplier;
@@ -257,9 +255,48 @@ public class HexChunk : MonoBehaviour {
 			sideCellVertexIndex + secondTriIndices.z);
 	}
 
-	void AddTriangle (int v1, int v2, int v3) {
+	private void AddTriangle (int v1, int v2, int v3) {
 		triangles.Add(v1);
 		triangles.Add(v2);
 		triangles.Add(v3 );
+	}
+
+	private void GenerateUVs(){
+		if (uvs == null ){ // we can reuse UVs for each islands
+			uvs = new Vector2[HexGridUtils.ChunkCellsPositions.Length * 6]; // * 6 because there are 6 vertices per cell
+		}else{
+			return;
+		}
+
+		Vector2[] uvCorners = HexMetrics.uvCorners;
+
+		float spacing = 0.1f;
+		Vector2 maxCellWorldPos = HexGridUtils.HexToWorld(new Vector2(_size, _size));
+		maxCellWorldPos += new Vector2(_size * (1+spacing) - spacing, _size  * (1+spacing) - spacing); // also take in count the spaces added between cells in he uvs
+		
+		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
+			Vector2 cellWorldPos = HexGridUtils.HexToUV(HexGridUtils.ChunkCellsPositions[cellIndex], spacing);
+
+			for (int i = 0; i < 6; i++) {
+				Vector2 uv = uvCorners[i];
+				uv /= maxCellWorldPos.x; // x is the max value between both coordinates
+				Vector2 cellPosNormalized = cellWorldPos / maxCellWorldPos.x;
+				uv += cellPosNormalized;
+				uv += new Vector2(0.5f, 0.5f);
+				uvs[cellIndex * 6 + i] = uv;
+				if(uv.x > 1f || uv.y > 1) Debug.Log("UV are incorrect > 1 " + uv);
+			}
+		}
+
+		// Debug.Log(
+			// 		// "uv " + cellIndex + " " + cellGridPos + " " + (cellGridPos + posOffset) + " are \n"
+			// 		"uv " + cellIndex + " are \n"
+			// 		+ uvs[vertexIndex].ToString(".0###########") + "\n"
+			// 		+ uvs[vertexIndex+1].ToString(".0###########") + "\n"
+			// 		+ uvs[vertexIndex+2].ToString(".0###########") + "\n"
+			// 		+ uvs[vertexIndex+3].ToString(".0###########") + "\n"
+			// 		+ uvs[vertexIndex+4].ToString(".0###########") + "\n"
+			// 		+ uvs[vertexIndex+5].ToString(".0###########")
+			// );
 	}
 }
