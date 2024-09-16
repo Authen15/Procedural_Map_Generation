@@ -44,20 +44,21 @@ public static class NoiseGenerator
     //     return noiseMap;
     // }
 
-    public static float[,] GenerateIslandHeightMap(HexIsland hexIsland){
-        HeightMapSettings heightMapSettings = hexIsland.IslandBiome.HeightMapSettings;
+    public static float[,] GenerateHeightMap(HeightMapSettings heightMapSettings, int size, int customSeed = 0){
         
-        System.Random prng = new System.Random (hexIsland.IslandX + 100 * hexIsland.IslandZ);
+        System.Random prng = new System.Random (customSeed);
 		float offsetX = prng.Next (-100000, 100000);
 		float offsetY = prng.Next (-100000, 100000);
 
-        float[,] noiseMap = GenerateNoiseMap(HexMetrics.IslandSize, heightMapSettings.noiseSettings, new Vector2(offsetX, offsetY));
+        float[,] noiseMap = GenerateNoiseMap(size, heightMapSettings.NoiseSettings, new Vector2(offsetX, offsetY));
         AnimationCurve heightCurve_threadsafe = new AnimationCurve (heightMapSettings.HeightCurve.keys);
+        
+        float[,] fallOffMap = null; //TODO handle falloffmap in a better way
+        if (heightMapSettings.UseFallOff)
+            fallOffMap = FallOffMapGenerator.GenerateChunkFalloffMap(heightMapSettings);
 
-        // float[,] fallOffMap = FallOffMapGenerator.GenerateChunkFalloffMap(heightMapSettings);
-
-        for(int y = 0; y < HexMetrics.IslandSize; y++){
-            for(int x = 0; x < HexMetrics.IslandSize; x++){
+        for(int y = 0; y < size; y++){
+            for(int x = 0; x < size; x++){
                 float rawNoise = noiseMap[x, y];
                 rawNoise = NoiseUtils.CDF(rawNoise, 0.5f, 0.2f);
 
@@ -65,17 +66,17 @@ public static class NoiseGenerator
 
 
                 float finalValue = heightCurve_threadsafe.Evaluate(rawNoise); // height curve bound must be < 0 and > 1
-                finalValue += heightMapSettings.BaseHeight;
 
-                // finalValue -= fallOffMap[x,y];
+                if (heightMapSettings.UseFallOff){
+                    finalValue -= fallOffMap[x,y];
+                }
 
-                // finalValue = Mathf.Clamp(finalValue, 0, 1);
+                finalValue = Mathf.Clamp(finalValue, 0, 1);
 
                 // UpdateCacheValues(finalValue);
                 NoiseUtils.RoundToNearestHeightStep(finalValue, HexMetrics.NbHeightSteps);
 
                 noiseMap[x, y] = finalValue;
-                
             }
         }
         return noiseMap;

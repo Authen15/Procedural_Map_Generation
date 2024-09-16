@@ -52,7 +52,7 @@ public static class HexGridUtils {
         int index = 1;
 		for (int r = 1; r <= radius; r++) {
 			// Start at (r, 0) for the current ring
-			Vector2 current = new Vector2(0 + r, 0);
+			Vector2 current = new Vector2(r, 0);
 
 			for (int d = 0; d < 6; d++) {  // 6 directions
 				for (int i = 0; i < r; i++) {  // Number of cells in the current direction
@@ -66,40 +66,42 @@ public static class HexGridUtils {
 		return positions;
 	}
 
-    public static Vector3 HexToWorld(Vector2 cellCoordinates, float height)
+	public static int GetRingStartIndex(int ringNumber){
+		return 1 + 6 * (ringNumber * (ringNumber + 1) / 2);
+	}
+
+    public static Vector3 HexToWorld(Vector2 cellCoordinates)
 	{
 		float x = cellCoordinates.x;
-		float y = height;
 		float z = cellCoordinates.y;
 		Vector3 position;
 
 		position.x = x * (HexMetrics.InnerRadius * 2f) + z * HexMetrics.InnerRadius;
-		position.y = y * HexMetrics.HeightMultiplier;
+		position.y = 0;
 		position.z = z * (HexMetrics.OuterRadius * 1.5f);
 		return position;
 	}
 
-	public static Vector2 HexToWorld(Vector2 cellCoordinates)
+	// public static Vector2 HexToWorld(Vector2 cellCoordinates)
+	// {
+	// 	float x = cellCoordinates.x;
+	// 	float y = cellCoordinates.y;
+	// 	Vector2 position;
+
+	// 	position.x = x * (HexMetrics.InnerRadius * 2f) + y * HexMetrics.InnerRadius;
+	// 	position.y = y * (HexMetrics.OuterRadius * 1.5f);
+	// 	return position;
+	// }
+
+	public static Vector2 HexToUV(Vector2 cellCoordinates)
 	{
+		float outerRadius = HexMetrics.OuterRadius;
 		float x = cellCoordinates.x;
 		float y = cellCoordinates.y;
 		Vector2 position;
 
-		position.x = x * (HexMetrics.InnerRadius * 2f) + y * HexMetrics.InnerRadius;
-		position.y = y * (HexMetrics.OuterRadius * 1.5f);
-		return position;
-	}
-
-	public static Vector2 HexToUV(Vector2 cellCoordinates, float distanceBetweenCells)
-	{
-		float outerRadius = HexMetrics.OuterRadius + distanceBetweenCells*HexMetrics.OuterRadius;
-		float innerRadius = outerRadius * 0.866025404f;
-		float x = cellCoordinates.x;
-		float y = cellCoordinates.y;
-		Vector2 position;
-
-		position.x = x * (innerRadius * 2f) + y * innerRadius;
-		position.y = y * (outerRadius * 1.5f);
+		position.x = x * (outerRadius * 2f) + y * outerRadius;
+		position.y = y * (outerRadius * 2f);
 		return position;
 	}
 

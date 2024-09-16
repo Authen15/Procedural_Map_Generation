@@ -14,14 +14,6 @@ namespace Biome {
 
     public class BiomeManager : MonoBehaviour
     {
-        [SerializeField]
-        private BiomeData[] _allBiomes;
-
-        // public string[] ShaderReferenceSuffix = {
-        //     "BOREAL",
-        //     "MESA"
-        // };
-
 
         private static BiomeManager _instance;
         public static BiomeManager Instance{
@@ -32,9 +24,14 @@ namespace Biome {
                 return _instance;
             }
         }
-        
+
+        [SerializeField]
+        private BiomeData[] _allBiomes;
+        private System.Random _prng;
+
         void Awake(){
             _instance = this;
+            _prng = new System.Random(HexMeshGrid.Instance.GlobalSeed);
         }
 
         // public BiomeData GetBiome(float moisture, float temperature)
@@ -55,7 +52,8 @@ namespace Biome {
 
         public BiomeData GetBiome() //TODO make a more complex system for biome distribution
         {
-            return _allBiomes[Random.Range(0, _allBiomes.Length)];
+            // return _allBiomes[Random.Range(0, _allBiomes.Length)];
+            return _allBiomes[_prng.Next(0, _allBiomes.Length)];
         }
     }
 }

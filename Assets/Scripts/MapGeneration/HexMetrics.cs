@@ -2,20 +2,19 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 7; // size of the map in chunks
-	public const int IslandSize = 119; // must be odd number, max size = 119
+	public const int MapSize = 3; // size of the map in chunks
+	public const int IslandSize = 117; // must be odd number, max size = 117
 	public const int MapCellGridSize = MapSize * IslandSize;
-	public const float HeightMultiplier = 10f; //multiply the y scale of the hex by this value
+	public const float HeightMultiplier = 6f; //multiply the y scale of the hex by this value
 	public const float OuterRadius = 1f;
 	public const float InnerRadius = OuterRadius * 0.866025404f;
 
-	public const int NbHeightSteps = 20;
+	public const int NbHeightSteps = 16;
 
-	private const float DistanceBetweenIslands = 3f;
+	private const float DistanceBetweenIslands = 10f;
 
 	public const float ChunkInnerRadius = IslandSize/2 * OuterRadius * 1.5f + OuterRadius + DistanceBetweenIslands*OuterRadius;
 	public const float ChunkOuterRadius = ChunkInnerRadius / 0.866025404f;
-
 
 
 	public static Vector3[] corners = {

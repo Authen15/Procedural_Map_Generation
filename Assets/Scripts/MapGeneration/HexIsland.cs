@@ -1,10 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Biome;
+using Unity.VisualScripting;
 
 struct HexIslandMeshData
 {
-	
+	public Vector2[] uvs;
+	public Vector3[] baseVertices; // vertices are the sae for each island except for their height
+	public List<int> triangles;
 }
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -16,11 +19,12 @@ public class HexIsland : MonoBehaviour {
 	private int _radius;
 	public BiomeData IslandBiome;
 
-	Mesh hexMesh;
-	List<Vector3> vertices; // Todo Reuse vertices and triangles as all islands are the same, just modify vertices height
-	List<int> triangles;
-	static Vector2[] uvs;
-
+	private Mesh _hexMesh;
+	private static HexIslandMeshData _hexIslandMeshData;
+	[HideInInspector]
+	private Vector3[] _vertices; // needed because vertices height is unique
+	
+			
     public void Initialize(int x, int z)
     {
 		IslandX = x;
@@ -28,15 +32,37 @@ public class HexIsland : MonoBehaviour {
 		_radius = _size / 2;
 
 		IslandBiome = BiomeManager.Instance.GetBiome();
+		IslandBiome.HeightMapSettings.UpdateIslandMesh += UpdateMeshRunTime; // Update the mesh at runtime when modifying heightmap parameters
     }
 
 	public void GenerateMesh () {
-		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-		hexMesh.name = "Hex Mesh";
-		vertices = new List<Vector3>();
-		triangles = new List<int>();
-		Triangulate();
+		GetComponent<MeshFilter>().mesh = _hexMesh = new Mesh();
+		_hexMesh.name = "Hex Mesh";
+
+		float[,] heightMap = NoiseGenerator.GenerateHeightMap(IslandBiome.HeightMapSettings, HexMetrics.IslandSize, IslandX + IslandZ * HexMetrics.MapSize);
+
+		if (_hexIslandMeshData.triangles == null && _hexIslandMeshData.baseVertices == null){ // store triangles and vertices in a struct as we need them only once
+			_hexIslandMeshData.triangles = new List<int>();
+			_hexIslandMeshData.baseVertices = new Vector3[HexGridUtils.ChunkCellsPositions.Length * 6 + (_radius*6*6)]; // * 6 because there are 6 vertices per cell, _radius*6*6 to duplicate the last ring vertices for island edges triangles
+			Triangulate(); // create vertices and triangles
+		}
+		_vertices = (Vector3[])_hexIslandMeshData.baseVertices.Clone(); // HexIslandMeshData vertices are shared for each meshes
+		
+		if (_hexIslandMeshData.uvs == null ){ // we can reuse UVs for each islands
+			_hexIslandMeshData.uvs = new Vector2[HexGridUtils.ChunkCellsPositions.Length * 6 + (_radius*6*6)];
+			GenerateUVs();
+		}
+
+		GenerateVerticesHeight(heightMap); // since we re-use vertices, we need to update the Height
 		ApplyMaterial();
+
+		_hexMesh.vertices = _vertices;
+		_hexMesh.triangles = _hexIslandMeshData.triangles.ToArray();
+		_hexMesh.uv = _hexIslandMeshData.uvs;
+		_hexMesh.RecalculateNormals();
+		_hexMesh.RecalculateTangents();
+		// _hexMesh.RecalculateUVDistributionMetrics();
+		gameObject.AddComponent<MeshCollider>();
 	}
 
 	public void ApplyMaterial () {
@@ -52,36 +78,23 @@ public class HexIsland : MonoBehaviour {
 		material.SetFloat("_IslandSize", HexMetrics.IslandSize);
 	}
 
-	public void Triangulate () {
-		hexMesh.Clear();
-		vertices.Clear();
-		triangles.Clear();
 
+	#region Triangulation
+
+	public void Triangulate () {
 		TriangulateCellTopFaces();
 		TriangulateCellSides();
-		GenerateUVs();
-
-		hexMesh.vertices = vertices.ToArray();
-		hexMesh.triangles = triangles.ToArray();
-		hexMesh.RecalculateNormals();
-		hexMesh.uv = uvs;
-		gameObject.AddComponent<MeshCollider>();
 	}
 
 	void TriangulateCellTopFaces(){
-		float[,] heightMap = NoiseGenerator.GenerateIslandHeightMap(this);
 		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
-			int vertexIndex = vertices.Count;
+			int vertexIndex = cellIndex * 6; // 6 vertices per cell
 
-			int xHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].x + _radius; // + _radius to normalized because cells coord can be negative
-			int yHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].y + _radius;
-			float height = heightMap[xHeight,yHeight];
-
-			Vector3 cellWorldPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex], height);
+			Vector3 cellWorldPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex]);
 
 			Vector3[] corners = HexMetrics.corners;
 			for (int i = 0; i < 6; i++) {
-				vertices.Add(cellWorldPos + corners[i]);
+				_hexIslandMeshData.baseVertices[vertexIndex + i] = cellWorldPos + corners[i];
 			}
 
 			AddTriangle(vertexIndex + 0, vertexIndex + 1, vertexIndex + 5);
@@ -218,26 +231,44 @@ public class HexIsland : MonoBehaviour {
 	private void TriangulateSide(int cellIndex, int vertexIndex, Vector3Int firstTriIndices, Vector3Int secondTriIndices, HexGridUtils.Dir dir){
 		Vector3 sideCellPos = HexGridUtils.ChunkCellsPositions[cellIndex] + HexGridUtils.GetDir[(int)dir];
 		int sideCellVertexIndex;
-		if(!HexGridUtils.CellIndexDict.ContainsKey(sideCellPos)){
-			Debug.LogWarning("Should add vertex to connect toward the bottom " + "cellIndex : "+ cellIndex);
-			// sideCellVertexIndex = vertices.Count; // we will add new vertices, so the offset is the actual number of vertices
-			// Vector3 firstVertex = vertices[vertexIndex+firstTriIndices.x];
-			// firstVertex.y = - HexMetrics.HeightMultiplier;
-			// firstTriIndices.z = 0;
-			// vertices.Add(firstVertex);
+		// TODO optimize this to not create 6 vertices as only two or three are needed
+		if(!HexGridUtils.CellIndexDict.ContainsKey(sideCellPos)){ // side cell does not exist
+			sideCellVertexIndex = 	(HexGridUtils.GetRingStartIndex(_radius) + // start index after the last cells
+			 						cellIndex - HexGridUtils.GetRingStartIndex(_radius - 1)) * 6; // index of the cell in the last ring, * 6 to get vertex index
 
-			// Vector3 secondVertex = vertices[vertexIndex+firstTriIndices.y];
-			// secondVertex.y = - HexMetrics.HeightMultiplier;
-			// secondTriIndices.y = 1;
-			// vertices.Add(secondVertex);
+			Vector3 cellWorldPos = HexGridUtils.HexToWorld(HexGridUtils.ChunkCellsPositions[cellIndex]);
+			Vector3[] corners = HexMetrics.corners;
+			for (int i = 0; i < 6; i++) {
+				_hexIslandMeshData.baseVertices[sideCellVertexIndex + i] = cellWorldPos + corners[i] + new Vector3(0, -HexMetrics.HeightMultiplier * 10f, 0);
+			}
 
-			// Vector3 thirdVertex = vertices[vertexIndex+firstTriIndices.z];
-			// thirdVertex.y = - HexMetrics.HeightMultiplier;
-			// secondTriIndices.z = 2;
-			// vertices.Add(thirdVertex);
-			return; //TODO manage the uvs (maybe it would be better to add the cells in the TriangulateTopFaces, as an other crown but only for interior vertices )
+			switch(dir){
+				case HexGridUtils.Dir.BottomLeft :
+					firstTriIndices = new Vector3Int(4,3,3);
+					secondTriIndices = new Vector3Int(4,3,4);
+					break;
+				case HexGridUtils.Dir.Left :
+					firstTriIndices = new Vector3Int(5,4,4);
+					secondTriIndices = new Vector3Int(5,4,5);
+					break;
+				case HexGridUtils.Dir.TopLeft :
+					firstTriIndices = new Vector3Int(0,5,5);
+					secondTriIndices = new Vector3Int(0,5,0);
+					break;
+				case HexGridUtils.Dir.TopRight :
+					firstTriIndices = new Vector3Int(1,0,0);
+					secondTriIndices = new Vector3Int(1,0,1);
+					break;
+				case HexGridUtils.Dir.Right :
+					firstTriIndices = new Vector3Int(2,1,1);
+					secondTriIndices = new Vector3Int(2,1,2);
+					break;
+				case HexGridUtils.Dir.BottomRight :
+					firstTriIndices = new Vector3Int(3,2,2);
+					secondTriIndices = new Vector3Int(3,2,3);
+					break;
+			}
 		}else{
-			// Debug.Log("everyting is fine " + "cellIndex : "+ cellIndex);
 			int sideCellIndex = HexGridUtils.CellIndexDict[sideCellPos];
 			sideCellVertexIndex = sideCellIndex*6;
 		}
@@ -256,47 +287,78 @@ public class HexIsland : MonoBehaviour {
 	}
 
 	private void AddTriangle (int v1, int v2, int v3) {
-		triangles.Add(v1);
-		triangles.Add(v2);
-		triangles.Add(v3 );
+		_hexIslandMeshData.triangles.Add(v1);
+		_hexIslandMeshData.triangles.Add(v2);
+		_hexIslandMeshData.triangles.Add(v3);
+	}
+
+	#endregion
+
+	public void UpdateMeshRunTime(){
+		UpdateVerticesHeight();
+		_hexMesh.RecalculateNormals();
+		_hexMesh.RecalculateTangents();
+	}
+
+	private void UpdateVerticesHeight(){
+		float[,] heightMap = NoiseGenerator.GenerateHeightMap(IslandBiome.HeightMapSettings, HexMetrics.IslandSize, IslandX + IslandZ * HexMetrics.MapSize);
+		GenerateVerticesHeight(heightMap);
+		ApplyMaterial();
+		_hexMesh.vertices = _vertices;
+	}
+	
+	public void GenerateVerticesHeight(float[,] heightMap){
+		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
+			int vertexIndex = cellIndex * 6; // 6 vertices per cell
+
+			int xHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].x + _radius; // + _radius to normalized because cells coord can be negative
+			int yHeight = (int)HexGridUtils.ChunkCellsPositions[cellIndex].y + _radius; //TODO change coorddinates system to be able to use heightmap in shaders (right now the x axis is creating problem because of the shift)
+																						// Maybe try doing a convertion from axial coord to offset https://www.redblobgames.com/grids/hexagons/
+			float height = heightMap[xHeight,yHeight];
+
+			
+			for (int i = 0; i < 6; i++) { // for each vertex update the height
+				_vertices[vertexIndex + i].y = height * HexMetrics.HeightMultiplier;
+			}
+		}
 	}
 
 	private void GenerateUVs(){
-		if (uvs == null ){ // we can reuse UVs for each islands
-			uvs = new Vector2[HexGridUtils.ChunkCellsPositions.Length * 6]; // * 6 because there are 6 vertices per cell
-		}else{
-			return;
-		}
-
 		Vector2[] uvCorners = HexMetrics.uvCorners;
 
-		float spacing = 0.1f;
-		Vector2 maxCellWorldPos = HexGridUtils.HexToWorld(new Vector2(_size, _size));
-		maxCellWorldPos += new Vector2(_size * (1+spacing) - spacing, _size  * (1+spacing) - spacing); // also take in count the spaces added between cells in he uvs
+		Vector2 maxCellPos = HexGridUtils.HexToUV(new Vector2(_size / 1.5f, _size / 1.5f));
+		// float maxUVX = float.MinValue;
+		// float maxUVY = float.MinValue;
 		
 		for (int cellIndex = 0; cellIndex < HexGridUtils.ChunkCellsPositions.Length; cellIndex++){
-			Vector2 cellWorldPos = HexGridUtils.HexToUV(HexGridUtils.ChunkCellsPositions[cellIndex], spacing);
+			int vertexIndex = cellIndex * 6;
+			Vector2 cellPos = HexGridUtils.HexToUV(HexGridUtils.ChunkCellsPositions[cellIndex]);
 
 			for (int i = 0; i < 6; i++) {
 				Vector2 uv = uvCorners[i];
-				uv /= maxCellWorldPos.x; // x is the max value between both coordinates
-				Vector2 cellPosNormalized = cellWorldPos / maxCellWorldPos.x;
+				uv /= maxCellPos.x;
+				Vector2 cellPosNormalized = cellPos / maxCellPos.x;
 				uv += cellPosNormalized;
 				uv += new Vector2(0.5f, 0.5f);
-				uvs[cellIndex * 6 + i] = uv;
+				_hexIslandMeshData.uvs[vertexIndex + i] = uv;
 				if(uv.x > 1f || uv.y > 1) Debug.Log("UV are incorrect > 1 " + uv);
-			}
-		}
+				
 
-		// Debug.Log(
-			// 		// "uv " + cellIndex + " " + cellGridPos + " " + (cellGridPos + posOffset) + " are \n"
-			// 		"uv " + cellIndex + " are \n"
-			// 		+ uvs[vertexIndex].ToString(".0###########") + "\n"
-			// 		+ uvs[vertexIndex+1].ToString(".0###########") + "\n"
-			// 		+ uvs[vertexIndex+2].ToString(".0###########") + "\n"
-			// 		+ uvs[vertexIndex+3].ToString(".0###########") + "\n"
-			// 		+ uvs[vertexIndex+4].ToString(".0###########") + "\n"
-			// 		+ uvs[vertexIndex+5].ToString(".0###########")
+				// if(uv.x > maxUVX) maxUVX = uv.x;
+				// if(uv.y > maxUVY) maxUVY = uv.y;
+			}
+
+			// Debug.Log(
+			// 	// "uv " + cellIndex + " " + cellGridPos + " " + (cellGridPos + posOffset) + " are \n"
+			// 	"uv " + cellIndex + " are \n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex].ToString(".0###########") + "\n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex+1].ToString(".0###########") + "\n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex+2].ToString(".0###########") + "\n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex+3].ToString(".0###########") + "\n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex+4].ToString(".0###########") + "\n"
+			// 	+ _hexIslandMeshData.uvs[vertexIndex+5].ToString(".0###########")
 			// );
+		}
+		// Debug.Log("maxUVX " + maxUVX + " maxUVY" + maxUVY);
 	}
 }
