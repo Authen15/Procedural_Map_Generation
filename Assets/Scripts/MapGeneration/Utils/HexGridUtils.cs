@@ -21,16 +21,16 @@ public static class HexGridUtils {
     };
     
 
-    public static Dictionary<Vector3, int> CellIndexDict; // contaiu the index of a cell in an array using it's coordinates in the grid
+    public static Dictionary<Vector3, int> CellIndexDict; // contains the index of a cell in an array using it's coordinates in the grid
     
-    public static Vector2[] ChunkCellsPositions;
+    public static Vector2[] IslandCellsPositions;
 
-    public static Vector2[] MapChunksPositions;
+    public static Vector2[] MapIslandsPositions;
 
     static HexGridUtils(){
         CellIndexDict = new Dictionary<Vector3, int>();
-        ChunkCellsPositions = GenerateGridPositions(HexMetrics.IslandSize, true);
-        MapChunksPositions = GenerateGridPositions(HexMetrics.MapSize);
+        IslandCellsPositions = GenerateGridPositions(HexMetrics.IslandSize, true);
+        MapIslandsPositions = GenerateGridPositions(HexMetrics.MapSize);
     }
 
 	private static Vector2[] GenerateGridPositions(int size, bool populateDict = false){
@@ -66,11 +66,11 @@ public static class HexGridUtils {
 		return positions;
 	}
 
-	public static int GetRingStartIndex(int ringNumber){
-		return 1 + 6 * (ringNumber * (ringNumber + 1) / 2);
+	public static int GetIslandCellsNumber(int size){
+		return 1 + 6 * (size * (size + 1) / 2);
 	}
 
-    public static Vector3 HexToWorld(Vector2 cellCoordinates)
+    public static Vector3 CellToWorld(Vector2 cellCoordinates)
 	{
 		float x = cellCoordinates.x;
 		float z = cellCoordinates.y;
@@ -82,18 +82,7 @@ public static class HexGridUtils {
 		return position;
 	}
 
-	// public static Vector2 HexToWorld(Vector2 cellCoordinates)
-	// {
-	// 	float x = cellCoordinates.x;
-	// 	float y = cellCoordinates.y;
-	// 	Vector2 position;
-
-	// 	position.x = x * (HexMetrics.InnerRadius * 2f) + y * HexMetrics.InnerRadius;
-	// 	position.y = y * (HexMetrics.OuterRadius * 1.5f);
-	// 	return position;
-	// }
-
-	public static Vector2 HexToUV(Vector2 cellCoordinates)
+	public static Vector2 CellToUV(Vector2 cellCoordinates)
 	{
 		float outerRadius = HexMetrics.OuterRadius;
 		float x = cellCoordinates.x;
@@ -105,15 +94,15 @@ public static class HexGridUtils {
 		return position;
 	}
 
-	public static Vector3 HexChunkToWorld(Vector2 chunkCoordinates)
+	public static Vector3 IslandToWorld(Vector2 islandCoordinates)
 	{
-		float x = chunkCoordinates.x;
-		float z = chunkCoordinates.y;
+		float x = islandCoordinates.x;
+		float z = islandCoordinates.y;
 		Vector3 position;
 
-		position.x = x * (HexMetrics.ChunkOuterRadius * 1.5f);
+		position.x = x * (HexMetrics.IslandOuterRadius * 1.5f);
 		position.y = 0;
-		position.z = z * (HexMetrics.ChunkInnerRadius * 2f) + x * HexMetrics.ChunkInnerRadius;
+		position.z = z * (HexMetrics.IslandInnerRadius * 2f) + x * HexMetrics.IslandInnerRadius;
 
 		return position;
 	}

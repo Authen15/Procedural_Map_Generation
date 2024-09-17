@@ -1,0 +1,8 @@
+islands bridges
+	- bridges are automatically generated
+	- player needs to build the bridges
+	- some islands don't have bridges but an ability obstacle
+		- strong wind or high jump for wind element
+		- lava river for fire
+		- big rock for earth
+		- river to froze for ice

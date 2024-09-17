@@ -2,19 +2,20 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 3; // size of the map in chunks
-	public const int IslandSize = 117; // must be odd number, max size = 117
-	public const int MapCellGridSize = MapSize * IslandSize;
+	public const int MapSize = 5; // diameter of the map in islands
+	public const int IslandSize = 117; // diameter of an island in cells, must be odd number, max size = 117
+	public const int IslandRadius = IslandSize / 2;
 	public const float HeightMultiplier = 6f; //multiply the y scale of the hex by this value
-	public const float OuterRadius = 1f;
-	public const float InnerRadius = OuterRadius * 0.866025404f;
+	public const float OuterRadius = 1f; // outer radius of hexcells
+	public const float InnerRadius = OuterRadius * 0.866025404f; // inner radius of hexcells
 
-	public const int NbHeightSteps = 16;
+	public const int NbHeightSteps = 24; // cells height will be distributed in 'n' steps 
 
 	private const float DistanceBetweenIslands = 10f;
 
-	public const float ChunkInnerRadius = IslandSize/2 * OuterRadius * 1.5f + OuterRadius + DistanceBetweenIslands*OuterRadius;
-	public const float ChunkOuterRadius = ChunkInnerRadius / 0.866025404f;
+	public const float IslandInnerRadius = IslandRadius * OuterRadius * 1.5f + OuterRadius // the inner-radius(vertical) of an island(flat-top shaped) is the sum of all it's cells(pointy-top) outer-radius(vertical). Each cell is separated vertically by 1.5 * outer, and we add the 1 * outer from the center cell to get the island radius lenght
+										 + DistanceBetweenIslands; // we add a flat distance offset to separate the islands
+	public const float IslandOuterRadius = IslandInnerRadius / 0.866025404f;
 
 
 	public static Vector3[] corners = {

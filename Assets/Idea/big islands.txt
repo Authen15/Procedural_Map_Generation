@@ -1,0 +1,15 @@
+create big islands that are 7 islands without any spaces between islands
+
+big islands are a more polished version of the small one from the same biome and have some special feature
+
+gameplay : big islands could hold a mini boss that gives great rewards to the player
+
+feature idea :
+	desert biome, tall and wide pillars (1000 pointes wow) linked by bridges, a big flat pillar at the middle with a mini boss on it
+	the player could access the outside pillars using a rustic lift by pulling a rope	
+
+	mesa biome, big volcano on the center island, the mini boss is in the volcano
+
+	boreal, some mystical stuff, flying gem shaped rocks with magic in it, and in the middle, an autel with a druid (human or animal shape) mini boss
+
+	ice, ...

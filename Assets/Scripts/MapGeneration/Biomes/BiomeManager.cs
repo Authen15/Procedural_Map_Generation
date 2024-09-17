@@ -31,7 +31,7 @@ namespace Biome {
 
         void Awake(){
             _instance = this;
-            _prng = new System.Random(HexMeshGrid.Instance.GlobalSeed);
+            _prng = new System.Random(MapManager.Instance.MapSeed);
         }
 
         // public BiomeData GetBiome(float moisture, float temperature)

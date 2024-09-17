@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public static class FallOffMapGenerator{
-    public static float[,] GenerateChunkFalloffMap(HeightMapSettings heightMapSettings)
+    public static float[,] GenerateIslandFalloffMap(HeightMapSettings heightMapSettings)
     {
         float[,] map = new float[HexMetrics.IslandSize, HexMetrics.IslandSize];
 

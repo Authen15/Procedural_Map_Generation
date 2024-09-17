@@ -97,6 +97,9 @@
         },
         {
             "m_Id": "05839d1b33074308b7c815922c4f7697"
+        },
+        {
+            "m_Id": "4738c85ae13c468ca90604b34b8d14b2"
         }
     ],
     "m_Dropdowns": [],
@@ -1559,6 +1562,9 @@
     "m_Name": "Noise Settings",
     "m_ChildObjectList": [
         {
+            "m_Id": "4738c85ae13c468ca90604b34b8d14b2"
+        },
+        {
             "m_Id": "0b95342408db46ee984f3a5bcb299263"
         },
         {
@@ -2067,6 +2073,31 @@
     },
     "m_Labels": [],
     "m_Space": 0
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.ShaderGraph.ShaderKeyword",
+    "m_ObjectId": "4738c85ae13c468ca90604b34b8d14b2",
+    "m_Guid": {
+        "m_GuidSerialized": "f31f37d9-10d9-4fe1-82e2-0c485f5dcfe0"
+    },
+    "m_Name": "ActivateNoise",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "ActivateNoise",
+    "m_DefaultReferenceName": "_ACTIVATENOISE",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_KeywordType": 0,
+    "m_KeywordDefinition": 0,
+    "m_KeywordScope": 0,
+    "m_KeywordStages": 63,
+    "m_Entries": [],
+    "m_Value": 0,
+    "m_IsEditable": true
 }
 
 {
@@ -3613,7 +3644,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 8.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,

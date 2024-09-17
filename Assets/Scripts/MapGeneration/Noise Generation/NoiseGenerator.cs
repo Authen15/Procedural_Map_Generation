@@ -55,7 +55,7 @@ public static class NoiseGenerator
         
         float[,] fallOffMap = null; //TODO handle falloffmap in a better way
         if (heightMapSettings.UseFallOff)
-            fallOffMap = FallOffMapGenerator.GenerateChunkFalloffMap(heightMapSettings);
+            fallOffMap = FallOffMapGenerator.GenerateIslandFalloffMap(heightMapSettings);
 
         for(int y = 0; y < size; y++){
             for(int x = 0; x < size; x++){
