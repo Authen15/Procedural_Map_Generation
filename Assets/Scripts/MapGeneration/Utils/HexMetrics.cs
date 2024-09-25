@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 5; // diameter of the map in islands
+	public const int MapSize = 3; // diameter of the map in islands
 	public const int IslandSize = 117; // diameter of an island in cells, must be odd number, max size = 117
 	public const int IslandRadius = IslandSize / 2;
 	public const float HeightMultiplier = 6f; //multiply the y scale of the hex by this value
@@ -11,10 +11,12 @@ public static class HexMetrics {
 
 	public const int NbHeightSteps = 24; // cells height will be distributed in 'n' steps 
 
-	private const float DistanceBetweenIslands = 10f;
+	public const int DistanceBetweenIslands = 9; // must be odd if we don't want to offset the island 
 
-	public const float IslandInnerRadius = IslandRadius * OuterRadius * 1.5f + OuterRadius // the inner-radius(vertical) of an island(flat-top shaped) is the sum of all it's cells(pointy-top) outer-radius(vertical). Each cell is separated vertically by 1.5 * outer, and we add the 1 * outer from the center cell to get the island radius lenght
-										 + DistanceBetweenIslands; // we add a flat distance offset to separate the islands
+	public const float IslandInnerRadius = (IslandRadius + // the inner-radius(vertical) of an island(flat-top shaped) is the sum of all it's cells(pointy-top) outer-radius(vertical). Each cell is separated vertically by 1.5 * outer
+											DistanceBetweenIslands / 2f +  // we add the length we want to separate the island of, divided by 2 because we want to separate the islands by the half of the length on each side
+											OuterRadius / 2f)  // and we add the outer from the center cell to get the island radius lenght, divided by 2 because we want to separate the islands by the half of the length on each side
+											* OuterRadius * 1.5f; 
 	public const float IslandOuterRadius = IslandInnerRadius / 0.866025404f;
 
 

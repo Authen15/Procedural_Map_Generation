@@ -52,7 +52,6 @@ namespace Biome {
 
         public BiomeData GetBiome() //TODO make a more complex system for biome distribution
         {
-            // return _allBiomes[Random.Range(0, _allBiomes.Length)];
             return _allBiomes[_prng.Next(0, _allBiomes.Length)];
         }
     }

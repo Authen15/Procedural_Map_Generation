@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using static HexGridUtils;
 
 public class MapManager : MonoBehaviour
 {
@@ -12,6 +14,8 @@ public class MapManager : MonoBehaviour
 		}
 	}
 
+	public Dictionary<AxialCoordinates, Island> IslandDict;
+
 
 	public int MapSeed = 0;
 
@@ -23,6 +27,8 @@ public class MapManager : MonoBehaviour
 	
 	void Start()
 	{
+		IslandDict = new Dictionary<AxialCoordinates, Island>();
+
 		float startTime = Time.realtimeSinceStartup;
 		GenerateMap();
 		Debug.Log("Generating time " + (Time.realtimeSinceStartup - startTime).ToString(".0###########"));
@@ -30,16 +36,22 @@ public class MapManager : MonoBehaviour
 
 	void GenerateMap()
 	{
-		Vector2[] islandsPositions = HexGridUtils.MapIslandsPositions;
+		AxialCoordinates[] islandsPositions = HexGridUtils.MapIslandsPositions;
 
-		foreach (Vector2 islandCoordinates in islandsPositions )
+		foreach (AxialCoordinates islandCoordinates in islandsPositions)
 		{
 			// convert to vector3 for world position
-			Vector3 islandPos = HexGridUtils.IslandToWorld(new Vector2((int)islandCoordinates.x, (int)islandCoordinates.y));
+			Vector3 islandPos = HexGridUtils.IslandToWorld(islandCoordinates);
 
 			Island island = Instantiate(IslandPrefab, islandPos, Quaternion.identity, transform);
 
-			island.Initialize((int)islandCoordinates.x, (int)islandCoordinates.y);
+			IslandDict.Add(islandCoordinates, island);
+
+			island.Initialize(islandCoordinates.x, islandCoordinates.z);
+		}
+
+		foreach (Island island in IslandDict.Values){
+			island.GenerateIsland();
 		}
 	}
 }

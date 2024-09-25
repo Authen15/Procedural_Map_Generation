@@ -4,3 +4,6 @@ maybe adding the option to randomize the color by cell on a list of chosen color
 would need the shader to be able to color entirely one cell, 
 maybe the uvs could be all vertex from one cell at the same spot
 and the texures could be generated using position
+
+dividing shades in number of steps, then rounding to the nearest step could do the same thing, sharper shades and less bluring
+using the same logic as for the heightmap
