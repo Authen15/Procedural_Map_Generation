@@ -5,26 +5,30 @@ namespace Biome {
     [CreateAssetMenu(menuName = "Terrain/Biome")]
     public class BiomeData : ScriptableObject
     {
-        public BiomeType BiomeType;
+        // public string ShaderReferenceSuffix;
+        // public BiomeType BiomeType;
+        public Material BiomeMaterial;
 
-        [HideInInspector]
-        public int subBiomeCount;
+        // [HideInInspector]
+        // public int SubBiomeCount;
 
-        public Color biomeColor; // used for preview map
+        public HeightMapSettings HeightMapSettings;
+
+        // public Color BiomeColor; // used for preview map
 
         // [Header("Height Thresholds")]
         // public Vector2[] HeightThresholds;
 
-        [Header("Temperature Thresholds")]
-        public Vector2[] TemperatureThresholds;
+        // [Header("Temperature Thresholds")]
+        // public Vector2[] TemperatureThresholds;
 
-        [Header("Moisture Thresholds")]
-        public Vector2[] MoistureThresholds;
+        // [Header("Moisture Thresholds")]
+        // public Vector2[] MoistureThresholds;
 
 
-        void OnValidate(){
-            subBiomeCount = TemperatureThresholds.Length;
-        }
+        // void OnValidate(){
+        //     SubBiomeCount = TemperatureThresholds.Length;
+        // }
 
 
     

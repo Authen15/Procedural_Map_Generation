@@ -1,0 +1,5 @@
+create variant of each type of island, the variant would need a different heightMapSettings and possibly a different material
+also different features
+
+
+	exemple, desert has pillars, one variant could be a desert wih a big mountain in the middle
