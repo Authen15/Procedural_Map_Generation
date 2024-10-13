@@ -10,13 +10,13 @@ Credits :
 ## Biome Islands
 
 ### Desert
-![Desert](Desert.png "Desert")
+![Desert](Desert.png?raw=true "Desert")
 ### Ice
-![Ice](Ice.png "Ice")
+![Ice](Ice.png?raw=true "Ice")
 ### Mesa
-![Mesa](Mesa.png "Mesa")
+![Mesa](Mesa.png?raw=true "Mesa")
 ### Boreal Forest
-![Boreal Forest](Boreal.png "Boreal Forest")
+![Boreal Forest](Boreal.png?raw=true "Boreal Forest")
 
 ## Run Time Mesh Editing
-<video src="RunTimeEditing.mp4" width="1280" height="720" controls></video>
+<video src="RunTimeEditing.mp4?raw=true" width="1280" height="720" controls></video>
