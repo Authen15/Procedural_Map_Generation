@@ -46,7 +46,7 @@ public static class NoiseGenerator
 
     public static float[,] GenerateHeightMap(HeightMapSettings heightMapSettings, int size, int customSeed = 0){
         
-        System.Random prng = new System.Random (customSeed);
+        System.Random prng = new System.Random (customSeed + MapManager.Instance.MapSeed);
 		float offsetX = prng.Next (-100000, 100000);
 		float offsetY = prng.Next (-100000, 100000);
 

@@ -4,12 +4,13 @@ using UnityEngine;
 using static HexGridUtils;
 
 public class IslandBridgeGenerator {
-	private static AxialCoordinates[] _bridgesAnchorCells;
+	private static AxialCoordinates[,] _bridgesAnchorCells;
 	private static GameObject _bridgeTemplate;
     private static Dictionary<AxialCoordinates, int> _bridgeCellsIndexDict;
 	private static List<Vector3> _bridgeVertices = new List<Vector3>();
 	private static List<int> _bridgeTriangles = new List<int>();
 	private static List<Vector2> _bridgeUVs = new List<Vector2>();
+	private static int _bridgeSize = 8;
 
 	private enum BridgesDir { 
         BottomRight = 0,
@@ -27,27 +28,30 @@ public class IslandBridgeGenerator {
 
 	private static void FetchBridgeAnchorCells(){ 
 		if (_bridgesAnchorCells != null) return; // if already initialized, return
-		_bridgesAnchorCells = new AxialCoordinates[6]; // 6 faces of the hexagon
+		_bridgesAnchorCells = new AxialCoordinates[6, _bridgeSize]; // 6 faces of the hexagon
 
-		int anchorCellIndex = GetIslandCellsNumber(HexMetrics.IslandRadius - 1) // index of the first cell in the last ring
+		int anchorMidCellIndexOffset = GetIslandCellsNumber(HexMetrics.IslandRadius - 1) // index of the first cell in the last ring
                                             + HexMetrics.IslandRadius / 2; // offset to get the middle cell from the bot Right side
 		
-		_bridgesAnchorCells[0] = IslandCellsPositions[anchorCellIndex];
-		for (int i = 1; i < 6; i++){
-			if (HexMetrics.IslandRadius %2 == 0){ // if radius is even, the last ring side have an odd number of cells, the center is a unique cell
-				anchorCellIndex += HexMetrics.IslandRadius; // the offset to get other mid cells is the previous + radius
-				_bridgesAnchorCells[i] = IslandCellsPositions[anchorCellIndex];
-			}else
-			{ //TODO, handle case when island radius is odd and the center is composed of 2 cells
+		for (int i = 0; i < 6; i++){ // iterate through the 6 sides
+			for (int j = 0; j < _bridgeSize; j++){ // iterate through the cells of the bridge anchored to the island
+				if (HexMetrics.IslandRadius %2 == 0){ // if radius is even, the last ring side have an odd number of cells, the center is a unique cell
+					int anchorMidCellIndex = anchorMidCellIndexOffset + i * HexMetrics.IslandRadius; // the offset to get other mid cells is the previous + radius
+					AxialCoordinates cellCoord = IslandCellsPositions[anchorMidCellIndex + j - _bridgeSize/2]; // we offset by half the bridgesize to get the cell at the left and at the right of the mid cell
+					_bridgesAnchorCells[i,j] = cellCoord;
+					
+				}else
+				{ //TODO, handle case when island radius is odd and the center is composed of 2 cells
 
+				}
 			}
 		}
     }
-	private void GenerateBridgeTemplate(Material bridgeMaterial, int bridgeSize){
+	private void GenerateBridgeTemplate(Material bridgeMaterial){
 		if (_bridgeTemplate != null) return; // if the template already exists, return
 		_bridgeTemplate = new GameObject("Bridge Template");
 
-		PopulateBridgeCellHashSet(bridgeSize);
+		PopulateBridgeCellHashSet(_bridgeSize);
 
 		MeshRenderer meshRenderer = _bridgeTemplate.AddComponent<MeshRenderer>();
 		meshRenderer.sharedMaterial = bridgeMaterial;
@@ -74,22 +78,22 @@ public class IslandBridgeGenerator {
 			AxialCoordinates midCellPos = new AxialCoordinates(-z/2, z+1); // get the middle cell, -z/2 to avoid the offset, 
 			int offset = bridgeSize/2; // we place cells from left to right of the middle cell
 			for (int x = 0; x < bridgeSize; x++){
-				bool isOddRow = z % 2 == 1;
-				if (x == 0 && !isOddRow) continue; // skip the first cell in even rows
+				bool isEvenRow = z % 2 == 0;
+				if (x == 0 && isEvenRow) continue; // skip the first cell in even rows
 				AxialCoordinates cellPos = midCellPos + GetDir[(int)Dir.Right] * (x - offset);
 				_bridgeCellsIndexDict.Add(cellPos, cellIndex++);
 			}
 		}
 	}
 #endregion
-    public void GenerateIslandBridges(Island currentIsland, Material bridgeMaterial, int bridgeSize){
-		GenerateBridgeTemplate(bridgeMaterial, bridgeSize);
+    public void GenerateIslandBridges(Island currentIsland, Material bridgeMaterial){
+		GenerateBridgeTemplate(bridgeMaterial);
         for (int i = 0; i < 3; i++){
 			Island targetIsland = GetNeighborIsland(currentIsland, (BridgesDir)i);
 			if (targetIsland == null) continue; // if there is no island in this direction, skip this iteration
 			
-			AxialCoordinates bridgeAnchorStartCell = _bridgesAnchorCells[i];
-			AxialCoordinates bridgeAnchorEndCell = _bridgesAnchorCells[(i + 3) % 6]; // get the opposite bridge anchor cell
+			AxialCoordinates bridgeAnchorStartCell = _bridgesAnchorCells[i, _bridgeSize/2];
+			// AxialCoordinates bridgeAnchorEndCell = _bridgesAnchorCells[(i + 3) % 6]; // get the opposite bridge anchor cell
 			Vector3 anchorWorldPos = CellToWorld(bridgeAnchorStartCell);
 			Vector3 bridgePosition = currentIsland.transform.position + anchorWorldPos;
 
@@ -99,9 +103,9 @@ public class IslandBridgeGenerator {
 			bridge.name = string.Format("Bridge ({0},{1})", currentIsland.IslandX, currentIsland.IslandZ);
 
 			Mesh mesh = bridge.GetComponent<MeshFilter>().mesh;
-			float startHeight = currentIsland.GetCellHeightMapValue(bridgeAnchorStartCell);
-			float endHeight = targetIsland.GetCellHeightMapValue(bridgeAnchorEndCell);
-			mesh.vertices = UpdateBridgeVerticesHeight(mesh.vertices, startHeight, endHeight);
+			// float startHeight = currentIsland.GetCellHeightMapValue(bridgeAnchorStartCell);
+			// float endHeight = targetIsland.GetCellHeightMapValue(bridgeAnchorEndCell);
+			mesh.vertices = UpdateBridgeVerticesHeight(currentIsland, targetIsland, mesh.vertices, (BridgesDir)i);
 		}
     }
 
@@ -212,27 +216,56 @@ public class IslandBridgeGenerator {
 	}
 
 
-	private static void TriangulateSide(int cellIndex, int vertexIndex, Vector3Int firstTriIndices, Vector3Int secondTriIndices, Dir dir){
+	private static void TriangulateSide(int cellIndex, int vertexIndex, Vector3Int firstTriIndices, Vector3Int secondTriIndices, Dir dir) {
 		AxialCoordinates sideCellPos = _bridgeCellsIndexDict.Keys.ElementAt(cellIndex) + GetDir[(int)dir];
-		if(!_bridgeCellsIndexDict.ContainsKey(sideCellPos)){ // side cell does not exist
-			Debug.LogWarning("trying to access a cell not existing in the bridge");
-			return;
-		}
-		int sideCellIndex = _bridgeCellsIndexDict[sideCellPos];
-		int sideCellVertexIndex = sideCellIndex*6;
-
 		
+		// Check if neighboring cell exists
+		if (_bridgeCellsIndexDict.ContainsKey(sideCellPos)) {
+			// Neighboring cell exists, proceed with existing vertices
+			int sideCellIndex = _bridgeCellsIndexDict[sideCellPos];
+			int sideCellVertexIndex = sideCellIndex * 6;
 
-		AddTriangle(
-			vertexIndex + firstTriIndices.x, 
-			vertexIndex + firstTriIndices.y, 
-			sideCellVertexIndex + firstTriIndices.z);
+			AddTriangle(
+				vertexIndex + firstTriIndices.x, 
+				vertexIndex + firstTriIndices.y, 
+				sideCellVertexIndex + firstTriIndices.z);
+				
+			AddTriangle(
+				vertexIndex + secondTriIndices.x, 
+				sideCellVertexIndex + secondTriIndices.y, 
+				sideCellVertexIndex + secondTriIndices.z);
+		} else {
+			// Neighbor cell does not exist, create border vertices and triangles
+			// Vector3[] corners = HexMetrics.corners;
 			
-		AddTriangle(
-			vertexIndex + secondTriIndices.x, 
-			sideCellVertexIndex + secondTriIndices.y, 
-			sideCellVertexIndex + secondTriIndices.z);
+			// Get the local positions of the required vertices for the side faces
+			Vector3 borderVertex1 = _bridgeVertices[vertexIndex + firstTriIndices.x] + new Vector3(0,-1,0);//corners[firstTriIndices.z];
+			Vector3 borderVertex2 = _bridgeVertices[vertexIndex + firstTriIndices.y] + new Vector3(0,-1,0); //corners[secondTriIndices.z];
+
+			// Add border vertices to bridge vertices list
+			int borderVertexIndex1 = _bridgeVertices.Count;
+			_bridgeVertices.Add(borderVertex1);
+			int borderVertexIndex2 = _bridgeVertices.Count;
+			_bridgeVertices.Add(borderVertex2);
+
+			// Create border triangles
+			AddTriangle(
+				vertexIndex + firstTriIndices.x, 
+				vertexIndex + firstTriIndices.y, 
+				borderVertexIndex1);
+
+			AddTriangle(
+				vertexIndex + firstTriIndices.y, 
+				borderVertexIndex2, 
+				borderVertexIndex1);
+
+			// AddTriangle(
+			// 	vertexIndex + secondTriIndices.x, 
+			// 	borderVertexIndex2,
+			// 	borderVertexIndex1);
+		}
 	}
+
 
 	private static void AddTriangle (int v1, int v2, int v3) {
 		_bridgeTriangles.Add(v1);
@@ -241,28 +274,50 @@ public class IslandBridgeGenerator {
 	}
 #endregion
 
-	private Vector3[] UpdateBridgeVerticesHeight(Vector3[] vertices, float startHeight, float endHeight){ //TODO convert function to use arrays
-		for (int i = 0; i < _bridgeCellsIndexDict.Count; i++){
+	private Vector3[] UpdateBridgeVerticesHeight(Island currentIsland, Island targetIsland, Vector3[] vertices, BridgesDir dir) {
+		float averageStartHeight = 0;
+		float averageEndHeight = 0;
+
+		for (int i = 0; i < _bridgesAnchorCells.GetLength(1); i++){
+			AxialCoordinates startCellCoord = _bridgesAnchorCells[(int)dir, i];
+			averageStartHeight += currentIsland.GetCellHeightMapValue(startCellCoord);
+
+			AxialCoordinates endCellCoord = _bridgesAnchorCells[((int)dir + 3) % 6, i];
+			averageEndHeight += targetIsland.GetCellHeightMapValue(endCellCoord);
+		}
+		averageStartHeight /= _bridgeSize;
+		averageEndHeight /= _bridgeSize;
+
+
+		for (int i = 0; i < _bridgeCellsIndexDict.Count; i++) {
 			AxialCoordinates cellCoord = _bridgeCellsIndexDict.Keys.ElementAt(i);
-			int x = cellCoord.x;
 			int z = cellCoord.z;
+			bool isNewRow = i > 0 && _bridgeCellsIndexDict.Keys.ElementAt(i - 1).z != z;
 			
+			// Interpolate height for each cell base on it's z position in the bridge
+			float height = Mathf.Lerp(averageStartHeight, averageEndHeight, (z - 1) / (float)(HexMetrics.DistanceBetweenIslands - 1));
 
-			float height = Mathf.Lerp(startHeight, endHeight, z/(float)HexMetrics.DistanceBetweenIslands); // the z coord starts at 0 on the current island and DistanceBetweenIslands on the target island, so we use it to interpolate the height between the two islands
 			height = NoiseUtils.RoundToNearestHeightStep(height, HexMetrics.NbHeightSteps);
-			// if previous or next cell z coord is different from current cell z coord, then it's a side cell
-			// or if it's the first cell / last cell in the array
-			bool isSideCell = (i > 0 && _bridgeCellsIndexDict.Keys.ElementAt(i - 1).z != z) || (i < _bridgeCellsIndexDict.Count - 1 && _bridgeCellsIndexDict.Keys.ElementAt(i + 1).z != z) || (i == 0 || i == _bridgeCellsIndexDict.Count - 1);
-			if (isSideCell) height += HexMetrics.HeightMultiplier/10f;	 // make some borders for the sides of the bridge
+
+			// Determine if the cell is a side cell and raise it slightly for the fence effect
+			bool isSideCell = isNewRow || 
+							(i < _bridgeCellsIndexDict.Count - 1 && _bridgeCellsIndexDict.Keys.ElementAt(i + 1).z != z) || 
+							(i == 0 || i == _bridgeCellsIndexDict.Count - 1);
+			if (isSideCell) height += HexMetrics.HeightMultiplier / 8f;
 
 
-			int vertexIndex = i * 6; // each cell has 6 vertices, so we multiply the cell index by 6 to get the vertex index
-			for (int j = 0; j < 6; j++) { // for each vertex update the height
+			// Update vertex heights for the current cell
+			int vertexIndex = i * 6; // each cell has 6 vertices
+			for (int j = 0; j < 6; j++) { // set the height for each vertex in the cell
 				vertices[vertexIndex + j].y = height;
 			}
 		}
 		return vertices;
-    }
+	}
+
+
+
+
 
 #region UV
 	void GenerateBridgeUVs(){

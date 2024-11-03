@@ -11,7 +11,6 @@ public class Island : MonoBehaviour {
 
 	public float[,] HeightMap;
 
-	private int BridgeSize = 8; // must be an even number
 	public Material BridgeMaterial;
 
 	public GameObject[] Bridges;
@@ -50,7 +49,7 @@ public class Island : MonoBehaviour {
 		Bridges = new GameObject[3];
 
 		IslandBridgeGenerator islandBridgeGenerator = new IslandBridgeGenerator();
-		islandBridgeGenerator.GenerateIslandBridges(this, BridgeMaterial, BridgeSize);
+		islandBridgeGenerator.GenerateIslandBridges(this, BridgeMaterial);
 
 		for (int i = 0; i < Bridges.Length; i++){
 			if (Bridges[i] != null){
