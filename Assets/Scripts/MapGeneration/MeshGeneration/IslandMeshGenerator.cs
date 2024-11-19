@@ -22,9 +22,11 @@ public class IslandMeshGenerator : MonoBehaviour{
 		MeshRenderer = GetComponent<MeshRenderer>();
 
 		if (_triangles == null && _baseVertices == null){ // store triangles and vertices in a struct as we need them only once
+			float startTime = Time.realtimeSinceStartup;
 			_triangles = new List<int>();
 			_baseVertices = new List<Vector3>(); // * 6 because there are 6 vertices per cell, HexMetrics.IslandRadius*6*6 to duplicate the last ring vertices for island edges triangles
 			HexCellTriangulator.Triangulate(IslandCellIndexDict, _baseVertices, _triangles);
+			Debug.Log("First Mesh Generating time " + (Time.realtimeSinceStartup - startTime).ToString(".0###########"));
 		}
 		
 		// if (_uvs == null ){ // we can reuse UVs for each islands

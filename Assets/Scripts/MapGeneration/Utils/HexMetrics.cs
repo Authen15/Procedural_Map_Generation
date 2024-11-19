@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 3; // diameter of the map in islands
+	public const int MapSize = 15; // diameter of the map in islands
 	public const int IslandSize = 117; // diameter of an island in cells, must be odd number, max size = 117
 	public const int IslandRadius = IslandSize / 2;
 	public const float HeightMultiplier = 6f; //multiply the y scale of the hex by this value
