@@ -8,7 +8,7 @@ public class MapManager : MonoBehaviour
 	public static MapManager Instance{
 		get{
 			if (_instance == null){
-				Debug.LogWarning("HexMeshGrid is null");
+				Debug.LogWarning("MapManager is null");
 			}
 			return _instance;
 		}
@@ -47,7 +47,7 @@ public class MapManager : MonoBehaviour
 
 			IslandDict.Add(islandCoordinates, island);
 
-			island.Initialize(islandCoordinates.x, islandCoordinates.z);
+			island.Initialize(islandCoordinates);
 		}
 
 		foreach (Island island in IslandDict.Values){

@@ -50,6 +50,8 @@ public class IslandBridgeGenerator {
 	private void GenerateBridgeTemplate(Material bridgeMaterial){
 		if (_bridgeTemplate != null) return; // if the template already exists, return
 		_bridgeTemplate = new GameObject("Bridge Template");
+		_bridgeTemplate.SetActive(false);
+
 
 		PopulateBridgeCellHashSet(_bridgeSize);
 
@@ -98,8 +100,9 @@ public class IslandBridgeGenerator {
 
 			Quaternion rotation = Quaternion.LookRotation(anchorWorldPos, Vector3.up);
 			GameObject bridge = Island.Instantiate(_bridgeTemplate, bridgePosition, rotation, currentIsland.transform);
+			bridge.SetActive(true);
 			currentIsland.Bridges[i] = bridge;
-			bridge.name = string.Format("Bridge ({0},{1})", currentIsland.IslandX, currentIsland.IslandZ);
+			bridge.name = string.Format("Bridge " + currentIsland.coord);
 
 			Mesh mesh = bridge.GetComponent<MeshFilter>().mesh;
 			// float startHeight = currentIsland.GetCellHeightMapValue(bridgeAnchorStartCell);
@@ -113,13 +116,13 @@ public class IslandBridgeGenerator {
 		AxialCoordinates islandCoord;
         switch (dir){
 			case BridgesDir.BottomRight: 
-				islandCoord = new AxialCoordinates(currentIsland.IslandX + 1, currentIsland.IslandZ -1);
+				islandCoord = new AxialCoordinates(currentIsland.coord.x + 1, currentIsland.coord.z -1);
 				break;
 			case BridgesDir.Bottom:
-				islandCoord = new AxialCoordinates(currentIsland.IslandX, currentIsland.IslandZ - 1);
+				islandCoord = new AxialCoordinates(currentIsland.coord.x, currentIsland.coord.z - 1);
 				break;
 			case BridgesDir.BottomLeft:
-				islandCoord = new AxialCoordinates(currentIsland.IslandX - 1, currentIsland.IslandZ);
+				islandCoord = new AxialCoordinates(currentIsland.coord.x - 1, currentIsland.coord.z);
 				break;
 			default :
 				return null;
@@ -134,10 +137,10 @@ public class IslandBridgeGenerator {
 
 		for (int i = 0; i < _bridgesAnchorCells.GetLength(1); i++){
 			AxialCoordinates startCellCoord = _bridgesAnchorCells[(int)dir, i];
-			averageStartHeight += currentIsland.GetCellHeightMapValue(startCellCoord);
+			averageStartHeight += currentIsland.GetCellHeightMapValue(startCellCoord) * HexMetrics.HeightMultiplier;
 
 			AxialCoordinates endCellCoord = _bridgesAnchorCells[((int)dir + 3) % 6, i];
-			averageEndHeight += targetIsland.GetCellHeightMapValue(endCellCoord);
+			averageEndHeight += targetIsland.GetCellHeightMapValue(endCellCoord) * HexMetrics.HeightMultiplier;
 		}
 		averageStartHeight /= _bridgeSize;
 		averageEndHeight /= _bridgeSize;

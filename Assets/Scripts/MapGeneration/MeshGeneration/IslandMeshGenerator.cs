@@ -4,7 +4,7 @@ using static HexGridUtils;
 using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class IslandMeshGenerator : MonoBehaviour{
+public class IslandMeshGenerator {
 	private static Vector2[] _uvs;
 	private static List<Vector3> _baseVertices; // vertices are the same for each island except for their height
 	private static List<int> _triangles;
@@ -16,10 +16,10 @@ public class IslandMeshGenerator : MonoBehaviour{
 	[HideInInspector]
 	public MeshRenderer MeshRenderer;
 
-	public void GenerateMesh(Island island) {
-		MeshFilter = GetComponent<MeshFilter>();
+	public void GenerateMesh(Island island, MeshFilter meshFilter, MeshRenderer meshRenderer) {
+		MeshFilter = meshFilter;
 		MeshFilter.mesh = Mesh = new Mesh();
-		MeshRenderer = GetComponent<MeshRenderer>();
+		MeshRenderer = meshRenderer;
 
 		if (_triangles == null && _baseVertices == null){ // store triangles and vertices in a struct as we need them only once
 			float startTime = Time.realtimeSinceStartup;
@@ -69,7 +69,7 @@ public class IslandMeshGenerator : MonoBehaviour{
 	private static void UpdateVerticesHeight(Island island, Vector3[] vertices){
 		for (int cellIndex = 0; cellIndex < HexGridUtils.IslandCellsPositions.Length; cellIndex++){
 			int vertexIndex = cellIndex * 6; // 6 vertices per cell
-			float height = island.GetCellHeightMapValue(IslandCellsPositions[cellIndex]);
+			float height = island.GetCellHeightMapValue(IslandCellsPositions[cellIndex]) * HexMetrics.HeightMultiplier;
 			
 			for (int i = 0; i < 6; i++) { // for each vertex update the height
 				vertices[vertexIndex + i].y = height;

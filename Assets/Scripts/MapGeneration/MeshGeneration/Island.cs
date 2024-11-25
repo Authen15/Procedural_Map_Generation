@@ -1,32 +1,34 @@
 using UnityEngine;
 using Biome;
-using static HexGridUtils;
 
-[RequireComponent(typeof(IslandMeshGenerator))]
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
+
 public class Island : MonoBehaviour {
 
-	public int IslandX;
-	public int IslandZ; 
+	public bool isInitialised;
+	public AxialCoordinates coord;
 	public BiomeData Biome;
-
 	public float[,] HeightMap;
 
 	public Material BridgeMaterial;
-
 	public GameObject[] Bridges;
 
-    public void Initialize(int x, int z)
+	public IslandSpawner IslandSpawner;
+
+    public void Initialize(AxialCoordinates coord)
     {
-		IslandX = x;
-		IslandZ = z;
+		this.coord = coord;
+		name = "Island " + coord.ToString();
 
 		Biome = BiomeManager.Instance.GetBiome();
 
 		GenerateHeightMap();
+
+		isInitialised = true;
 	}
 
 	private void GenerateHeightMap(){
-		HeightMap = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, IslandX + IslandZ * HexMetrics.MapSize);
+		HeightMap = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, coord.x + coord.z * HexMetrics.MapSize);
 	}
 
 	public void GenerateIsland(){
@@ -35,8 +37,9 @@ public class Island : MonoBehaviour {
 	}
 
 	private void GenerateIslandMesh(){
-		IslandMeshGenerator meshGenerator = GetComponent<IslandMeshGenerator>(); // TODO generate Mesh only if island is adjacent to player current island
-		meshGenerator.GenerateMesh(this);
+		IslandMeshGenerator meshGenerator = new IslandMeshGenerator(); // TODO generate Mesh only if island is adjacent to player current island
+		meshGenerator.GenerateMesh(this, GetComponent<MeshFilter>(), GetComponent<MeshRenderer>());  // TODO add Mesh Collider only when player is on the island
+
 		gameObject.AddComponent<MeshCollider>();  // TODO add Mesh Collider only when player is on the island
 
 		Biome.HeightMapSettings.UpdateIslandMesh += () => { // Update the mesh at runtime when modifying heightmap parameters
@@ -61,6 +64,10 @@ public class Island : MonoBehaviour {
 	public float GetCellHeightMapValue(AxialCoordinates cellCoordinates){
 		//TODO change coordinates system to be able to use heightmap in shaders (right now the x axis is creating problem because of the shift)
 		// Maybe try doing a convertion from axial coord to offset https://www.redblobgames.com/grids/hexagons/
-		return HeightMap[cellCoordinates.x + HexMetrics.IslandRadius, cellCoordinates.z + HexMetrics.IslandRadius] * HexMetrics.HeightMultiplier;
+		return HeightMap[cellCoordinates.x + HexMetrics.IslandRadius, cellCoordinates.z + HexMetrics.IslandRadius];
+	}
+
+	public void PopulateIslandCreatures(){
+		IslandSpawner.PopulateIslandCreatures();
 	}
 }
