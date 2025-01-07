@@ -1,5 +1,6 @@
 using UnityEngine;
 using Biome;
+using Unity.AI.Navigation;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 
@@ -14,6 +15,8 @@ public class Island : MonoBehaviour {
 	public GameObject[] Bridges;
 
 	public IslandSpawner IslandSpawner;
+	
+	public NavMeshSurface NavMeshSurface;
 
     public void Initialize(AxialCoordinates coord)
     {
@@ -41,6 +44,8 @@ public class Island : MonoBehaviour {
 		meshGenerator.GenerateMesh(this, GetComponent<MeshFilter>(), GetComponent<MeshRenderer>());  // TODO add Mesh Collider only when player is on the island
 
 		gameObject.AddComponent<MeshCollider>();  // TODO add Mesh Collider only when player is on the island
+		NavMeshSurface.BuildNavMesh();
+
 
 		Biome.HeightMapSettings.UpdateIslandMesh += () => { // Update the mesh at runtime when modifying heightmap parameters
 			GenerateHeightMap();
@@ -65,9 +70,5 @@ public class Island : MonoBehaviour {
 		//TODO change coordinates system to be able to use heightmap in shaders (right now the x axis is creating problem because of the shift)
 		// Maybe try doing a convertion from axial coord to offset https://www.redblobgames.com/grids/hexagons/
 		return HeightMap[cellCoordinates.x + HexMetrics.IslandRadius, cellCoordinates.z + HexMetrics.IslandRadius];
-	}
-
-	public void PopulateIslandCreatures(){
-		IslandSpawner.PopulateIslandCreatures();
 	}
 }

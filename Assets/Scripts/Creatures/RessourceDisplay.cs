@@ -3,20 +3,18 @@ using UnityEngine.UI;
 
 public class RessourceDisplay : MonoBehaviour
 {
-    public Image healthBarBackground;
+    public GameObject healthDisplay;
     public Image healthBarForeground;
     public Stats stats;
 
+    private Camera mainCamera;
     private float targetFillAmount;
     [SerializeField]
     private float fillSpeed = 2f;
 
     private void Start()
     {
-        healthBarForeground = GameObject.Find("healthBarForeground").GetComponent<Image>();
-        healthBarBackground = GameObject.Find("healthBarBackground").GetComponent<Image>();
-        stats = GetComponent<Stats>();
-
+        mainCamera = Camera.main;
         targetFillAmount = healthBarForeground.fillAmount;
     }
 
@@ -26,14 +24,14 @@ public class RessourceDisplay : MonoBehaviour
 
         if (healthBarForeground.fillAmount >= 1f)
         {
-            healthBarBackground.enabled = false;
-            healthBarForeground.enabled = false;
+            healthDisplay.SetActive(false);
         }
         else
         {
-            healthBarBackground.enabled = true;
-            healthBarForeground.enabled = true;
+            healthDisplay.SetActive(true);
         }
+
+        healthDisplay.transform.LookAt(mainCamera.transform);
     }
 
     public void UpdateHealthBar()

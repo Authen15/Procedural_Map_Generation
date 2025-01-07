@@ -40,7 +40,7 @@ public class IslandMeshGenerator {
 
 		UpdateMesh(island);
 		ApplyMaterial(island.Biome.BiomeMaterial);
-
+		
 		// mesh.RecalculateUVDistributionMetrics();
 		// gameObject.AddComponent<MeshCollider>();
 	}
@@ -53,6 +53,7 @@ public class IslandMeshGenerator {
 		Mesh.vertices = vertices;
 		Mesh.RecalculateNormals();
 		Mesh.RecalculateTangents();
+		Mesh.RecalculateBounds();
 	}
 
     private void ApplyMaterial(Material material) {

@@ -94,7 +94,6 @@ public class IslandBridgeGenerator {
 			if (targetIsland == null) continue; // if there is no island in this direction, skip this iteration
 			
 			AxialCoordinates bridgeAnchorStartCell = _bridgesAnchorCells[i, _bridgeSize/2];
-			// AxialCoordinates bridgeAnchorEndCell = _bridgesAnchorCells[(i + 3) % 6]; // get the opposite bridge anchor cell
 			Vector3 anchorWorldPos = CellToWorld(bridgeAnchorStartCell);
 			Vector3 bridgePosition = currentIsland.transform.position + anchorWorldPos;
 
@@ -102,11 +101,9 @@ public class IslandBridgeGenerator {
 			GameObject bridge = Island.Instantiate(_bridgeTemplate, bridgePosition, rotation, currentIsland.transform);
 			bridge.SetActive(true);
 			currentIsland.Bridges[i] = bridge;
-			bridge.name = string.Format("Bridge " + currentIsland.coord);
+			bridge.name = $"Bridge {currentIsland.coord}";
 
 			Mesh mesh = bridge.GetComponent<MeshFilter>().mesh;
-			// float startHeight = currentIsland.GetCellHeightMapValue(bridgeAnchorStartCell);
-			// float endHeight = targetIsland.GetCellHeightMapValue(bridgeAnchorEndCell);
 			mesh.vertices = UpdateBridgeVerticesHeight(currentIsland, targetIsland, mesh.vertices, (BridgesDir)i);
 		}
     }
