@@ -828,6 +828,7 @@
     "m_OutputNode": {
         "m_Id": "205769478b564ef5994bf329c51eb1f7"
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": []
 }
 
@@ -2243,8 +2244,8 @@
     "m_ObjectId": "4beafad23ba04182a60b8954d6a6303d",
     "m_Title": "Using real height",
     "m_Position": {
-        "x": -2329.60009765625,
-        "y": -1476.0
+        "x": -2329.0,
+        "y": -1475.0
     }
 }
 
@@ -2490,7 +2491,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0

@@ -89,6 +89,9 @@
         },
         {
             "m_Id": "0f00fbba4bd34857a1d0ca984d6904eb"
+        },
+        {
+            "m_Id": "30eaed73731e4abcb47cb1d4deeece23"
         }
     ],
     "m_Keywords": [
@@ -249,6 +252,9 @@
         },
         {
             "m_Id": "caa318e7de914e7f97c266a54ae1b94b"
+        },
+        {
+            "m_Id": "c5bfcacaff7349f0a62729a20fc3a8a5"
         }
     ],
     "m_GroupDatas": [],
@@ -700,6 +706,20 @@
                     "m_Id": "3564c419d7bf486489dfcb9aef58fc69"
                 },
                 "m_SlotId": -1633227856
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "c5bfcacaff7349f0a62729a20fc3a8a5"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "c3fa6c54d0a642c3b8828179138760c2"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -1548,6 +1568,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
+    "m_ObjectId": "2aaf6b81a2b7447ea73ba45ee7e2d4d5",
+    "m_Id": 1,
+    "m_DisplayName": "Out_Vector3",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "OutVector3",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "2f551da85955481ea3a876757b9e3bd5",
     "m_Id": 0,
@@ -1559,6 +1602,36 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Texture2DShaderProperty",
+    "m_ObjectId": "30eaed73731e4abcb47cb1d4deeece23",
+    "m_Guid": {
+        "m_GuidSerialized": "7b3c2955-cf7c-4007-87d4-e94b7a8294dd"
+    },
+    "m_Name": "Tmp",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "Tmp",
+    "m_DefaultReferenceName": "_Tmp",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "m_SerializedTexture": "",
+        "m_Guid": ""
+    },
+    "isMainTexture": false,
+    "useTilingAndOffset": false,
+    "m_Modifiable": true,
+    "m_DefaultType": 0
 }
 
 {
@@ -1792,6 +1865,9 @@
         },
         {
             "m_Id": "ce7cfd98fd3d4289971bf5393e64ee7a"
+        },
+        {
+            "m_Id": "30eaed73731e4abcb47cb1d4deeece23"
         }
     ]
 }
@@ -2683,7 +2759,7 @@
     "m_ZTestMode": 4,
     "m_ZWriteControl": 0,
     "m_AlphaMode": 0,
-    "m_RenderFace": 2,
+    "m_RenderFace": 0,
     "m_AlphaClip": false,
     "m_CastShadows": true,
     "m_ReceiveShadows": true,
@@ -4236,6 +4312,44 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "VertexDescription.Position"
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.SubGraphNode",
+    "m_ObjectId": "c5bfcacaff7349f0a62729a20fc3a8a5",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Bake Shader Vertex Pos",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -7356.0,
+            "y": 8874.0,
+            "width": 208.0,
+            "height": 279.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "2aaf6b81a2b7447ea73ba45ee7e2d4d5"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedSubGraph": "{\n    \"subGraph\": {\n        \"fileID\": -5475051401550479605,\n        \"guid\": \"36cb7734d94fb5549ac92a7d61fb9162\",\n        \"type\": 3\n    }\n}",
+    "m_PropertyGuids": [],
+    "m_PropertyIds": [],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {

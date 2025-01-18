@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Biome {
 
@@ -7,7 +8,9 @@ namespace Biome {
     {
         // public string ShaderReferenceSuffix;
         // public BiomeType BiomeType;
-        public Material BiomeMaterial;
+        [FormerlySerializedAs("BiomeMaterial")]
+        public Material BiomeTerrainMaterial;
+        public Material BiomeGrassMaterial;
 
         // [HideInInspector]
         // public int SubBiomeCount;

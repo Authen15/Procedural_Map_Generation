@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Biome {
@@ -31,7 +32,6 @@ namespace Biome {
 
         void Awake(){
             _instance = this;
-            _prng = new System.Random(MapManager.Instance.MapSeed);
         }
 
         // public BiomeData GetBiome(float moisture, float temperature)
@@ -52,6 +52,9 @@ namespace Biome {
 
         public BiomeData GetBiome() //TODO make a more complex system for biome distribution
         {
+            if(_prng == null){
+                _prng = new System.Random(MapManager.Instance.MapSeed);
+            }
             return _allBiomes[_prng.Next(0, _allBiomes.Length)];
         }
     }
