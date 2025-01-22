@@ -64,7 +64,6 @@ public static class NoiseGenerator
 
                 rawNoise = Mathf.Clamp(rawNoise, 0, 1);
 
-
                 float finalValue = heightCurve_threadsafe.Evaluate(rawNoise); // height curve bound must be < 0 and > 1
 
                 if (heightMapSettings.UseFallOff){

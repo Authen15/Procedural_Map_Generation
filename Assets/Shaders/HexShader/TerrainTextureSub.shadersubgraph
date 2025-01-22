@@ -608,6 +608,7 @@
     "m_OutputNode": {
         "m_Id": "205769478b564ef5994bf329c51eb1f7"
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": []
 }
 
@@ -1275,7 +1276,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0
@@ -2635,8 +2636,8 @@
     "m_ObjectId": "770b64a09f8041e0950886e83d4c89b1",
     "m_Title": "Get uvs from object pos",
     "m_Position": {
-        "x": -2294.400390625,
-        "y": 178.39999389648438
+        "x": -2294.0,
+        "y": -4.0
     }
 }
 
@@ -3418,7 +3419,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0
@@ -3867,10 +3868,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1469.600341796875,
-            "y": 238.40000915527345,
-            "width": 208.0,
-            "height": 312.80010986328127
+            "x": -1435.999755859375,
+            "y": 334.0,
+            "width": 207.9998779296875,
+            "height": 315.0
         }
     },
     "m_Slots": [

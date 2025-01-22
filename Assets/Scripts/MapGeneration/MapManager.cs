@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static HexGridUtils;
 
 public class MapManager : MonoBehaviour
 {

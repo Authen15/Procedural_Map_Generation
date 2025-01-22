@@ -83,11 +83,11 @@ public static class HexGridUtils
 		return neighbours;
 	}
 
-	public static Vector2 CellToUV(Vector2 cellCoordinates) // must be axial coordinates but we keep vector2 to be able to use float
+	public static Vector2 CellToUV(AxialCoordinates cellCoordinates) // must be axial coordinates but we keep vector2 to be able to use float
 	{
 		float outerRadius = HexMetrics.OuterRadius;
 		float x = cellCoordinates.x;
-		float y = cellCoordinates.y;
+		float y = cellCoordinates.z;
 		Vector2 position;
 
 		position.x = x * (outerRadius * 2f) + y * outerRadius;

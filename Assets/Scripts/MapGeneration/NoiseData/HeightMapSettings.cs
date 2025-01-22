@@ -11,9 +11,11 @@ public class HeightMapSettings : DataMapSettings
 
     public Action UpdateIslandMesh;
 
+#if UNITY_EDITOR
     protected override void OnValidate()
     {
         base.OnValidate();
         UpdateIslandMesh?.Invoke();
     }
+#endif
 }

@@ -39,7 +39,7 @@ public class IslandMeshGenerator {
 		// Mesh.uv = _uvs;
 
 		UpdateMesh(island);
-		ApplyMaterial(island.Biome.BiomeMaterial);
+		ApplyMaterial(island.Biome.BiomeTerrainMaterial, island.Biome.BiomeGrassMaterial);
 		
 		// mesh.RecalculateUVDistributionMetrics();
 		// gameObject.AddComponent<MeshCollider>();
@@ -56,12 +56,16 @@ public class IslandMeshGenerator {
 		Mesh.RecalculateBounds();
 	}
 
-    private void ApplyMaterial(Material material) {
-        MeshRenderer.sharedMaterial = material;
-        SetMaterialProperties(MeshRenderer.sharedMaterial);
+	private void ApplyMaterial(Material terrainMaterial, Material grassMaterial = null) {
+		if (grassMaterial != null) {
+			MeshRenderer.sharedMaterials = new Material[] { terrainMaterial, grassMaterial };
+		} else {
+			MeshRenderer.sharedMaterial = terrainMaterial;
+		}
+		SetTerrainMaterialProperties(terrainMaterial);
 	}
 
-	private void SetMaterialProperties(Material material)
+	private void SetTerrainMaterialProperties(Material material)
 	{
 		material.SetFloat("_MinHeight", 0);
 		material.SetFloat("_MaxHeight", HexMetrics.HeightMultiplier);
