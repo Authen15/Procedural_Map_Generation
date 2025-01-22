@@ -9,7 +9,7 @@ public class IslandSpawner : MonoBehaviour{
     public Island Island;
     public GameObject Player;
 
-    public bool active;
+    private bool active;
 
     private const int MAXIMUM_CREATURE_AMOUNT = 48;
     private const float MIN_SPAWN_DURATION = 2f;
@@ -23,6 +23,10 @@ public class IslandSpawner : MonoBehaviour{
 
     public void Start(){
         Player = GameObject.FindGameObjectWithTag("Player");
+    }
+
+    public void SetActive(bool active){
+        this.active = active;
     }
     
     private void PopulateIslandCreatures()
@@ -43,7 +47,7 @@ public class IslandSpawner : MonoBehaviour{
     {
         for (int attemptCount = 0; attemptCount < MAX_RANDOM_SPAWN_ITERATIONS; attemptCount++)
         {
-            spawnPosition = GetRandomSpawnPosition();
+            spawnPosition = GetRandomSpawnPosition() + transform.position; // add the object position to get the world position
             if (CanSpawnCreatureAtPosition(spawnPosition))
             {
                 return true;

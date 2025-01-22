@@ -16,6 +16,8 @@ public class CreatureSpawnManager : MonoBehaviour
             SetActiveNeighboursIslandsSpawner(_previousIslandCoord, false);
         }
         SetActiveNeighboursIslandsSpawner(currentIslandCoord, true);
+        
+        _previousIslandCoord = currentIslandCoord;
     }
 
     private void SetActiveNeighboursIslandsSpawner(AxialCoordinates currentIslandCoord, bool active)
@@ -32,7 +34,7 @@ public class CreatureSpawnManager : MonoBehaviour
     private void TrySetActiveIsland(AxialCoordinates islandCoord, bool active){
         if (MapManager.Instance.IslandDict.TryGetValue(islandCoord, out Island island) && island.isInitialised)
         {
-            island.IslandSpawner.active = active;
+            island.IslandSpawner.SetActive(active);
         }
         Debug.LogWarning("Failed to set axtive spawner on Island " + islandCoord);
    
