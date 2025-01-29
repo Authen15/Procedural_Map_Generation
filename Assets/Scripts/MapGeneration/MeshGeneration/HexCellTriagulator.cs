@@ -44,21 +44,21 @@ public static class HexCellTriangulator {
 			int vertexIndex = cellIndex * 6; // each cell has 6 vertices
 			for (int j = 0; j < 6; j++) {
 				AxialCoordinates targetCell = cellCoord + GetDir[j];
-				cellDict.TryGetValue(targetCell, out int targetCellIndex);
+				bool hasNeighboor = cellDict.TryGetValue(targetCell, out int targetCellIndex);
 				int targetCellVertexIndexOffset = targetCellIndex * 6;
 				switch ((Dir)j) 
 				{
-					case Dir.BottomLeft: TriangulateBotLeftSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
-					case Dir.BottomRight: TriangulateBotRightSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
-					case Dir.Left: TriangulateLeftSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
+					case Dir.BottomLeft: TriangulateBotLeftSide(targetCellVertexIndexOffset, vertices, triangles, hasNeighboor, vertexIndex); break;
+					case Dir.BottomRight: TriangulateBotRightSide(targetCellVertexIndexOffset, vertices, triangles, hasNeighboor, vertexIndex); break;
+					case Dir.Left: TriangulateLeftSide(targetCellVertexIndexOffset, vertices, triangles, hasNeighboor, vertexIndex); break;
 					case Dir.Right: 
-						if (targetCellVertexIndexOffset == 0) // if there is no neighbour in this direction, we triangulate this direction to create a border
+						if (!hasNeighboor) // if there is no neighbour in this direction, we triangulate this direction to create a border
 							TriangulateRightSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
 					case Dir.TopLeft: 
-						if (targetCellVertexIndexOffset == 0) // if there is no neighbour in this direction, we triangulate this direction to create a border
+						if (!hasNeighboor) // if there is no neighbour in this direction, we triangulate this direction to create a border
 							TriangulateTopLeftSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
 					case Dir.TopRight: 
-						if (targetCellVertexIndexOffset == 0) // if there is no neighbour in this direction, we triangulate this direction to create a border
+						if (!hasNeighboor) // if there is no neighbour in this direction, we triangulate this direction to create a border
 							TriangulateTopRightSide(targetCellVertexIndexOffset, vertices, triangles, vertexIndex); break;
 					default :
 						break;
@@ -67,33 +67,31 @@ public static class HexCellTriangulator {
 		}	
 	}
     
-    private static void TriangulateBotLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 4, 3, 1, 0);
+	// called for any cell
+    private static void TriangulateBotLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, bool hasNeighboor, int currentCellvertexIndexOffset){
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, hasNeighboor, 4, 3, 1, 0);
+	}
+	private static void TriangulateBotRightSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, bool hasNeighboor, int currentCellvertexIndexOffset){
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, hasNeighboor, 3, 2, 0, 5);
+	}
+	private static void TriangulateLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, bool hasNeighboor, int currentCellvertexIndexOffset){
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, hasNeighboor, 5, 4, 2, 1);
 	}
 
-	private static void TriangulateLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 5, 4, 2, 1);
-	}
-
-	private static void TriangulateTopLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 0, 5, 3, 2);
-	}
-
-	private static void TriangulateTopRightSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 1, 0, 4, 3);
-	}
-
+	// called only for border cells that have no neighbour in the direction
 	private static void TriangulateRightSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 2, 1, 5, 4);
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, false, 2, 1, 5, 4);
+	}
+	private static void TriangulateTopLeftSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, false, 0, 5, 3, 2);
+	}
+	private static void TriangulateTopRightSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
+		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, false, 1, 0, 4, 3);
 	}
 
-	private static void TriangulateBotRightSide(int targetCellVertexIndexOffset, List<Vector3> vertices, List<int> triangles, int currentCellvertexIndexOffset){
-		TriangulateSide(vertices, triangles, targetCellVertexIndexOffset, currentCellvertexIndexOffset, 3, 2, 0, 5);
-	}
-
-    private static void TriangulateSide(List<Vector3> vertices, List<int> triangles, int targetCellVertexIndexOffset, int currentCellvertexIndexOffset, int currentCellIndex1, int currentCellIndex2, int targetCellIndex1, int targetCellIndex2) {
+    private static void TriangulateSide(List<Vector3> vertices, List<int> triangles, int targetCellVertexIndexOffset, int currentCellvertexIndexOffset, bool hasNeighboor, int currentCellIndex1, int currentCellIndex2, int targetCellIndex1, int targetCellIndex2) {
 		// Check if neighboring cell exists
-		if (targetCellVertexIndexOffset != 0) {
+		if (hasNeighboor) {
 			AddTriangle(
 				triangles,
 				currentCellvertexIndexOffset + currentCellIndex1, 
