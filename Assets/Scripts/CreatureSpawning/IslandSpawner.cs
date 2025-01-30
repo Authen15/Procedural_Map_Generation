@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using static HexGridUtils;
 
@@ -86,8 +85,8 @@ public class IslandSpawner : MonoBehaviour{
         _creaturesAmount--;
     }
 
-    public void OnDrawGizmos(){
+    public void OnDrawGizmosSelected(){
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(Player.transform.position, MIN_PLAYER_DISTANCE);
+        Gizmos.DrawWireSphere(Player.transform.position, MIN_PLAYER_DISTANCE);
     }
 }

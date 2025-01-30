@@ -1,133 +1,103 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
+
     [Header("Movement")]
-    public float moveSpeed;
+    public float BaseMoveSpeed;
+    public float SprintSpeedMultiplier;
+    public float jumpHeight;
+    public float AirMultiplier;
+    private float _gravityValue = -9.81f;
 
-    public float groundDrag;
+    [Header("view")]
+    [Range(0.0f, 1f)] public float rotationPower = 0.8f;
+    public float rotationLerp = 0.5f;
 
-    public float jumpForce;
-    public float jumpCooldown;
-    public float airMultiplier;
-    bool readyToJump;
 
-    private float walkSpeed;
-    private float sprintSpeed;
+    private Vector2 _move;
+    private Vector2 _look;
+    private bool _isJumping;
+    private bool _isSprinting;
+    private bool _isGrounded;
 
-    [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
+    private Vector3 _playerVelocity;
+    private Quaternion _nextRotation;
+    private CharacterController _characterController;
 
-    [Header("Ground Check")]
-    public float playerHeight;
-    public LayerMask whatIsGround;
-    bool grounded;
+    public void OnMove(InputValue value)
+    {
+        _move = value.Get<Vector2>();
+    }
 
-    public Transform orientation;
+    public void OnLook(InputValue value)
+    {
+        _look = value.Get<Vector2>();
+    }
 
-    float horizontalInput;
-    float verticalInput;
+    public void OnSprint(InputValue value)
+    {
+        _isSprinting = value.Get<float>() > 0;
+    }
 
-    Vector3 moveDirection;
 
-    CharacterController characterController;
+    public void OnJump(InputValue value)
+    {
+        _isJumping = value.Get<float>() > 0 && _isGrounded;
+    }
 
     private void Start()
     {
-        walkSpeed = moveSpeed;
-        sprintSpeed = moveSpeed * 2;
-
-        characterController = GetComponent<CharacterController>();
-
-        readyToJump = true;
+        _characterController = GetComponent<CharacterController>();
     }
 
     private void Update()
     {
-        // ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
-
-        MyInput();
-        SpeedControl();
-
-        // handle drag
-        // if (grounded)
-        //     rb.drag = groundDrag;
-        // else
-        //     rb.drag = 0;
-    }
-
-    private void FixedUpdate()
-    {
-        MovePlayer();
-    }
-
-    private void MyInput()
-    {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
-
-        // when to jump
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
+        // using a raycast to check if the player is grounded because the character controller's isGrounded property isn't working properly
+        _isGrounded = Physics.Raycast(transform.position, Vector3.down, _characterController.height / 2 + 0.1f);
+        if (_isGrounded && _playerVelocity.y < 0)
         {
-            readyToJump = false;
-
-            Jump();
-
-            Invoke(nameof(ResetJump), jumpCooldown);
+            _playerVelocity.y = 0f;
         }
 
-        if(Input.GetKey(KeyCode.LeftShift))
-            moveSpeed = sprintSpeed;
-        else
-            moveSpeed = walkSpeed;
+        MovePlayer();
+        RotatePlayer();
+        ApplyJump();
+
+        _playerVelocity.y += _gravityValue * Time.deltaTime;
+        _characterController.Move(_playerVelocity * Time.deltaTime);
     }
 
     private void MovePlayer()
     {
-        // calculate movement direction
-        // moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput; //for movement in player orientation
-        moveDirection = transform.forward * verticalInput + transform.right * horizontalInput; // for movement in camera orientation
+        Vector3 moveDirection = transform.forward * _move.y + transform.right * _move.x;
 
+        float moveSpeed = BaseMoveSpeed;
+        if (_isSprinting)
+            moveSpeed *= SprintSpeedMultiplier;
 
-        // on ground
-        if(grounded)
-            // rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-            characterController.SimpleMove(moveDirection.normalized * moveSpeed * Time.fixedDeltaTime);
-
-        // in air
-        else if(!grounded)
-            // rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-            characterController.SimpleMove(moveDirection.normalized * moveSpeed * airMultiplier * Time.fixedDeltaTime);
+        if (_isGrounded)
+            _characterController.Move(moveDirection.normalized * moveSpeed * Time.deltaTime);
+        else
+            _characterController.Move(moveDirection.normalized * moveSpeed * AirMultiplier * Time.deltaTime);
 
     }
 
-    private void SpeedControl()
+    private void RotatePlayer()
     {
-        // // Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        // Vector3 flatVel = new Vector3(characterController.velocity.x, 0f, characterController.velocity.z);
-
-        // if(flatVel.magnitude > moveSpeed)
-        // {
-        //     Vector3 limitedVel = flatVel.normalized * moveSpeed;
-        //     // rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-        //     characterController.Move(new Vector3(limitedVel.x, characterController.velocity.y, limitedVel.z));
-        // }
+        transform.rotation *= Quaternion.AngleAxis(_look.x * rotationPower, Vector3.up);
+        _nextRotation = Quaternion.Lerp(transform.rotation, _nextRotation, Time.deltaTime * rotationLerp);
     }
 
-    private void Jump()
+    private void ApplyJump()
     {
         // reset y velocity
-        // rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        characterController.Move(new Vector3(characterController.velocity.x, 0f, characterController.velocity.z));
-
-        // rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        characterController.Move(transform.up * jumpForce * Time.fixedDeltaTime);
-    }
-    private void ResetJump()
-    {
-        readyToJump = true;
+        if (_isJumping && _isGrounded){
+            _playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * _gravityValue);
+            _isJumping = false;
+        }
     }
 }

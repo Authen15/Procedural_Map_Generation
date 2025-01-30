@@ -22,16 +22,16 @@ public class CreatureSpawnManager : MonoBehaviour
 
     private void SetActiveNeighboursIslandsSpawner(AxialCoordinates currentIslandCoord, bool active)
     {
-        TrySetActiveIsland(currentIslandCoord, active);
+        TrySetActiveIslandSpawner(currentIslandCoord, active);
 
         AxialCoordinates[] neighborCoords = GetCellNeighboursCoords(currentIslandCoord);
         foreach (AxialCoordinates neighborCoord in neighborCoords)
         {
-            TrySetActiveIsland(neighborCoord, active);
+            TrySetActiveIslandSpawner(neighborCoord, active);
         }
     }
 
-    private void TrySetActiveIsland(AxialCoordinates islandCoord, bool active){
+    private void TrySetActiveIslandSpawner(AxialCoordinates islandCoord, bool active){
         if (MapManager.Instance.IslandDict.TryGetValue(islandCoord, out Island island) && island.isInitialised)
         {
             island.IslandSpawner.SetActive(active);
