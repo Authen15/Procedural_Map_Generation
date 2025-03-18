@@ -7,21 +7,30 @@ Credits :
 
 # Features
 
+## Procedural generation
+![Infinite](https://github.com/user-attachments/assets/2d32325b-ce6d-40b0-984b-ca1da20bcb8b)
+
 ## Biome Islands
 
-### Desert
-![Desert](https://github.com/user-attachments/assets/24bbb0ec-ff5e-4fe2-a75f-0e6e885146ec)
+### Biome Geometry Grass
+![Biome Grass](https://github.com/user-attachments/assets/31011138-e50a-42b5-acb2-eb1c328813da)
 
-### Ice
-![Ice](https://github.com/user-attachments/assets/4741ac30-fd84-4837-976b-20bf33ce0715)
+### Desert Biome
+![Desert](https://github.com/user-attachments/assets/12151905-9175-4923-b2e1-3dd379552431)
 
-### Mesa
-![Mesa](https://github.com/user-attachments/assets/421c3fc0-cbb8-4e39-a2d7-4a4c9c57546c)
+### Ice Biome
+![Ice](https://github.com/user-attachments/assets/9c386b1e-923b-46d7-9d01-6104f2919250)
 
-### Boreal Forest
-![Boreal](https://github.com/user-attachments/assets/86c3e9de-0298-409c-acbf-d18517fadcd1)
+### Mesa Biome
+![Mesa](https://github.com/user-attachments/assets/ccbb82aa-f09f-4fec-bf3c-ef1ea7ad44b5)
+
+### Boreal Forest Biome
+![Boreal](https://github.com/user-attachments/assets/6cf05f95-76ac-4d99-aa93-ba1c002b2ead)
 
 
 ## Run Time Mesh Editing
 https://github.com/user-attachments/assets/af8bd831-e0ca-44ce-bd85-ea9a686924e0
+
+## [Early stage] ennemy spawning system
+![Ennemies](https://github.com/user-attachments/assets/481884ef-be18-43a5-8a90-88009a83f345)
 
