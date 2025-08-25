@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -28,25 +27,25 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion _nextRotation;
     private CharacterController _characterController;
 
-    public void OnMove(InputValue value)
+    public void OnMove(InputAction.CallbackContext context)
     {
-        _move = value.Get<Vector2>();
+        _move = context.ReadValue<Vector2>();
     }
 
-    public void OnLook(InputValue value)
+    public void OnLook(InputAction.CallbackContext context)
     {
-        _look = value.Get<Vector2>();
+        _look = context.ReadValue<Vector2>();
     }
 
-    public void OnSprint(InputValue value)
+    public void OnSprint(InputAction.CallbackContext context)
     {
-        _isSprinting = value.Get<float>() > 0;
+        _isSprinting = context.ReadValue<float>() > 0;
     }
 
 
-    public void OnJump(InputValue value)
+    public void OnJump(InputAction.CallbackContext context)
     {
-        _isJumping = value.Get<float>() > 0 && _isGrounded;
+        _isJumping = context.ReadValue<float>() > 0 && _isGrounded;
     }
 
     private void Start()
