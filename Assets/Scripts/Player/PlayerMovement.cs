@@ -10,12 +10,15 @@ public class PlayerMovement : MonoBehaviour
     public float SprintSpeedMultiplier;
     public float jumpHeight;
     public float AirMultiplier;
-    private float _gravityValue = -9.81f;
+    private float _gravityValue = -9.81f * 4f;
 
     [Header("view")]
+    [SerializeField] private GameObject _cameraTarget;
     [Range(0.0f, 1f)] public float rotationPower = 0.8f;
     public float rotationLerp = 0.5f;
 
+    [Header("Animation")]
+    public Animator animator;
 
     private Vector2 _move;
     private Vector2 _look;
@@ -24,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _isGrounded;
 
     private Vector3 _playerVelocity;
-    private Quaternion _nextRotation;
+    // private Quaternion _nextRotation;
     private CharacterController _characterController;
 
     public void OnMove(InputAction.CallbackContext context)
@@ -51,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         _characterController = GetComponent<CharacterController>();
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -65,9 +70,18 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
         RotatePlayer();
         ApplyJump();
+        Animation();
 
         _playerVelocity.y += _gravityValue * Time.deltaTime;
         _characterController.Move(_playerVelocity * Time.deltaTime);
+    }
+
+    private void Animation()
+    {
+        if (_move.magnitude > 0.1f)
+            animator.SetInteger("Speed", 1);
+        else
+            animator.SetInteger("Speed", 0);
     }
 
     private void MovePlayer()
@@ -88,7 +102,29 @@ public class PlayerMovement : MonoBehaviour
     private void RotatePlayer()
     {
         transform.rotation *= Quaternion.AngleAxis(_look.x * rotationPower, Vector3.up);
-        _nextRotation = Quaternion.Lerp(transform.rotation, _nextRotation, Time.deltaTime * rotationLerp);
+        // _nextRotation = Quaternion.Lerp(transform.rotation, _nextRotation, Time.deltaTime * rotationLerp);
+
+        #region Vertical Rotation
+        _cameraTarget.transform.rotation *= Quaternion.AngleAxis(-_look.y * rotationPower, Vector3.right);
+
+        var angles = _cameraTarget.transform.localEulerAngles;
+        angles.z = 0;
+
+        var angle = _cameraTarget.transform.localEulerAngles.x;
+
+        //Clamp the Up/Down rotation
+        if (angle > 180 && angle < 340)
+        {
+            angles.x = 340;
+        }
+        else if(angle < 180 && angle > 40)
+        {
+            angles.x = 40;
+        }
+
+
+        _cameraTarget.transform.localEulerAngles = angles;
+        #endregion
     }
 
     private void ApplyJump()
