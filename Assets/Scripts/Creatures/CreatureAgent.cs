@@ -23,11 +23,16 @@ public class CreatureAgent : MonoBehaviour
 
     public const float UPDATE_TIME = 0.25f;
 
-    public void Start() {
+    private bool _isImmobilized;
+
+    public void Start()
+    {
         mainCamera = Camera.main;
         path = new NavMeshPath();
         elapsed = 0.0f;
         player = GameObject.FindGameObjectWithTag("Player");
+
+        UpdateAgentSpeed();
     }
 
     public void Update() {
@@ -57,20 +62,58 @@ public class CreatureAgent : MonoBehaviour
         }
     }
 
-    private void MoveTowardsPlayer(){
+    private void MoveTowardsPlayer()
+    {
         NavMesh.CalculatePath(transform.position, player.transform.position, NavMesh.AllAreas, path);
         agent.SetPath(path);
     }
 
+    private void UpdateAgentSpeed()
+    {
+        CreatureStats stats = GetComponent<CreatureStats>();
+
+        if (_isImmobilized)
+        {
+            SetAgentSpeed(0);
+        }
+        else
+        {
+            if (stats != null)
+            {
+                SetAgentSpeed(stats.MovementSpeed.Value);
+                stats.MovementSpeed.OnValueChanged.AddListener(movementSpeed => SetAgentSpeed(movementSpeed));
+            }
+            else
+                Debug.LogError("CreatureStats is null in: " + gameObject.name);
+        }       
+    }
+
+    public void SetImmobilizeState(bool state)
+    {
+        _isImmobilized = state;
+        UpdateAgentSpeed();
+    }
+
+    private void SetAgentSpeed(float speed)
+    {
+        agent.speed = speed;
+    }
+
 #region UI
-    private void UpdateUI(){
-        if (isTriggered){
+    private void UpdateUI()
+    {
+        if (isTriggered)
+        {
             TriggeredIcon.enabled = true;
             SearchIcon.enabled = false;
-        }else if (Vector3.Distance(transform.position, player.transform.position) < SearchDistance){
+        }
+        else if (Vector3.Distance(transform.position, player.transform.position) < SearchDistance)
+        {
             SearchIcon.enabled = true;
             TriggeredIcon.enabled = false;
-        }else{
+        }
+        else
+        {
             TriggeredIcon.enabled = false;
             SearchIcon.enabled = false;
         }

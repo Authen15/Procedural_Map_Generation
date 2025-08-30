@@ -161,6 +161,7 @@ GameObject:
   - component: {fileID: 4985474358031421697}
   - component: {fileID: 3776808540723206817}
   - component: {fileID: 668465594452857167}
+  - component: {fileID: 4987842095992028268}
   - component: {fileID: -6994939007882706397}
   - component: {fileID: 1901191957993173839}
   - component: {fileID: 1263358031513892392}
@@ -309,6 +310,22 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     BaseValue: 0
+--- !u!114 &4987842095992028268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836330753491645796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb6ba0e22c07ed4ca912c420df82c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slowEffect: {fileID: 11400000, guid: 656b9a00717a5b64ead160cf0d4d044a, type: 2}
+  _rootEffect: {fileID: 11400000, guid: 6e77d34692c3592489eb5fd8014b3f5f, type: 2}
+  _doTEffect: {fileID: 11400000, guid: 3ca81367c23388c47be3634115ffa2e1, type: 2}
+  _aoEEffect: {fileID: 0}
 --- !u!114 &-6994939007882706397
 MonoBehaviour:
   m_ObjectHideFlags: 0

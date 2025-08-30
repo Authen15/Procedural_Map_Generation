@@ -2,30 +2,38 @@ using UnityEngine;
 
 public class CreatureStats : MonoBehaviour
 {
-    [Header("Damage Stats")]
+    [Header("Health")]
+    public Stat MaxHealthPoint = new Stat();
+    public Stat HealthRegeneration = new Stat();
+
+    [Header("Damage Types")]
     public Stat NeutralDamage = new Stat();
     public Stat AshenDamage = new Stat();
     public Stat EmberDamage = new Stat();
     public Stat FrostDamage = new Stat();
     public Stat VerdantDamage = new Stat();
 
-    [Header("Misc Stats")]
-    public Stat ArmorPenetration = new Stat();
-    public Stat DoT = new Stat();
-    public Stat AuraDamage = new Stat();
-    public Stat AoE = new Stat();
-    public Stat RootChance = new Stat();
-    public Stat Slow = new Stat();
-    public Stat ExecutionThreshold = new Stat();
-
+    [Header("Offensive")]
     public Stat AttackSpeed = new Stat();
+    public Stat AoE = new Stat();
+    public Stat ExecutionThreshold = new Stat();
+    public Stat ArmorPenetration = new Stat();
+    public Stat AuraDamage = new Stat();
+
+    [Header("Defensive")]
+    public Stat Armor = new Stat();
+
+    [Header("On-Hit Effects")]
+    public Stat DoT = new Stat();
+    public Stat Slow = new Stat();
+    public Stat RootChance = new Stat();
+
+    [Header("Sustain")]
+    public Stat Lifesteal = new Stat();
+
+    [Header("Mobility")]
     public Stat MovementSpeed = new Stat();
 
-    [Header("Sustain Stats")]
-    public Stat Armor = new Stat();
-    public Stat Lifesteal = new Stat();
-    public Stat MaxHealthPoint = new Stat();
-    public Stat HealthRegeneration = new Stat();
 
     public Stat GetStat(StatType type)
     {

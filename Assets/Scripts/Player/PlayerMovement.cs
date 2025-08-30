@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
 
+    private CreatureStats _playerStats;
+
     [Header("Movement")]
-    public float BaseMoveSpeed;
     public float SprintSpeedMultiplier;
     public float jumpHeight;
     public float AirMultiplier;
@@ -54,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         _characterController = GetComponent<CharacterController>();
+        _playerStats = GetComponent<CreatureStats>();
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -88,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 moveDirection = transform.forward * _move.y + transform.right * _move.x;
 
-        float moveSpeed = BaseMoveSpeed;
+        float moveSpeed = _playerStats.MovementSpeed.Value;
         if (_isSprinting)
             moveSpeed *= SprintSpeedMultiplier;
 
