@@ -2,23 +2,28 @@ using UnityEngine;
 
 public class AoeEffect : RuntimeEffect
 {
-    LayerMask layerMask;
-    float _value;
+    LayerMask _layerMask;
+    float _radius;
+
+    Stat _aoE;
 
     public AoeEffect(AoeEffectDefinition definition, Creature source)
     {
-        layerMask = definition.LayerMask;
+        _layerMask = definition.LayerMask;
+        _radius = definition.Radius;
+
+        _aoE = source.Stats.AoE;
     }
 
     public override void Apply(Creature self)
     {
-        Collider[] colliders = Physics.OverlapSphere(self.transform.position, 5, layerMask);
+        Collider[] colliders = Physics.OverlapSphere(self.transform.position, _radius, _layerMask);
         foreach (Collider collider in colliders)
         {
             Creature inRangeTarget = collider.gameObject.GetComponent<Creature>();
 
             if (inRangeTarget != null || inRangeTarget != self)
-                inRangeTarget.TakeDamage(_value);
+                inRangeTarget.TakeDamage(_aoE.Value);
         }
     }
 

@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class DotEffect : RuntimeEffect
 {
-    private float _duration;
-    private float _startTime;
+    float _duration;
+    float _startTime;
 
-    private Stat _doT;
-    private float _damagePerTick => _doT.Value / _duration;
+    Stat _doT;
+    float _damagePerTick => _doT.Value / _duration;
 
     float _remainingTime => _startTime + _duration - Time.time;
 
@@ -26,7 +26,6 @@ public class DotEffect : RuntimeEffect
         if (_remainingTime < 0)
             return false;
 
-        _duration--;
         self.TakeDamage(_damagePerTick);
         return true;
     }
