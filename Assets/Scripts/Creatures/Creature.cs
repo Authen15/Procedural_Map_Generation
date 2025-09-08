@@ -1,25 +1,24 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(CreatureStats)), RequireComponent(typeof(CreatureEffectsManager))]
+[RequireComponent(typeof(CreatureStats)), RequireComponent(typeof(CreatureEffectManager))]
 public abstract class Creature : MonoBehaviour
 {
     public CreatureStats Stats;
     public float CurrentHealth;
 
-    private CreatureEffectsManager _effectsManager;
+    public CreatureEffectManager EffectManager;
 
     public virtual void Awake()
     {
         Stats = GetComponent<CreatureStats>();
         CurrentHealth = Stats.MaxHealthPoint.Value;
-        _effectsManager = GetComponent<CreatureEffectsManager>();
+        EffectManager = GetComponent<CreatureEffectManager>();
     }
 
     // When the creature is beeing Hit, take damages and check for any effects 
     public void OnHit(CreatureStats attacker)
     {
-        _effectsManager.ApplyOnHitEffects(attacker);
         OnHitDamage(attacker);
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -8,6 +9,7 @@ public class Projectile : MonoBehaviour
     // Cinemachine.CinemachineImpulseSource source;
 
     private CreatureStats _attackerStats;
+    private Action<Creature> _onHit;
 
     private void Awake()
     {
@@ -15,13 +17,14 @@ public class Projectile : MonoBehaviour
         rb.centerOfMass = transform.position;
     }
 
-    public void Fire(CreatureStats attackerStats)
+    public void Fire(CreatureStats attackerStats, Action<Creature> onHitCallback)
     {
         _attackerStats = attackerStats;
         // rb.AddForce(transform.forward * (100 * Random.Range(1.3f, 1.7f)), ForceMode.Impulse);
         rb.AddForce(transform.forward * force, ForceMode.Impulse);
         // source = GetComponent<Cinemachine.CinemachineImpulseSource>();
         // source.GenerateImpulse(Camera.main.transform.forward);
+        _onHit = onHitCallback;
     }
 
     public void OnCollisionEnter(Collision collision)
@@ -39,6 +42,7 @@ public class Projectile : MonoBehaviour
             if (creature != null)
             {
                 creature.OnHit(_attackerStats);
+                _onHit?.Invoke(creature);
             }
         }
     }

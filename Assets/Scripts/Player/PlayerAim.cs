@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -67,8 +67,8 @@ public class PlayerAim : MonoBehaviour
 
             if (_isAttacking)
             {
-                if ((Time.time - _lastFireTime) > (1 / FireRate)) {
-                    StartCoroutine(Fire());
+                if ((Time.time - _lastFireTime) > (1f / _playerStats.AttackSpeed.Value)) {
+                    Fire();
                     _lastFireTime = Time.time;
                 }
             }
@@ -93,10 +93,10 @@ public class PlayerAim : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         AimReticle.SetActive(enabled);
     }
-    
 
 
-    IEnumerator Fire()
+
+    void Fire()
     {
         Camera camera = Camera.main;
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -115,8 +115,7 @@ public class PlayerAim : MonoBehaviour
 
         GameObject projectile = Instantiate(ProjectilePrefab, FireTransform.position, Quaternion.LookRotation(direction));
 
-        yield return new WaitForSeconds(0.1f);
-
-        projectile.GetComponent<Projectile>().Fire(_playerStats);
+        Action<Creature> callback = GetComponent<CreatureEffectManager>().ApplyOnHitEffects;
+        projectile.GetComponent<Projectile>().Fire(_playerStats, callback);
     }
 }

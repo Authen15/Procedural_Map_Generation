@@ -2854,15 +2854,102 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 295c7baacaaeec0428b1093cce8fcad5, type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: _doTEffect
+      value: 
+      objectReference: {fileID: 11400000, guid: 3ca81367c23388c47be3634115ffa2e1,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: _rootEffect
+      value: 
+      objectReference: {fileID: 11400000, guid: 6e77d34692c3592489eb5fd8014b3f5f,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: _slowEffect
+      value: 
+      objectReference: {fileID: 11400000, guid: 656b9a00717a5b64ead160cf0d4d044a,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: InitialEffects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitSelfEffects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: InitialEffects.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 140c83f607c1b364c855e93793157db9,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: InitialEffects.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 140c83f607c1b364c855e93793157db9,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitSelfEffects.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: c07afe24671ab8445b37cf9a0ee785fe,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 01aa15ce4b89f1d4dadc691b6826bde6,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 3e29cb301644e4f4db0f069b0b3a166d,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: daa0691829aee384ea516562dffb02a2,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: d0645b0d939276945a627846284f0647,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: a0e5ea7f261a93042b4f21ba87fe22f8,
+        type: 2}
+    - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: OnHitTargetEffects.Array.data[5]
+      value: 
+      objectReference: {fileID: 11400000, guid: a0e5ea7f261a93042b4f21ba87fe22f8,
+        type: 2}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: DoT.BaseValue
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: RootChance.BaseValue
-      value: 50
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
@@ -2877,7 +2964,7 @@ PrefabInstance:
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: NeutralDamage.BaseValue
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}

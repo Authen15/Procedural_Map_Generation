@@ -7,5 +7,5 @@ public class SecondEvolutionDefinition : ScriptableObject
     public string Name;
 
     [TextArea] public string Description;
-    public Effect Effect;
+    public EffectDefinition Effect;
 }

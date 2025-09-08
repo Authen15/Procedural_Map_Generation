@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcf0e5bc1fd5ab94fbdc377af5b3bed6, type: 3}
-  m_Name: EmberEvolution1
+  m_Script: {fileID: 11500000, guid: f2c50ff31f658e64e8936baab1f511b0, type: 3}
+  m_Name: AttackSpeedOnHitEffectDefinition
   m_EditorClassIdentifier: 
-  Name: Berserk
-  Description: 
-  OnceModifiers: []
-  ScalingModifier: {fileID: 0}
+  Duration: 10
+  AttackSpeedPerHit: 0.02

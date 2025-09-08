@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 591359223602867647}
   - component: {fileID: 3266787009934335676}
   - component: {fileID: 2059291379209606817}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Search Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 4140747337854062131}
   - component: {fileID: 430723629093601810}
   - component: {fileID: 4799509705143109843}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: HeathForeground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 1901191957993173839}
   - component: {fileID: 1263358031513892392}
   - component: {fileID: 1420276288708599101}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Creature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,6 +220,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad2cb7dff62f4e74d934b9cc55c9cc1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxHealthPoint:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 100
+  HealthRegeneration:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 0
   NeutralDamage:
     OnValueChanged:
       m_PersistentCalls:
@@ -245,17 +255,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     BaseValue: 0
-  ArmorPenetration:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 0
-  DoT:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 0
-  AuraDamage:
+  AttackSpeed:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
@@ -265,7 +265,27 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     BaseValue: 0
-  RootChance:
+  ExecutionThreshold:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 0
+  ArmorPenetration:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 0
+  AuraDamage:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 0
+  Armor:
+    OnValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+    BaseValue: 0
+  DoT:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
@@ -275,22 +295,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     BaseValue: 0
-  ExecutionThreshold:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 0
-  AttackSpeed:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 0
-  MovementSpeed:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 3.8
-  Armor:
+  RootChance:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
@@ -300,16 +305,11 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
     BaseValue: 0
-  MaxHealthPoint:
+  MovementSpeed:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
-    BaseValue: 100
-  HealthRegeneration:
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls: []
-    BaseValue: 0
+    BaseValue: 3.8
 --- !u!114 &4987842095992028268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +325,6 @@ MonoBehaviour:
   _slowEffect: {fileID: 11400000, guid: 656b9a00717a5b64ead160cf0d4d044a, type: 2}
   _rootEffect: {fileID: 11400000, guid: 6e77d34692c3592489eb5fd8014b3f5f, type: 2}
   _doTEffect: {fileID: 11400000, guid: 3ca81367c23388c47be3634115ffa2e1, type: 2}
-  _aoEEffect: {fileID: 0}
 --- !u!114 &-6994939007882706397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,7 +415,7 @@ GameObject:
   - component: {fileID: 8558279594817906059}
   - component: {fileID: 7249852008542180548}
   - component: {fileID: 6141681542762410435}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -500,7 +499,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9184707767454281245}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Health Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -539,7 +538,7 @@ GameObject:
   - component: {fileID: 6193495689197335062}
   - component: {fileID: 2033318372612412462}
   - component: {fileID: 4202274447226698374}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Creature Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -622,7 +621,7 @@ GameObject:
   - component: {fileID: 6595221381153754904}
   - component: {fileID: 8915205174178927117}
   - component: {fileID: 7977552146287092840}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Trigger Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -697,7 +696,7 @@ GameObject:
   - component: {fileID: 581343407544862983}
   - component: {fileID: 1964380355693446286}
   - component: {fileID: 1876703116392018941}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: HeathBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}

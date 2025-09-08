@@ -2,55 +2,88 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreatureEffectsManager : MonoBehaviour
+public class CreatureEffectManager : MonoBehaviour
 {
-    private Creature _creature;
+
+    public List<EffectDefinition> OnHitTargetEffects; // effects that this creature applies to others on hit
+    public List<EffectDefinition> OnHitSelfEffects; // effects that this creature applies on itself when hitting others
+    public Dictionary<EffectDefinition, RuntimeEffect> CurrentEffects; // effects that are currently affecting the creature
 
     [SerializeField]
-    private Effect _slowEffect;
-    [SerializeField]
-    private Effect _rootEffect;
-    [SerializeField]
-    private Effect _doTEffect;
+    private EffectDefinition[] InitialEffects; // the creature spawns with those effects
 
-    private Dictionary<Effect, Coroutine> _activeCoroutines = new();
+    private Creature _self;
+
 
     public void Awake()
     {
-        _creature = GetComponent<Creature>();
+        _self = GetComponent<Creature>();
+        CurrentEffects = new Dictionary<EffectDefinition, RuntimeEffect>();
     }
 
-    public void ApplyOnHitEffects(CreatureStats attacker)
+    public void Start()
     {
-        if (Random.value <= attacker.RootChance.Value)
-            ApplyEffect(_rootEffect, attacker);
-
-        ApplyEffect(_slowEffect, attacker);
-        ApplyEffect(_doTEffect, attacker);
+        ApplyInitialEffects();
+        StartCoroutine(TickEffects());
     }
 
-    void ApplyEffect(Effect effect, CreatureStats attacker)
+    private IEnumerator TickEffects()
     {
-        if (effect == null) return;
+        WaitForSeconds waitForTick = new(1);
 
-        // Handle cooldown
-        if (effect.IsOnCooldown)
-            return;
-
-        
-        if (_activeCoroutines.TryGetValue(effect, out var existing))
+        while (true)
         {
-            _creature.StopCoroutine(existing);
-            _activeCoroutines.Remove(effect);
+            var toRemove = new List<EffectDefinition>();
+            foreach (var kvp in CurrentEffects)
+            {
+                if (!kvp.Value.Tick(_self))
+                {
+                    toRemove.Add(kvp.Key); // using a list as dict can't be modified on iteration
+                }
+            }
+
+            foreach (var def in toRemove)
+                CurrentEffects.Remove(def);
+
+            yield return waitForTick;
         }
 
-        Coroutine routine = _creature.StartCoroutine(RunEffect(effect, attacker));
-        _activeCoroutines[effect] = routine;
     }
 
-    private IEnumerator RunEffect(Effect effect, CreatureStats attacker)
+    public void ApplyEffects(EffectDefinition[] definitions, Creature source)
     {
-        yield return effect.Activate(_creature, attacker);
-        _activeCoroutines.Remove(effect);
+        foreach (EffectDefinition definition in definitions)
+        {
+            if (!CurrentEffects.TryGetValue(definition, out RuntimeEffect effect))
+            {
+                effect = definition.CreateEffect(source);
+                CurrentEffects.Add(definition, effect);
+            }
+
+            effect.Apply(_self);
+        }
+    }
+
+    public void ApplyOnHitEffects(Creature target)
+    {
+        target.EffectManager.ApplyEffects(OnHitTargetEffects.ToArray(), _self);
+        ApplyEffects(OnHitSelfEffects.ToArray(), _self);
+    }
+
+    public void ApplyInitialEffects()
+    {
+        ApplyEffects(InitialEffects, _self);
+    }
+
+    public void RegisterOnHitTargetEffects(EffectDefinition effectDefinition)
+    {
+        if (!OnHitTargetEffects.Contains(effectDefinition))
+            OnHitTargetEffects.Add(effectDefinition);
+    }
+
+    public void RegisterOnHitSelfEffects(EffectDefinition effectDefinition)
+    {
+        if (!OnHitSelfEffects.Contains(effectDefinition))
+            OnHitSelfEffects.Add(effectDefinition);
     }
 }
