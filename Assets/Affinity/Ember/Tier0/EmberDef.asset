@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18ca6cdf48354db4bb6203e82765ba55, type: 3}
+  m_Name: EmberDef
+  m_EditorClassIdentifier: 
+  Name: Ember
+  AffinityType: 1
+  Opposite: {fileID: 11400000, guid: e0209cf9c6d535b40b4f0133420bb7a5, type: 2}
+  FirstEvolutionDefinition: {fileID: 11400000, guid: 39ea2429ec00e5e49b8bf6e47dac8033,
+    type: 2}
+  SecondEvolutionDefinition: {fileID: 11400000, guid: bdc8fd7f5ad4fa8468eccdfa18fb9b71,
+    type: 2}
+  Description: '+8 ember damage
+
+    3 damage/sec for close ennemies
+
+    5 damage
+    over 5 secs
+
+    8 % armor penetration (per level)'
+  OnceModifiers:
+  - {fileID: 11400000, guid: a53d262fb0df28840ab5a83af7113261, type: 2}
+  - {fileID: 11400000, guid: eaff976e26101734abc33e4830032975, type: 2}
+  ScalingModifier: {fileID: 11400000, guid: 0363912fff0af8945a68d9c0c6ae5839, type: 2}

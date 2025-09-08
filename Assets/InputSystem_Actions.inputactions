@@ -33,6 +33,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Aim",
+                    "type": "Value",
+                    "id": "d5dd5591-90d6-4524-b0e0-e97e79dc1219",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "852140f2-7766-474d-8707-702459ba45f3",
@@ -99,6 +108,15 @@
                     "name": "DebugHeal",
                     "type": "Button",
                     "id": "b1f8847d-a40d-40d3-95f6-7f2ce46ba23d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShowLevel",
+                    "type": "Button",
+                    "id": "18738fef-2a8f-4192-9fcc-63f7f52fdf30",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -339,6 +357,17 @@
                 },
                 {
                     "name": "",
+                    "id": "d69359e3-2d36-463b-b190-c72532906044",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "cbac6039-9c09-46a1-b5f2-4e5124ccb5ed",
                     "path": "<Keyboard>/2",
                     "interactions": "",
@@ -510,6 +539,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "DebugHeal",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b90974ae-c947-4576-a4df-76741b0ea32c",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ShowLevel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

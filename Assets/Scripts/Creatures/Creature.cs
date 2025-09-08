@@ -1,60 +1,68 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class Creature : MonoBehaviour
+[RequireComponent(typeof(CreatureStats)), RequireComponent(typeof(CreatureEffectManager))]
+public abstract class Creature : MonoBehaviour
 {
-    private Stats stats;
-    private RessourceDisplay ressourceDisplay;
-    private InputAction _debugDamageAction;
-    private InputAction _debugHealAction;
+    public CreatureStats Stats;
+    public float CurrentHealth;
 
-    private void Awake()
+    public CreatureEffectManager EffectManager;
+
+    public virtual void Awake()
     {
-        stats = GetComponent<Stats>();
-        ressourceDisplay = GetComponent<RessourceDisplay>();
-        stats.currentHealth = stats.maxHealth;
-
-        _debugDamageAction = InputSystem.actions.FindAction("DebugDamage");
-        _debugHealAction = InputSystem.actions.FindAction("DebugHeal");
-    } 
-
-    private void Update() {
-        if (_debugDamageAction.WasPressedThisFrame())
-        {
-            TakeDamage(10);
-        }
-        if (_debugHealAction.WasPressedThisFrame())
-        {
-            Heal(10);
-        }
+        Stats = GetComponent<CreatureStats>();
+        CurrentHealth = Stats.MaxHealthPoint.Value;
+        EffectManager = GetComponent<CreatureEffectManager>();
     }
 
-    public void TakeDamage(int damage)
+    // When the creature is beeing Hit, take damages and check for any effects 
+    public void OnHit(CreatureStats attacker)
     {
-        stats.currentHealth -= damage;
-        ressourceDisplay.UpdateHealthBar();
-        if (stats.currentHealth <= 0)
+        OnHitDamage(attacker);
+    }
+
+    protected virtual void OnHitDamage(CreatureStats attacker)
+    {
+        // TODO take in care the resistance of the creature
+
+        // TODO, apply damage depending on affinity resistance/weakness
+
+        
+        float totalDamage = attacker.NeutralDamage.Value + attacker.AshenDamage.Value + attacker.EmberDamage.Value + attacker.FrostDamage.Value + attacker.VerdantDamage.Value;
+
+        TakeDamage(totalDamage);
+    }
+
+    public virtual void TakeDamage(float damage)
+    {
+        CurrentHealth -= damage;
+
+        // TODO add execution threshold
+        if (CurrentHealth <= 0)
         {
             Die();
         }
     }
 
-    public void Heal(int heal)
+    public virtual void Heal(float heal)
     {
-        stats.currentHealth += heal;
-        ressourceDisplay.UpdateHealthBar();
-        if (stats.currentHealth > stats.maxHealth)
+        CurrentHealth += heal;
+
+        if (CurrentHealth > Stats.MaxHealthPoint.Value)
         {
-            stats.currentHealth = stats.maxHealth;
+            CurrentHealth = Stats.MaxHealthPoint.Value;
         }
-        
     }
 
-    public void Die()
+    public virtual void Die()
     {
         Destroy(gameObject);
     }
-    
 
-    
+    public IEnumerator Regeneration()
+    {
+        Heal(Stats.HealthRegeneration.Value);
+        yield return new WaitForSeconds(1);
+    }
 }
