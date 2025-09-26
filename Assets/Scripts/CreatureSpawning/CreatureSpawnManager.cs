@@ -36,7 +36,10 @@ public class CreatureSpawnManager : MonoBehaviour
         {
             island.IslandSpawner.SetActive(active);
         }
-        Debug.LogWarning("Failed to set active spawner on Island " + islandCoord);
+        else
+        {
+            Debug.LogWarning("Failed to set active spawner on Island " + islandCoord);    
+        }
    
     }
 }

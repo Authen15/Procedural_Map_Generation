@@ -17,6 +17,8 @@ namespace Biome {
 
         public HeightMapSettings HeightMapSettings;
 
+        public GameObject[] CreaturePrefabs;
+
         // public Color BiomeColor; // used for preview map
 
         // [Header("Height Thresholds")]
@@ -34,7 +36,7 @@ namespace Biome {
         // }
 
 
-    
+
     }
 }
 

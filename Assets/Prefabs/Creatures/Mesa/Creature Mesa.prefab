@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 1263358031513892392}
   - component: {fileID: 1420276288708599101}
   m_Layer: 7
-  m_Name: Creature
+  m_Name: Creature Mesa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,10 +204,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Stats: {fileID: 668465594452857167}
   CurrentHealth: 0
-  EmberXPAmount: 10
-  FrostXPAmount: 20
-  AshenXPAmount: 30
-  VerdantXPAmount: 40
+  EffectManager: {fileID: 0}
+  EmberXPAmount: 50
+  FrostXPAmount: 0
+  AshenXPAmount: 0
+  VerdantXPAmount: 0
 --- !u!114 &668465594452857167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,7 +230,7 @@ MonoBehaviour:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
-    BaseValue: 0
+    BaseValue: 0.5
   NeutralDamage:
     OnValueChanged:
       m_PersistentCalls:
@@ -284,7 +285,7 @@ MonoBehaviour:
     OnValueChanged:
       m_PersistentCalls:
         m_Calls: []
-    BaseValue: 0
+    BaseValue: 10
   DoT:
     OnValueChanged:
       m_PersistentCalls:
@@ -322,9 +323,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb6ba0e22c07ed4ca912c420df82c9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slowEffect: {fileID: 11400000, guid: 656b9a00717a5b64ead160cf0d4d044a, type: 2}
-  _rootEffect: {fileID: 11400000, guid: 6e77d34692c3592489eb5fd8014b3f5f, type: 2}
-  _doTEffect: {fileID: 11400000, guid: 3ca81367c23388c47be3634115ffa2e1, type: 2}
+  OnHitTargetEffects: []
+  OnHitSelfEffects: []
+  InitialEffects:
+  - {fileID: 11400000, guid: 140c83f607c1b364c855e93793157db9, type: 2}
 --- !u!114 &-6994939007882706397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,7 +590,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 6964805406151798792, guid: 03b4b3d734523bc4088e177f3be88ff5, type: 3}
+  - {fileID: 2100000, guid: 6131bede825e49e448f28616967befa2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

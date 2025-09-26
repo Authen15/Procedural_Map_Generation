@@ -4,7 +4,7 @@ using static HexGridUtils;
 
 public class IslandSpawner : MonoBehaviour{
 
-    public GameObject CreaturePrefab;
+    // public GameObject CreaturePrefab;
     public Island Island;
     public GameObject Player;
 
@@ -35,7 +35,12 @@ public class IslandSpawner : MonoBehaviour{
             return;
         }
 
-        GameObject creature = Instantiate(CreaturePrefab, spawnPosition, quaternion.identity);
+        if (Island.Biome.CreaturePrefabs.Length == 0)
+        {
+            Debug.LogError($"No creature prefab assigned for biome {Island.Biome}");
+            return; //TODO, add new creatures and create a real system to determine which creature should spawn
+        }    
+        GameObject creature = Instantiate(Island.Biome.CreaturePrefabs[0], spawnPosition, quaternion.identity);
         creature.transform.parent = transform;
         creature.name = $"creature {_creaturesAmount}";
 
