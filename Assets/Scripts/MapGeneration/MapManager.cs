@@ -3,26 +3,23 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-	private static MapManager _instance;
-	public static MapManager Instance{
-		get{
-			if (_instance == null){
-				Debug.LogWarning("MapManager is null");
-			}
-			return _instance;
-		}
-	}
+	public static MapManager Instance { get; private set; }
 
 	public Dictionary<AxialCoordinates, Island> IslandDict;
-
 
 	public int MapSeed = 0;
 
 	public Island IslandPrefab;
 	
-	void Awake(){
-		_instance = this;
-	}
+	void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 	
 	void Start()
 	{

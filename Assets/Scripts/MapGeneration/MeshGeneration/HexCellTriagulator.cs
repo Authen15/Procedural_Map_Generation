@@ -107,8 +107,8 @@ public static class HexCellTriangulator {
 			// Neighbor cell does not exist, create border vertices and triangles
 			
 			// Get the local positions of the required vertices for the side faces
-			Vector3 borderVertex1 = vertices[currentCellvertexIndexOffset + currentCellIndex1] + new Vector3(0,-1,0);//corners[firstTriIndices.z];
-			Vector3 borderVertex2 = vertices[currentCellvertexIndexOffset + currentCellIndex2] + new Vector3(0,-1,0); //corners[secondTriIndices.z];
+			Vector3 borderVertex1 = vertices[currentCellvertexIndexOffset + currentCellIndex1] + new Vector3(0, -HexMetrics.HeightMultiplier, 0);//corners[firstTriIndices.z];
+			Vector3 borderVertex2 = vertices[currentCellvertexIndexOffset + currentCellIndex2] + new Vector3(0, -HexMetrics.HeightMultiplier, 0); //corners[secondTriIndices.z];
 
 			// Add border vertices to bridge vertices list
 			int borderVertexIndex1 = vertices.Count;
