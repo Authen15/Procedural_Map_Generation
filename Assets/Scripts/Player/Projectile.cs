@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
     public Rigidbody rb;
     // Cinemachine.CinemachineImpulseSource source;
 
-    private CreatureStats _attackerStats;
+    private Creature _attacker;
     private Action<Creature> _onHit;
 
     private void Awake()
@@ -17,9 +17,9 @@ public class Projectile : MonoBehaviour
         rb.centerOfMass = transform.position;
     }
 
-    public void Fire(CreatureStats attackerStats, Action<Creature> onHitCallback)
+    public void Fire(Creature attacker, Action<Creature> onHitCallback)
     {
-        _attackerStats = attackerStats;
+        _attacker = attacker;
         // rb.AddForce(transform.forward * (100 * Random.Range(1.3f, 1.7f)), ForceMode.Impulse);
         rb.AddForce(transform.forward * force, ForceMode.Impulse);
         // source = GetComponent<Cinemachine.CinemachineImpulseSource>();
@@ -41,7 +41,7 @@ public class Projectile : MonoBehaviour
             Creature creature = collision.gameObject.GetComponent<Creature>();
             if (creature != null)
             {
-                creature.OnHit(_attackerStats);
+                creature.OnHit(_attacker);
                 _onHit?.Invoke(creature);
             }
         }

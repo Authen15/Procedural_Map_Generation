@@ -123,6 +123,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &73855257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 73855258}
+  m_Layer: 0
+  m_Name: Effect Registry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &73855258
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73855257}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.027997255, y: 14.15718, z: -3.6686687}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &310629333
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -131,6 +162,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1974410583}
     m_Modifications:
+    - target: {fileID: 1450800610028269263, guid: 284b6baf7e37373468759eab825eabba,
+        type: 3}
+      propertyPath: affinityType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2526680670163448571, guid: 284b6baf7e37373468759eab825eabba,
         type: 3}
       propertyPath: m_Color.b
@@ -1770,6 +1806,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1974410583}
     m_Modifications:
+    - target: {fileID: 1450800610028269263, guid: 284b6baf7e37373468759eab825eabba,
+        type: 3}
+      propertyPath: affinityType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2526680670163448571, guid: 284b6baf7e37373468759eab825eabba,
         type: 3}
       propertyPath: m_Color.b
@@ -2599,6 +2640,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1974410583}
     m_Modifications:
+    - target: {fileID: 1450800610028269263, guid: 284b6baf7e37373468759eab825eabba,
+        type: 3}
+      propertyPath: affinityType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2526680670163448571, guid: 284b6baf7e37373468759eab825eabba,
         type: 3}
       propertyPath: m_Color.a
@@ -2880,7 +2926,7 @@ PrefabInstance:
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitSelfEffects.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
@@ -2892,12 +2938,12 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialEffects.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 140c83f607c1b364c855e93793157db9,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.size
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
@@ -2909,41 +2955,51 @@ PrefabInstance:
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: 01aa15ce4b89f1d4dadc691b6826bde6,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 3e29cb301644e4f4db0f069b0b3a166d,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[2]
       value: 
-      objectReference: {fileID: 11400000, guid: daa0691829aee384ea516562dffb02a2,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: d0645b0d939276945a627846284f0647,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[4]
       value: 
-      objectReference: {fileID: 11400000, guid: a0e5ea7f261a93042b4f21ba87fe22f8,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 1239674129598393422, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
       propertyPath: OnHitTargetEffects.Array.data[5]
       value: 
-      objectReference: {fileID: 11400000, guid: a0e5ea7f261a93042b4f21ba87fe22f8,
+      objectReference: {fileID: 11400000, guid: 623216f1923bb2b4d882b03b014e06c6,
         type: 2}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
         type: 3}
+      propertyPath: AoE.BaseValue
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
       propertyPath: DoT.BaseValue
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
+        type: 3}
+      propertyPath: AuraDamage.BaseValue
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3280149125927109379, guid: 1a4e3202f61aa964abb4a177a938741d,
@@ -3290,3 +3346,4 @@ SceneRoots:
   - {fileID: 1746810740}
   - {fileID: 1197338603}
   - {fileID: 700173162}
+  - {fileID: 73855258}

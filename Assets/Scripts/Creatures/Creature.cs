@@ -16,29 +16,51 @@ public abstract class Creature : MonoBehaviour
         EffectManager = GetComponent<CreatureEffectManager>();
     }
 
-    // When the creature is beeing Hit, take damages and check for any effects 
-    public void OnHit(CreatureStats attacker)
+    public void OnHit(Creature attacker)
     {
-        OnHitDamage(attacker);
+        float damage = 0;
+        damage += GetNeutralDamage(attacker);
+        damage += GetAffinityDamage(attacker);
+
+        TakeDamage(damage);
+        Execute(attacker);
     }
 
-    protected virtual void OnHitDamage(CreatureStats attacker)
+    private float GetAffinityDamage(Creature attacker)
     {
-        // TODO take in care the resistance of the creature
+        float affinityDamage = 0;
 
-        // TODO, apply damage depending on affinity resistance/weakness
+        PlayerAffinityManager affinityManager = attacker.GetComponent<PlayerAffinityManager>();
 
-        
-        float totalDamage = attacker.NeutralDamage.Value + attacker.AshenDamage.Value + attacker.EmberDamage.Value + attacker.FrostDamage.Value + attacker.VerdantDamage.Value;
+        affinityDamage += attacker.Stats.AshenDamage.Value * affinityManager.GetDamageMultiplier(AffinityType.Ashen);
+        affinityDamage += attacker.Stats.EmberDamage.Value * affinityManager.GetDamageMultiplier(AffinityType.Ember);
+        affinityDamage += attacker.Stats.FrostDamage.Value * affinityManager.GetDamageMultiplier(AffinityType.Frost);
+        affinityDamage += attacker.Stats.VerdantDamage.Value * affinityManager.GetDamageMultiplier(AffinityType.Verdant);
 
-        TakeDamage(totalDamage);
+        return affinityDamage;
+    }
+
+    private float GetNeutralDamage(Creature attacker)
+    {
+        float effectiveArmor = Stats.Armor.Value * (1 - attacker.Stats.ArmorPenetration.Value);
+        float damageMultiplier = 50 / (50 + effectiveArmor);
+
+        return damageMultiplier * attacker.Stats.NeutralDamage.Value;
+    }
+
+    private void Execute(Creature attacker)
+    {
+        float healthPercent = CurrentHealth / Stats.MaxHealthPoint.Value;
+        if (attacker.Stats.ExecutionThreshold.Value > healthPercent)
+        {
+            Die();
+        }
     }
 
     public virtual void TakeDamage(float damage)
     {
         CurrentHealth -= damage;
 
-        // TODO add execution threshold
         if (CurrentHealth <= 0)
         {
             Die();

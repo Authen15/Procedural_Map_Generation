@@ -41,7 +41,6 @@ public class EnemyCreature : Creature
             Heal(10);
         }
     }
-
     
     public override void TakeDamage(float damage)
     {
@@ -54,11 +53,6 @@ public class EnemyCreature : Creature
         }
     }
 
-    protected override void OnHitDamage(CreatureStats attacker)
-    {
-        base.OnHitDamage(attacker);
-    }
-
     public override void Heal(float heal)
     {
         base.Heal(heal);
@@ -67,6 +61,8 @@ public class EnemyCreature : Creature
 
     public override void Die()
     {
+        //TODO find a better implementation
+        PlayerAffinityManager.Instance.OnCreatureKilled(this);
         base.Die();
     }
 

@@ -5,7 +5,7 @@ public class AffinityProgressUI : MonoBehaviour
 {
     public Image ProgressBarForeground;
     public AffinityType affinityType;
-    public Text TextLevel;
+    public Text LevelText;
 
     private PlayerAffinity _affinity;
     private Coroutine fillCoroutine;
@@ -14,7 +14,7 @@ public class AffinityProgressUI : MonoBehaviour
     {
         ProgressBarForeground.fillAmount = 0;
 
-        _affinity = PlayerAffinityManager.Instance.GetAffinity(affinityType);
+        _affinity = PlayerAffinityManager.Instance.GetPlayerAffinityByType(affinityType);
 
         _affinity.OnAffinityChanged += UpdateUI;
 
@@ -30,7 +30,7 @@ public class AffinityProgressUI : MonoBehaviour
         // Using PlayerAffinityManager.Instance as it won't be unactive for the coroutine
         fillCoroutine = PlayerAffinityManager.Instance.StartCoroutine(UIAnimationUtils.AnimateFillAmount(ProgressBarForeground, targetFill));
 
-        TextLevel.text = _affinity.CurrentLevel + "/" + AffinityDefinition.MAX_LEVEL;
+        LevelText.text = _affinity.CurrentLevel + "/" + AffinityDefinition.MAX_LEVEL;
     }
 
     // void OnDestroy()

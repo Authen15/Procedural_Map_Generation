@@ -13,7 +13,7 @@ public class RessourceDisplay : MonoBehaviour
     [SerializeField]
     private IEnumerator _fillCoroutine;
 
-    private void Start()
+    private void Awake()
     {
         _mainCamera = Camera.main;
         HealthDisplay.SetActive(false);

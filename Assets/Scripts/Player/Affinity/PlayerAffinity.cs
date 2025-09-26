@@ -7,6 +7,7 @@ public class PlayerAffinity
     [HideInInspector] public Action OnAffinityChanged;
 
     public AffinityDefinition Definition;
+    public AffinityType Opposite;
 
     private CreatureStats _stats;
 
@@ -19,6 +20,8 @@ public class PlayerAffinity
         CurrentXP = 0f;
         CurrentLevel = 0;
         _stats = stats;
+
+        Opposite = definition.Opposite.AffinityType;
     }
 
     public void AddXP(float amount)

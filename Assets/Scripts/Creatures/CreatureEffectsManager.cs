@@ -1,10 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CreatureEffectManager : MonoBehaviour
 {
-
     public List<EffectDefinition> OnHitTargetEffects; // effects that this creature applies to others on hit
     public List<EffectDefinition> OnHitSelfEffects; // effects that this creature applies on itself when hitting others
     public Dictionary<EffectDefinition, RuntimeEffect> CurrentEffects; // effects that are currently affecting the creature
@@ -25,6 +25,7 @@ public class CreatureEffectManager : MonoBehaviour
     {
         ApplyInitialEffects();
         StartCoroutine(TickEffects());
+        AddStatChangeListeners();
     }
 
     private IEnumerator TickEffects()
@@ -81,9 +82,45 @@ public class CreatureEffectManager : MonoBehaviour
             OnHitTargetEffects.Add(effectDefinition);
     }
 
+    public void UnRegisterOnHitTargetEffects(EffectDefinition effectDefinition) {
+        OnHitTargetEffects.Remove(effectDefinition);
+    }
+
     public void RegisterOnHitSelfEffects(EffectDefinition effectDefinition)
     {
         if (!OnHitSelfEffects.Contains(effectDefinition))
             OnHitSelfEffects.Add(effectDefinition);
+    }
+
+    public void UnRegisterOnHitSelfEffects(EffectDefinition effectDefinition) {
+        OnHitSelfEffects.Remove(effectDefinition);
+    }
+
+    private void AddStatChangeListeners()
+    {
+
+        Action<float, EffectDefinition> registerOrUnregister= (f, def) =>
+        {
+            if (f > 0) RegisterOnHitTargetEffects(def);
+            else UnRegisterOnHitTargetEffects(def);
+        };
+
+
+        // On-hit target Effect
+        EffectDefinition def = EffectRegistry.GetEffectDefinition<AoeEffectDefinition>();
+        _self.Stats.AoE.OnValueChanged.AddListener((float f) => registerOrUnregister(f, def));
+
+        def = EffectRegistry.GetEffectDefinition<DotEffectDefinition>();
+        _self.Stats.DoT.OnValueChanged.AddListener((float f) => registerOrUnregister(f, def));
+
+        def = EffectRegistry.GetEffectDefinition<RootEffectDefinition>();
+        _self.Stats.RootChance.OnValueChanged.AddListener((float f) => registerOrUnregister(f, def));
+
+        def = EffectRegistry.GetEffectDefinition<SlowEffectDefinition>();
+        _self.Stats.Slow.OnValueChanged.AddListener((float f) => registerOrUnregister(f, def));
+
+        // On-hit self effect
+        def = EffectRegistry.GetEffectDefinition<AuraEffectDefinition>();
+        _self.Stats.AuraDamage.OnValueChanged.AddListener((float f) => registerOrUnregister(f, def));
     }
 }

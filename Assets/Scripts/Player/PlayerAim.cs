@@ -17,6 +17,7 @@ public class PlayerAim : MonoBehaviour
     public float FireRate = 2;
     private float _lastFireTime = 0;
 
+    private Creature _creature;
     private CreatureStats _playerStats;
 
     private Quaternion _originalArmLocalRotation;
@@ -43,7 +44,9 @@ public class PlayerAim : MonoBehaviour
     public void Awake()
     {
         _originalArmLocalRotation = Arm.localRotation;
-        _playerStats = GetComponent<CreatureStats>();
+
+        _creature = GetComponent<Creature>();
+        _playerStats = _creature.Stats;
     }
 
 
@@ -116,6 +119,6 @@ public class PlayerAim : MonoBehaviour
         GameObject projectile = Instantiate(ProjectilePrefab, FireTransform.position, Quaternion.LookRotation(direction));
 
         Action<Creature> callback = GetComponent<CreatureEffectManager>().ApplyOnHitEffects;
-        projectile.GetComponent<Projectile>().Fire(_playerStats, callback);
+        projectile.GetComponent<Projectile>().Fire(_creature, callback);
     }
 }

@@ -64,8 +64,21 @@ public class PlayerAffinityManager : MonoBehaviour
         }
     }
 
-    public PlayerAffinity GetAffinity(AffinityType type)
+    public PlayerAffinity GetPlayerAffinityByType(AffinityType type)
     {
         return Affinities[type];
+    }
+
+    public float GetDamageMultiplier(AffinityType type)
+    {
+        // level MAX_LEVEL takes 0% damage from this affinity
+        // level MAX_LEVEL in opposite takes 200% damage from this affinity
+
+        PlayerAffinity affinity = GetPlayerAffinityByType(type);
+        PlayerAffinity opposite = GetPlayerAffinityByType(affinity.Opposite);
+
+        float relativeLevel = affinity.CurrentLevel - opposite.CurrentLevel; // from -MAX_LEVEL to MAX_LEVEL to compute resistance
+
+        return (float)(AffinityDefinition.MAX_LEVEL - relativeLevel) / AffinityDefinition.MAX_LEVEL;
     }
 }
