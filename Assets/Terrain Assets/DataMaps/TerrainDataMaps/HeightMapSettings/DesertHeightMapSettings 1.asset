@@ -22,57 +22,31 @@ MonoBehaviour:
   UseFallOff: 0
   FallOffMapSteepness: 1
   FallOffMapOffset: 1
+  Multiplier: 1
   HeightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: -0.0018005371
-      inSlope: 1.3892013
-      outSlope: 1.3892013
+      value: -0.009673238
+      inSlope: 1.2361544
+      outSlope: 1.2361544
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.051366117
+      outWeight: 0.10332123
     - serializedVersion: 3
-      time: 0.0254094
-      value: 0.059765443
-      inSlope: 0.8623343
-      outSlope: 0.8623343
+      time: 0.38627848
+      value: 0.18172708
+      inSlope: 0.37248343
+      outSlope: 0.37248343
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.10472613
-    - serializedVersion: 3
-      time: 0.2543512
-      value: 0.24726787
-      inSlope: 0.48435518
-      outSlope: 0.48435518
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.25977206
-      outWeight: 0.33926496
-    - serializedVersion: 3
-      time: 0.32964957
-      value: 0.3362705
-      inSlope: 1.0544167
-      outSlope: 1.0544167
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.28900933
+      inWeight: 0.10821446
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.38437736
-      value: 0.28013578
-      inSlope: 0.08077226
-      outSlope: 0.08077226
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.40301707
-      value: 0.6701921
+      time: 0.40301704
+      value: 0.42810673
       inSlope: 0.006651792
       outSlope: 0.006651792
       tangentMode: 0
@@ -80,8 +54,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 0.41285115
-      value: 0.28227642
+      time: 0.4120057
+      value: 0.18530205
       inSlope: 0.054319922
       outSlope: 0.054319922
       tangentMode: 0
@@ -89,35 +63,17 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.4348654
-      value: 0.2849106
-      inSlope: 0.6690618
-      outSlope: 0.6690618
+      time: 0.720718
+      value: 0.25572672
+      inSlope: 0.244672
+      outSlope: 0.244672
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.48982912
-    - serializedVersion: 3
-      time: 0.5431393
-      value: 0.34201387
-      inSlope: -0.0185907
-      outSlope: -0.0185907
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.98167545
+      inWeight: 0.10993635
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.71376
-      value: 0.30416262
-      inSlope: 0.06253488
-      outSlope: 0.06253488
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.7401953
-      value: 0.9120918
+      time: 0.7382941
+      value: 0.71518797
       inSlope: 0.12027097
       outSlope: 0.12027097
       tangentMode: 0
@@ -125,8 +81,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 0.76397276
-      value: 0.312728
+      time: 0.75854063
+      value: 0.2642921
       inSlope: 0.053688042
       outSlope: 0.053688042
       tangentMode: 0
@@ -134,23 +90,14 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.89300954
-      value: 0.33443666
+      time: 0.9114096
+      value: 0.27758116
       inSlope: 0.016545974
       outSlope: 0.016545974
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.1161619
       outWeight: 1
-    - serializedVersion: 3
-      time: 0.9010971
-      value: 0.53431547
-      inSlope: 10.517028
-      outSlope: 10.517028
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.050286844
-      outWeight: 0.14547926
     - serializedVersion: 3
       time: 0.951525
       value: 0.9156746

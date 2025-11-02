@@ -14,6 +14,11 @@ public class AxialCoordinates
         return new AxialCoordinates(a.x + b.x, a.z + b.z);
     }
 
+    public static AxialCoordinates operator -(AxialCoordinates a, AxialCoordinates b)
+    {
+        return new AxialCoordinates(a.x - b.x, a.z - b.z);
+    }
+
     public static AxialCoordinates operator *(AxialCoordinates a, int b)
     {
         return new AxialCoordinates(a.x * b, a.z * b);

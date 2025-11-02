@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using static HexGridUtils;
-using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-public class IslandMeshGenerator {
+public class IslandMeshGenerator
+{
 	private static Vector2[] _uvs;
 	private static List<Vector3> _baseVertices; // vertices are the same for each island except for their height
 	private static List<int> _triangles;
@@ -16,50 +16,84 @@ public class IslandMeshGenerator {
 	[HideInInspector]
 	public MeshRenderer MeshRenderer;
 
-	public void GenerateMesh(Island island, MeshFilter meshFilter, MeshRenderer meshRenderer) {
+	public void GenerateMesh(Island island, MeshFilter meshFilter, MeshRenderer meshRenderer)
+	{
 		MeshFilter = meshFilter;
 		MeshFilter.mesh = Mesh = new Mesh();
+		MeshFilter.mesh.name = $"{island} mesh";
 		MeshRenderer = meshRenderer;
 
-		if (_triangles == null && _baseVertices == null){ // store triangles and vertices in a struct as we need them only once
+		if (_triangles == null && _baseVertices == null)
+		{ // store triangles and vertices in a struct as we need them only once
 			float startTime = Time.realtimeSinceStartup;
 			_triangles = new List<int>();
 			_baseVertices = new List<Vector3>(); // * 6 because there are 6 vertices per cell, HexMetrics.IslandRadius*6*6 to duplicate the last ring vertices for island edges triangles
 			HexCellTriangulator.Triangulate(IslandCellIndexDict, _baseVertices, _triangles);
 			Debug.Log("First Mesh Generating time " + (Time.realtimeSinceStartup - startTime).ToString(".0###########"));
 		}
-		
-		// if (_uvs == null ){ // we can reuse UVs for each islands
-		// 	_uvs = new Vector2[HexGridUtils.IslandCellsPositions.Length * 6 + (HexMetrics.IslandRadius*6*6)];
-		// 	GenerateUVs();
-		// }
-		
+
+		if (_uvs == null)
+		{ // we can reuse UVs for each islands
+			_uvs = new Vector2[_baseVertices.Count];
+			GenerateUVs(island);
+		}
+
 		Mesh.vertices = _baseVertices.ToArray();
 		Mesh.triangles = _triangles.ToArray();
-		// Mesh.uv = _uvs;
+		Mesh.normals = CalculateCustomNormals(Mesh.vertices, Mesh.triangles);
+		Mesh.uv = _uvs;
 
 		UpdateMesh(island);
 		ApplyMaterial(island.Biome.BiomeTerrainMaterial, island.Biome.BiomeGrassMaterial);
-		
+
 		// mesh.RecalculateUVDistributionMetrics();
 		// gameObject.AddComponent<MeshCollider>();
 	}
 
-	public void UpdateMesh(Island island){
+	public void UpdateMesh(Island island)
+	{
 		Vector3[] vertices = Mesh.vertices;
 
 		UpdateVerticesHeight(island, vertices);
 
 		Mesh.vertices = vertices;
-		Mesh.RecalculateNormals();
 		Mesh.RecalculateTangents();
 		Mesh.RecalculateBounds();
 	}
 
-	private void ApplyMaterial(Material terrainMaterial, Material grassMaterial = null) {
-		if (grassMaterial != null) {
+	// calculate vertex normals based on adjacent triangles normals not weighted
+	Vector3[] CalculateCustomNormals(Vector3[] vertices, int[] triangles)
+	{
+		Vector3[] normals = new Vector3[vertices.Length];
+		for (int i = 0; i < triangles.Length; i += 3)
+		{
+			Vector3 v0 = vertices[triangles[i]];
+			Vector3 v1 = vertices[triangles[i + 1]];
+			Vector3 v2 = vertices[triangles[i + 2]];
+
+			Vector3 normal = Vector3.Cross(v1 - v0, v2 - v0).normalized;
+
+			normals[triangles[i]] += normal;
+			normals[triangles[i + 1]] += normal;
+			normals[triangles[i + 2]] += normal;
+		}
+
+		for (int i = 0; i < normals.Length; i++)
+		{
+			normals[i].Normalize();
+		}
+
+		return normals;
+	}
+
+	private void ApplyMaterial(Material terrainMaterial, Material grassMaterial = null)
+	{
+		if (grassMaterial != null)
+		{
 			MeshRenderer.sharedMaterials = new Material[] { terrainMaterial, grassMaterial };
-		} else {
+		}
+		else
+		{
 			MeshRenderer.sharedMaterial = terrainMaterial;
 		}
 		SetTerrainMaterialProperties(terrainMaterial);
@@ -70,54 +104,42 @@ public class IslandMeshGenerator {
 		material.SetFloat("_MinHeight", 0);
 		material.SetFloat("_MaxHeight", HexMetrics.HeightMultiplier);
 	}
-	
-	private static void UpdateVerticesHeight(Island island, Vector3[] vertices){
-		for (int cellIndex = 0; cellIndex < HexGridUtils.IslandCellsPositions.Length; cellIndex++){
+
+	private static void UpdateVerticesHeight(Island island, Vector3[] vertices)
+	{
+		for (int cellIndex = 0; cellIndex < HexGridUtils.IslandCellsPositions.Length; cellIndex++)
+		{
 			int vertexIndex = cellIndex * 6; // 6 vertices per cell
 			float height = island.GetCellHeightMapValue(IslandCellsPositions[cellIndex]) * HexMetrics.HeightMultiplier;
-			
-			for (int i = 0; i < 6; i++) { // for each vertex update the height
+
+			for (int i = 0; i < 6; i++)
+			{ // for each vertex update the height
 				vertices[vertexIndex + i].y = height;
 			}
 		}
 	}
 
-	// private static void GenerateUVs(){
-		// Vector2[] uvCorners = HexMetrics.uvCorners;
+	private static void GenerateUVs(Island island)
+	{
 
-		// Vector2 maxCellPos = HexGridUtils.CellToUV(new Vector2(HexMetrics.IslandSize / 1.5f, HexMetrics.IslandSize / 1.5f));
-		// // float maxUVX = float.MinValue;
-		// // float maxUVY = float.MinValue;
-		
-		// for (int cellIndex = 0; cellIndex < HexGridUtils.IslandCellsPositions.Length; cellIndex++){
-		// 	int vertexIndex = cellIndex * 6;
-		// 	Vector2 cellPos = HexGridUtils.CellToUV(HexGridUtils.IslandCellsPositions[cellIndex]);
+		Vector3 localMaxPos = CellToLocal(new AxialCoordinates(HexMetrics.IslandSize, HexMetrics.IslandSize), island.coord);
+		AxialCoordinates offset = new AxialCoordinates(HexMetrics.IslandSize / 2, HexMetrics.IslandSize / 2); // center is 0,0 so we offset coords
 
-		// 	for (int i = 0; i < 6; i++) {
-		// 		Vector2 uv = uvCorners[i];
-		// 		uv /= maxCellPos.x;
-		// 		Vector2 cellPosNormalized = cellPos / maxCellPos.x;
-		// 		uv += cellPosNormalized;
-		// 		uv += new Vector2(0.5f, 0.5f);
-		// 		_uvs[vertexIndex + i] = uv;
-		// 		if(uv.x > 1f || uv.y > 1) Debug.Log("UV are incorrect > 1 " + uv);
-				
+		for (int cellIndex = 0; cellIndex < IslandCellsPositions.Length; cellIndex++)
+		{
+			int vertexIndex = cellIndex * 6;
+			AxialCoordinates offsettedCoord = IslandCellsPositions[cellIndex] + offset;
+			Vector3 cellLocalPos = CellToLocal(offsettedCoord, island.coord);
+			Vector2 cellUvPos = new Vector2(cellLocalPos.x / localMaxPos.x, cellLocalPos.z / localMaxPos.z);
 
-		// 		// if(uv.x > maxUVX) maxUVX = uv.x;
-		// 		// if(uv.y > maxUVY) maxUVY = uv.y;
-		// 	}
+			_uvs[vertexIndex] = cellUvPos;
+			_uvs[vertexIndex + 1] = cellUvPos;
+			_uvs[vertexIndex + 2] = cellUvPos;
+			_uvs[vertexIndex + 3] = cellUvPos;
+			_uvs[vertexIndex + 4] = cellUvPos;
+			_uvs[vertexIndex + 5] = cellUvPos;
 
-		// 	// Debug.Log(
-		// 	// 	// "uv " + cellIndex + " " + cellGridPos + " " + (cellGridPos + posOffset) + " are \n"
-		// 	// 	"uv " + cellIndex + " are \n"
-		// 	// 	+ _hex_uvs[vertexIndex].ToString(".0###########") + "\n"
-		// 	// 	+ _hex_uvs[vertexIndex+1].ToString(".0###########") + "\n"
-		// 	// 	+ _hex_uvs[vertexIndex+2].ToString(".0###########") + "\n"
-		// 	// 	+ _hex_uvs[vertexIndex+3].ToString(".0###########") + "\n"
-		// 	// 	+ _hex_uvs[vertexIndex+4].ToString(".0###########") + "\n"
-		// 	// 	+ _hex_uvs[vertexIndex+5].ToString(".0###########")
-		// 	// );
-		// }
-		// Debug.Log("maxUVX " + maxUVX + " maxUVY" + maxUVY);
-	// }
+			if (cellUvPos.x > 1 || cellUvPos.y > 1 || cellUvPos.x < 0 || cellUvPos.y < 0) Debug.Log($"Error at index {vertexIndex} uv is out of bounds values (0,1) {cellUvPos}");
+		}
+	}
 }

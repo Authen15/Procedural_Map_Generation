@@ -27,6 +27,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ACTIVATENOISE
+  - _CRACKS
   - _NBLAYERS_7_
   - _TEXTURETYPE_CALCULATED_UVS
   m_InvalidKeywords:
@@ -132,12 +133,12 @@ Material:
     - _BIOME: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BlendPower1: 0.004
-    - _BlendPower2: 0.093
-    - _BlendPower3: 0.036
+    - _BlendPower1: 0.015
+    - _BlendPower2: 0.063
+    - _BlendPower3: 0.114
     - _BlendPower4: 0.061
     - _BlendPower5: 0
-    - _BlendPower6: 0.022
+    - _BlendPower6: 0.015
     - _BorealBlendPower: 0.05
     - _BorealThreshold2: 0.6
     - _BorealThreshold3: 0.73
@@ -146,9 +147,19 @@ Material:
     - _BorealThreshold6: 1
     - _BorealThreshold_1: 0.45
     - _BumpScale: 1
+    - _CRACKS: 1
     - _ChunkSize: 64
+    - _ChunkTransitionSmoothness: -0.06
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _CrackImperfectionSize: 0.85
+    - _CrackMaskRoughness: 0.45
+    - _CrackMaskSize: 0.134
+    - _CrackMaskSmoothness: 0.4
+    - _CrackThickness: 0.118
+    - _CracksCellSize: 0.88
+    - _CracksChunkSize: 0.0588
+    - _CracksHeight: 0.039
     - _Cull: 2
     - _Cutoff: 0.5
     - _DesertBlendPower: 0.05
@@ -170,6 +181,7 @@ Material:
     - _IceBlendPower: 0.05
     - _IceThreshold1: 0.7
     - _IceThreshold2: 0.95
+    - _ImperfectionSmoothness: 0.667
     - _InnerRadius: 0.8660254
     - _IslandSize: 117
     - _JungleBlendPower: 0.05
@@ -178,7 +190,7 @@ Material:
     - _JungleThreshold3: 0.46
     - _JungleThreshold4: 0.65
     - _MapSIze: 0
-    - _MaxHeight: 6
+    - _MaxHeight: 10
     - _MesaBlendPower: 0.05
     - _MesaThreshold1: 0.3
     - _MesaThreshold2: 0.36
@@ -189,15 +201,17 @@ Material:
     - _Metallic: 0
     - _MinHeight: 0
     - _NBLAYERS: 5
-    - _NoiseSize: 0
-    - _NoiseSmoothness: 2.18
+    - _NoiseSize: 3.3
+    - _NoiseSmoothness: 0.6
     - _NoiseThreshold: 0.31
+    - _NormalStr: -0.1
     - _OcclusionStrength: 1
     - _OuterRadius: 1
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _SimplexSize: 0.9
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -206,20 +220,28 @@ Material:
     - _Surface: 0
     - _TEXTURETYPE: 2
     - _TextureBrightness: 15.49
-    - _Threshold1: 0.247
-    - _Threshold2: 0.402
-    - _Threshold3: 0.625
-    - _Threshold4: 0.689
+    - _Threshold1: 0.022
+    - _Threshold2: 0.127
+    - _Threshold3: 0.134
+    - _Threshold4: 0.525
     - _Threshold5: 0.781
-    - _Threshold6: 0.99
+    - _Threshold6: 0.978
     - _Tiling: 8
     - _ToundraBlendPower: 0.05
     - _ToundraThreshold1: 0.07
     - _ToundraThreshold2: 0.24
     - _ToundraThreshold3: 0.49
     - _ToundraThreshold4: 0.84
+    - _VerticalTiling: 0
+    - _VoronoiSize: 0.3
+    - _Voronoie2Size: 0.0444
     - _WorkflowMode: 1
     - _ZWrite: 1
+    - _normalStr: 0.1
+    - _simpleNoiseSize: 0.97
+    - _simplexSmooth: 0.038
+    - _smooth1: 0.95
+    - _smooth2: -0.011
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BorealLayer1: {r: 0.1529262, g: 0.5271153, b: 0.01938236, a: 1}
@@ -236,6 +258,8 @@ Material:
     - _BorealTemperatureThreshold_1: {r: 0, g: 0, b: 0, a: 0}
     - _BorealTemperatureThreshold_3: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CrackColor: {r: 0.2924528, g: 0.035448827, b: 0, a: 1}
+    - _CrackMaskSmoothness: {r: 0, g: 0, b: 0, a: 0}
     - _DesertLayer1: {r: 0.9646866, g: 0.6653875, b: 0.1441285, a: 1}
     - _DesertLayer2: {r: 0.49693304, g: 0.26635566, b: 0, a: 1}
     - _DesertLayer3: {r: 0.16202943, g: 0.23839766, b: 0.116970696, a: 1}

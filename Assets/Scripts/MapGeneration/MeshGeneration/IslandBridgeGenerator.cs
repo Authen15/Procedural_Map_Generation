@@ -59,7 +59,7 @@ public class IslandBridgeGenerator {
 		meshRenderer.sharedMaterial = bridgeMaterial;
 		MeshFilter meshFilter = _bridgeTemplate.AddComponent<MeshFilter>();
 
-		HexCellTriangulator.Triangulate(_bridgeCellsIndexDict, _bridgeVertices, _bridgeTriangles);
+		HexCellTriangulator.Triangulate(_bridgeCellsIndexDict, _bridgeVertices, _bridgeTriangles, HexMetrics.HeightMultiplier / 4f);
 		GenerateBridgeUVs();
 
 		Mesh mesh = new Mesh();

@@ -230,10 +230,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -347.60009765625,
-            "y": -30.60009765625,
+            "x": -348.0,
+            "y": -33.0,
             "width": 132.0,
-            "height": 93.60009765625
+            "height": 94.0
         }
     },
     "m_Slots": [
@@ -273,7 +273,7 @@
     },
     "m_DefaultValue": {
         "x": 0.0,
-        "y": 0.0,
+        "y": 1.0,
         "z": 0.0
     },
     "m_Labels": []

@@ -36,7 +36,7 @@ public static class HexGridUtils
 	private static AxialCoordinates[] GenerateGridPositions(int size, bool populateDict = false)
 	{
 		int radius = size / 2;
-		//Total cell number is can be calcultated using the radius
+		//Total cell number is calcultated using the radius
 		//first the center cell + 6 cells around it
 		//then 12(R=2 * 6) cells to make another ring around, then 18(R=3 * 6) ...
 		// SUM(1->R : R) = R(R+1)/2
@@ -83,16 +83,9 @@ public static class HexGridUtils
 		return neighbours;
 	}
 
-	public static Vector2 CellToUV(AxialCoordinates cellCoordinates) // must be axial coordinates but we keep vector2 to be able to use float
+	public static Vector3 CellToLocal(AxialCoordinates cellCoordinates, AxialCoordinates islandCoord)
 	{
-		float outerRadius = HexMetrics.OuterRadius;
-		float x = cellCoordinates.x;
-		float y = cellCoordinates.z;
-		Vector2 position;
-
-		position.x = x * (outerRadius * 2f) + y * outerRadius;
-		position.y = y * (outerRadius * 2f);
-		return position;
+		return CellToWorld(cellCoordinates - islandCoord);
 	}
 
 	public static Vector3 CellToWorld(AxialCoordinates cellCoordinates)

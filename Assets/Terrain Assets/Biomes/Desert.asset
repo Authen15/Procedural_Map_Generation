@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BiomeTerrainMaterial: {fileID: 2100000, guid: 9ff11927816a5ab478b42ef15e12f5a9,
     type: 2}
-  BiomeGrassMaterial: {fileID: 2100000, guid: 634f833d1643bef47857b4ae716fd133, type: 2}
+  BiomeGrassMaterial: {fileID: 0}
   HeightMapSettings: {fileID: 11400000, guid: df1b2cf6cd3b5314db8b421d5691d049, type: 2}
   CreaturePrefabs:
   - {fileID: 836330753491645796, guid: d7c29fae4918a9849a6a571b16201614, type: 3}

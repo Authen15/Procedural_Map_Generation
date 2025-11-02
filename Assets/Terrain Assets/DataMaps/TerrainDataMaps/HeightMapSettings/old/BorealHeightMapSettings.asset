@@ -13,55 +13,46 @@ MonoBehaviour:
   m_Name: BorealHeightMapSettings
   m_EditorClassIdentifier: 
   NoiseSettings:
-    scale: 71.2
-    octaves: 8
-    persistance: 0.75
-    lacunarity: 1.6
-    seed: 333
+    scale: 96.4
+    octaves: 4
+    persistance: 0.964
+    lacunarity: 2
+    seed: 691
     offset: {x: 0, y: 0}
   UseFallOff: 0
-  FallOffMapSteepness: 0.84
-  FallOffMapOffset: 191.7
-  Multiplier: 1
+  FallOffMapSteepness: 1
+  FallOffMapOffset: 8
+  Multiplier: 0.32
   HeightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0014343262
+      time: 0
       value: 0
-      inSlope: 0.52095544
-      outSlope: 0.52095544
-      tangentMode: 0
+      inSlope: 0.7812271
+      outSlope: 0.7812271
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.48658663
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.13409385
-      value: 0.09946765
-      inSlope: 0.4622443
-      outSlope: 0.4622443
+      time: 0.35925284
+      value: 0.28065807
+      inSlope: 1.3205289
+      outSlope: 1.3205289
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.1025132
+      outWeight: 0.5371818
     - serializedVersion: 3
-      time: 0.7866353
-      value: 0.35560122
-      inSlope: 0.419788
-      outSlope: 0.419788
+      time: 0.50172687
+      value: 0.5033901
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.17933379
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1.4962822
-      outSlope: 1.4962822
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.16249102
-      outWeight: 0
+      inWeight: 0.06452223
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

@@ -10,57 +10,47 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9bc37904921038f47b2db1f62d1e0c74, type: 3}
-  m_Name: BorealHeightMapSettings
+  m_Name: JungleHeightMapSettings 1
   m_EditorClassIdentifier: 
   NoiseSettings:
-    scale: 71.2
-    octaves: 8
-    persistance: 0.75
-    lacunarity: 1.6
-    seed: 333
+    scale: 150
+    octaves: 5
+    persistance: 0.6
+    lacunarity: 2.2
+    seed: 114
     offset: {x: 0, y: 0}
   UseFallOff: 0
-  FallOffMapSteepness: 0.84
-  FallOffMapOffset: 191.7
-  Multiplier: 1
+  FallOffMapSteepness: 3
+  FallOffMapOffset: 2.2
   HeightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0014343262
+      time: 0.0014343262
       value: 0
-      inSlope: 0.52095544
-      outSlope: 0.52095544
+      inSlope: 1.2378668
+      outSlope: 1.2378668
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.48658663
+      outWeight: 0.06599555
     - serializedVersion: 3
-      time: 0.13409385
-      value: 0.09946765
-      inSlope: 0.4622443
-      outSlope: 0.4622443
+      time: 0.5502047
+      value: 0.4099389
+      inSlope: 0.80523664
+      outSlope: 0.80523664
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.1025132
-    - serializedVersion: 3
-      time: 0.7866353
-      value: 0.35560122
-      inSlope: 0.419788
-      outSlope: 0.419788
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.17933379
+      inWeight: 0.13325676
+      outWeight: 0.13474578
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1.4962822
-      outSlope: 1.4962822
+      inSlope: 3.1221068
+      outSlope: 3.1221068
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.16249102
+      inWeight: 0.035868354
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
