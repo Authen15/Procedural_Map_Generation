@@ -133,12 +133,12 @@ Material:
     - _BIOME: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BlendPower1: 0.035
-    - _BlendPower2: 0.029
-    - _BlendPower3: 0.042
-    - _BlendPower4: 0.034
-    - _BlendPower5: 0.04
-    - _BlendPower6: 0.04
+    - _BlendPower1: 0.029
+    - _BlendPower2: 0.04
+    - _BlendPower3: 0
+    - _BlendPower4: 0.04
+    - _BlendPower5: 0.05
+    - _BlendPower6: 0.06
     - _BorealBlendPower: 0.05
     - _BorealThreshold2: 0.6
     - _BorealThreshold3: 0.73
@@ -189,7 +189,7 @@ Material:
     - _JungleThreshold3: 0.46
     - _JungleThreshold4: 0.65
     - _MapSIze: 0
-    - _MaxHeight: 10
+    - _MaxHeight: 8
     - _MesaBlendPower: 0.05
     - _MesaThreshold1: 0.3
     - _MesaThreshold2: 0.36
@@ -200,8 +200,8 @@ Material:
     - _Metallic: 0
     - _MinHeight: 0
     - _NBLAYERS: 5
-    - _NoiseSize: 14.6
-    - _NoiseSmoothness: 1.11
+    - _NoiseSize: 12.1
+    - _NoiseSmoothness: 2.24
     - _NoiseThreshold: 0
     - _NormalStr: -0.1
     - _OcclusionStrength: 1
@@ -219,13 +219,13 @@ Material:
     - _Surface: 0
     - _TEXTURETYPE: 2
     - _TextureBrightness: 12
-    - _Threshold1: 0.001
-    - _Threshold2: 0.01
-    - _Threshold3: 0.07
-    - _Threshold4: 0.14
-    - _Threshold5: 0.22
-    - _Threshold6: 0.52
-    - _Tiling: 44.37
+    - _Threshold1: 0
+    - _Threshold2: 0.5
+    - _Threshold3: 2.5
+    - _Threshold4: 0.8
+    - _Threshold5: 1.6
+    - _Threshold6: 6.9
+    - _Tiling: 13.9
     - _ToundraBlendPower: 0.05
     - _ToundraThreshold1: 0.07
     - _ToundraThreshold2: 0.24

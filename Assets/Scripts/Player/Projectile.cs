@@ -20,10 +20,7 @@ public class Projectile : MonoBehaviour
     public void Fire(Creature attacker, Action<Creature> onHitCallback)
     {
         _attacker = attacker;
-        // rb.AddForce(transform.forward * (100 * Random.Range(1.3f, 1.7f)), ForceMode.Impulse);
         rb.AddForce(transform.forward * force, ForceMode.Impulse);
-        // source = GetComponent<Cinemachine.CinemachineImpulseSource>();
-        // source.GenerateImpulse(Camera.main.transform.forward);
         _onHit = onHitCallback;
     }
 

@@ -2649,7 +2649,7 @@
     "m_Title": "Get uvs from object pos",
     "m_Position": {
         "x": -2294.0,
-        "y": 275.0
+        "y": 274.9999694824219
     }
 }
 
@@ -4220,8 +4220,8 @@
     "m_ObjectId": "f93cfcb52f5c49f0b854b84fbb3a17ac",
     "m_Title": "Using Object UV",
     "m_Position": {
-        "x": 41.00016784667969,
-        "y": -440.9999694824219
+        "x": 41.000003814697269,
+        "y": -440.9999084472656
     }
 }
 

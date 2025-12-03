@@ -44,7 +44,7 @@ public class IslandMeshGenerator
 		Mesh.uv = _uvs;
 
 		UpdateMesh(island);
-		ApplyMaterial(island.Biome.BiomeTerrainMaterial, island.Biome.BiomeGrassMaterial);
+		ApplyMaterial(island);
 
 		// mesh.RecalculateUVDistributionMetrics();
 		// gameObject.AddComponent<MeshCollider>();
@@ -86,8 +86,11 @@ public class IslandMeshGenerator
 		return normals;
 	}
 
-	private void ApplyMaterial(Material terrainMaterial, Material grassMaterial = null)
+	private void ApplyMaterial(Island island)
 	{
+		Material terrainMaterial = island.Biome.BiomeTerrainMaterial;
+		Material grassMaterial = island.Biome.BiomeGrassMaterial;
+
 		if (grassMaterial != null)
 		{
 			MeshRenderer.sharedMaterials = new Material[] { terrainMaterial, grassMaterial };

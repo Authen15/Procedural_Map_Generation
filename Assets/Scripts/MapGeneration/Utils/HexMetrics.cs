@@ -5,7 +5,7 @@ public static class HexMetrics {
 	public const int MapSize = 3; // diameter of the map in islands
 	public const int IslandSize = 85; // diameter of an island in cells, must be odd number, max size = 117
 	public const int IslandRadius = IslandSize / 2;
-	public const float HeightMultiplier = 10f; //multiply the y scale of the hex by this value
+	public const float HeightMultiplier = 8f; //multiply the y scale of the hex by this value
 	public const float OuterRadius = .8f; // outer radius of hexcells
 	public const float InnerRadius = OuterRadius * 0.866025404f; // inner radius of hexcells
 

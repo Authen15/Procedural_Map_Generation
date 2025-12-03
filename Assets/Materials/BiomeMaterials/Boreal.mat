@@ -133,12 +133,12 @@ Material:
     - _BIOME: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
-    - _BlendPower1: 0.015
-    - _BlendPower2: 0.063
-    - _BlendPower3: 0.114
-    - _BlendPower4: 0.061
-    - _BlendPower5: 0
-    - _BlendPower6: 0.015
+    - _BlendPower1: 0.038
+    - _BlendPower2: 0.102
+    - _BlendPower3: 0.064
+    - _BlendPower4: 0.086
+    - _BlendPower5: 0.32
+    - _BlendPower6: 0.19
     - _BorealBlendPower: 0.05
     - _BorealThreshold2: 0.6
     - _BorealThreshold3: 0.73
@@ -152,11 +152,11 @@ Material:
     - _ChunkTransitionSmoothness: -0.06
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _CrackImperfectionSize: 0.85
+    - _CrackImperfectionSize: 0.61
     - _CrackMaskRoughness: 0.45
     - _CrackMaskSize: 0.134
     - _CrackMaskSmoothness: 0.4
-    - _CrackThickness: 0.118
+    - _CrackThickness: 0.043
     - _CracksCellSize: 0.88
     - _CracksChunkSize: 0.0588
     - _CracksHeight: 0.039
@@ -181,7 +181,7 @@ Material:
     - _IceBlendPower: 0.05
     - _IceThreshold1: 0.7
     - _IceThreshold2: 0.95
-    - _ImperfectionSmoothness: 0.667
+    - _ImperfectionSmoothness: 0.72
     - _InnerRadius: 0.8660254
     - _IslandSize: 117
     - _JungleBlendPower: 0.05
@@ -190,7 +190,7 @@ Material:
     - _JungleThreshold3: 0.46
     - _JungleThreshold4: 0.65
     - _MapSIze: 0
-    - _MaxHeight: 10
+    - _MaxHeight: 8
     - _MesaBlendPower: 0.05
     - _MesaThreshold1: 0.3
     - _MesaThreshold2: 0.36
@@ -202,7 +202,7 @@ Material:
     - _MinHeight: 0
     - _NBLAYERS: 5
     - _NoiseSize: 3.3
-    - _NoiseSmoothness: 0.6
+    - _NoiseSmoothness: 0.86
     - _NoiseThreshold: 0.31
     - _NormalStr: -0.1
     - _OcclusionStrength: 1
@@ -220,12 +220,12 @@ Material:
     - _Surface: 0
     - _TEXTURETYPE: 2
     - _TextureBrightness: 15.49
-    - _Threshold1: 0.022
-    - _Threshold2: 0.127
-    - _Threshold3: 0.134
-    - _Threshold4: 0.525
-    - _Threshold5: 0.781
-    - _Threshold6: 0.978
+    - _Threshold1: 0
+    - _Threshold2: 0.3
+    - _Threshold3: 1
+    - _Threshold4: 4.4
+    - _Threshold5: 8
+    - _Threshold6: 8
     - _Tiling: 8
     - _ToundraBlendPower: 0.05
     - _ToundraThreshold1: 0.07
@@ -281,13 +281,13 @@ Material:
     - _JungleLayer5: {r: 0.057805434, g: 0.1559265, b: 0.10702311, a: 1}
     - _JungleMoistureThreshold: {r: 0, g: 0, b: 0, a: 0}
     - _JungleTemperatureThreshold: {r: 0, g: 0, b: 0, a: 0}
-    - _Layer1: {r: 0.7803922, g: 0.59607846, b: 0.27450982, a: 1}
+    - _Layer1: {r: 0.8679245, g: 0.6315564, b: 0.2251691, a: 1}
     - _Layer2: {r: 0.21568629, g: 0.40000004, b: 0.058823533, a: 1}
     - _Layer3: {r: 0.14117648, g: 0.29803923, b: 0.058823533, a: 1}
     - _Layer4: {r: 0.07450981, g: 0.19607845, b: 0.027450982, a: 1}
     - _Layer5: {r: 0.38431376, g: 0.427451, b: 0.35686275, a: 1}
     - _Layer6: {r: 0.32941175, g: 0.33725488, b: 0.31764704, a: 1}
-    - _Layer7: {r: 0.8509805, g: 0.8509805, b: 0.8509805, a: 1}
+    - _Layer7: {r: 0.4528302, g: 0.26977357, b: 0.06430187, a: 1}
     - _MesaLayer1: {r: 1, g: 0.70110214, b: 0.21952623, a: 1}
     - _MesaLayer2: {r: 0.9646866, g: 0.2581829, b: 0.05780543, a: 1}
     - _MesaLayer3: {r: 0.6307573, g: 0.09989874, b: 0.01680738, a: 1}

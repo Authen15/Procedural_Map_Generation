@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerAim : MonoBehaviour
 {
-    public GameObject StandardCamera;
-    public GameObject AimCamera;
-    public GameObject AimReticle;
-
     public GameObject ProjectilePrefab;
 
     public Transform Arm;
@@ -20,20 +15,12 @@ public class PlayerAim : MonoBehaviour
     private Creature _creature;
     private CreatureStats _playerStats;
 
-    private Quaternion _originalArmLocalRotation;
-    private float _aimUpAxis;
-    private bool _isAiming;
+    private float _lookUpAxis;
     private bool _isAttacking;
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        _aimUpAxis = context.ReadValue<Vector2>().y;
-    }
-
-    public void OnAim(InputAction.CallbackContext context)
-    {
-        _isAiming = context.ReadValue<float>() > 0;
-        ToggleCrosshair();
+        _lookUpAxis = context.ReadValue<Vector2>().y;
     }
 
     public void OnAttack(InputAction.CallbackContext context)
@@ -43,82 +30,77 @@ public class PlayerAim : MonoBehaviour
 
     public void Awake()
     {
-        _originalArmLocalRotation = Arm.localRotation;
-
         _creature = GetComponent<Creature>();
         _playerStats = _creature.Stats;
     }
 
-
     public void Update()
     {
-        // If pressed, rotate arm up to player's forward position; if released, reset to original local rotation
-        if (_isAiming)
+        Arm.up = transform.forward;
+        Arm.localRotation *= Quaternion.AngleAxis(_lookUpAxis, Vector3.right);
+
+        if (_isAttacking)
         {
-            Arm.up = transform.forward;
-            // Arm.Rotate(Arm.right, _aimUpAxis); // Adjust rotation based on _aimUpAxis
-            Arm.localRotation *= Quaternion.AngleAxis(_aimUpAxis * 1f, Vector3.right);
-
-            if (!AimCamera.activeInHierarchy)
+            if ((Time.time - _lastFireTime) > (1f / _playerStats.AttackSpeed.Value))
             {
-                StandardCamera.SetActive(false);
-                AimCamera.SetActive(true);
-
-                //Allow time for the camera to blend before enabling the UI
-                StartCoroutine(ToggleCrosshair());
-            }
-
-            if (_isAttacking)
-            {
-                if ((Time.time - _lastFireTime) > (1f / _playerStats.AttackSpeed.Value)) {
-                    Fire();
-                    _lastFireTime = Time.time;
-                }
-            }
-        }
-        else
-        {
-            Arm.localRotation = _originalArmLocalRotation;
-
-            if (!StandardCamera.activeInHierarchy)
-            {
-                StandardCamera.SetActive(true);
-                AimCamera.SetActive(false);
-                AimReticle.SetActive(false);
+                Fire();
+                _lastFireTime = Time.time;
             }
         }
     }
 
-
-
-    IEnumerator ToggleCrosshair()
+    public Vector3 GetAimingPoint()
     {
-        yield return new WaitForSeconds(0.25f);
-        AimReticle.SetActive(enabled);
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+        Ray ray = Camera.main.ScreenPointToRay(mousePos);
+
+        // aim at FireTransform point height
+        Plane groundPlane = new Plane(Vector3.up, FireTransform.position);
+
+        if (groundPlane.Raycast(ray, out float enter))
+        {
+            return ray.GetPoint(enter);
+        }
+
+        return Vector3.zero; // we shouldn't get there as the ray whould always hit the plane
     }
-
-
 
     void Fire()
     {
-        Camera camera = Camera.main;
-        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Vector3 targetPoint;
+        Vector3 firePoint = GetAimingPoint();
+        Vector3 fireDir = (firePoint - FireTransform.position).normalized;
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            targetPoint = hit.point;
-        }
-        else
-        {
-            targetPoint = ray.origin + ray.direction * 1000f; // une grande distance si rien n'est touché
-        }
-
-        Vector3 direction = (targetPoint - FireTransform.position).normalized;
-
-        GameObject projectile = Instantiate(ProjectilePrefab, FireTransform.position, Quaternion.LookRotation(direction));
+        GameObject projectile = Instantiate(ProjectilePrefab, FireTransform.position, Quaternion.LookRotation(fireDir));
 
         Action<Creature> callback = GetComponent<CreatureEffectManager>().ApplyOnHitEffects;
         projectile.GetComponent<Projectile>().Fire(_creature, callback);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(FireTransform.position, GetAimingPoint());
+        Gizmos.DrawSphere(GetAimingPoint(), 0.1f);
+
+
+        // // #### Draw the plane at aiming height ####
+        // float size = 10f;
+
+        // Vector3 center = FireTransform.position;
+
+        // // Draw the plane
+        // Vector3 p0 = center + new Vector3(-size, 0, -size);
+        // Vector3 p1 = center + new Vector3(size, 0, -size);
+        // Vector3 p2 = center + new Vector3(size, 0, size);
+        // Vector3 p3 = center + new Vector3(-size, 0, size);
+
+        // Gizmos.DrawLine(p0, p1);
+        // Gizmos.DrawLine(p1, p2);
+        // Gizmos.DrawLine(p2, p3);
+        // Gizmos.DrawLine(p3, p0);
+
+        // // draw a cross in the middle
+        // Gizmos.DrawLine(center + Vector3.forward * size, center - Vector3.forward * size);
+        // Gizmos.DrawLine(center + Vector3.right * size, center - Vector3.right * size);
     }
 }

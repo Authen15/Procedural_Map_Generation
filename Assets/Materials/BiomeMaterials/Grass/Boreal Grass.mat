@@ -126,8 +126,8 @@ Material:
     - _BladeForward: 0.38
     - _BladeHeight: 0.25
     - _BladeHeightDelta: 0.05
-    - _BladeHeightMax: 0.712
-    - _BladeHeightMin: 0.522
+    - _BladeHeightMax: 0.82
+    - _BladeHeightMin: 0
     - _BladeSegments: 5
     - _BladeWidth: 0.015
     - _BladeWidthDelta: 0.02
@@ -154,8 +154,8 @@ Material:
     - _GrassFalloffSpan: 0.364
     - _GrassHeightMultiplier: 6
     - _GrassHeightThreshold: 0.035
-    - _GrassMaxHeightThreshold: 0.343
-    - _GrassMinHeightThreshold: 0.071
+    - _GrassMaxHeightThreshold: 0.38
+    - _GrassMinHeightThreshold: 0.17
     - _GrassThreshold: 0.158
     - _INVERSE_NOISE: 0
     - _INVERT_NOISE: 1

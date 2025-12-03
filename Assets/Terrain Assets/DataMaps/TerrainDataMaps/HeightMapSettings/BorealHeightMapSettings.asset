@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BorealHeightMapSettings
   m_EditorClassIdentifier: 
   NoiseSettings:
-    scale: 71.2
-    octaves: 8
+    scale: 40
+    octaves: 6
     persistance: 0.75
     lacunarity: 1.6
     seed: 333
@@ -27,41 +27,77 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0014343262
+      time: 0.0010070801
       value: 0
-      inSlope: 0.52095544
-      outSlope: 0.52095544
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.48658663
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.13409385
-      value: 0.09946765
-      inSlope: 0.4622443
-      outSlope: 0.4622443
+      time: 0.2
+      value: 0
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.1025132
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.7866353
-      value: 0.35560122
-      inSlope: 0.419788
-      outSlope: 0.419788
+      time: 0.35
+      value: 0.33
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.17933379
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.5
+      value: 0.33
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.65
+      value: 0.66
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.85
+      value: 0.66
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.4205799
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.851
+      value: 2
+      inSlope: 7.975426
+      outSlope: 7.975426
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.05783245
+      outWeight: 0.18005294
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 1.4962822
-      outSlope: 1.4962822
+      value: 2.5
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.16249102
-      outWeight: 0
+      inWeight: 0.06483453
+      outWeight: 0.065151595
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

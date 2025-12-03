@@ -90,7 +90,10 @@ public static class NoiseGenerator
                 rawNoise *= heightMapSettings.Multiplier;
                 // rawNoise = Mathf.Pow(rawNoise, 3);
 
-                float finalValue = heightCurve_threadsafe.Evaluate(rawNoise);
+                rawNoise = heightCurve_threadsafe.Evaluate(rawNoise);
+
+                // remap between 0 and 1
+                rawNoise /= heightMapSettings.GetMaximumHeight();
 
                 // if (heightMapSettings.UseFallOff)
                 // {
@@ -100,9 +103,9 @@ public static class NoiseGenerator
                 // finalValue = Mathf.Clamp(finalValue, 0, 1);
 
                 // UpdateCacheValues(finalValue);
-                finalValue = NoiseUtils.RoundToNearestHeightStep(finalValue, HexMetrics.NbHeightSteps);
+                rawNoise = NoiseUtils.RoundToNearestHeightStep(rawNoise, HexMetrics.NbHeightSteps);
 
-                noiseMap[x, y] = finalValue;
+                noiseMap[x, y] = rawNoise;
             }
         }
         return noiseMap;

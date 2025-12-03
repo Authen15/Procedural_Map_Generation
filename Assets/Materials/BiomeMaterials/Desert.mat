@@ -190,7 +190,7 @@ Material:
     - _JungleThreshold3: 0.46
     - _JungleThreshold4: 0.65
     - _MapSIze: 0
-    - _MaxHeight: 10
+    - _MaxHeight: 8
     - _MesaBlendPower: 0.05
     - _MesaThreshold1: 0.3
     - _MesaThreshold2: 0.36
@@ -220,9 +220,9 @@ Material:
     - _Surface: 0
     - _TEXTURETYPE: 2
     - _TextureBrightness: 13.2
-    - _Threshold1: 0.03
-    - _Threshold2: 0.06
-    - _Threshold3: 0.18
+    - _Threshold1: 0
+    - _Threshold2: 0.9
+    - _Threshold3: 3.9
     - _Threshold4: 0
     - _Threshold5: 0
     - _Threshold6: 0

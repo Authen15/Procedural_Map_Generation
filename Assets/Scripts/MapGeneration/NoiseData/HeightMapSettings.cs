@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "DataMapSettings/HeightMapSettings")]
-public class HeightMapSettings : DataMapSettings 
+public class HeightMapSettings : DataMapSettings
 {
     public bool UseFallOff;
     public float FallOffMapSteepness = 3;
@@ -19,4 +19,9 @@ public class HeightMapSettings : DataMapSettings
         UpdateIslandMesh?.Invoke();
     }
 #endif
+
+    public float GetMaximumHeight()
+    {
+        return HeightCurve.keys[HeightCurve.length - 1].value;
+    }
 }
