@@ -113,10 +113,8 @@ public static class HexGridUtils
 		float x = worldPosition.x;
 		float z = worldPosition.z;
 
-		// Calculate z (row), rounding to the nearest cell
 		int zCoord = Mathf.RoundToInt(z / (HexMetrics.OuterRadius * 1.5f));
 
-		// Calculate x (column), considering z's contribution
 		int xCoord = Mathf.RoundToInt((x - zCoord * HexMetrics.InnerRadius) / (HexMetrics.InnerRadius * 2f));
 
 		return new AxialCoordinates(xCoord, zCoord);
@@ -137,16 +135,23 @@ public static class HexGridUtils
 
 	public static AxialCoordinates WorldToIsland(Vector3 worldPosition)
 	{
-		float x = worldPosition.x;
-		float z = worldPosition.z;
+		float minSqrDist = float.MaxValue;
+		AxialCoordinates closestIslandCoord = new AxialCoordinates(0,0);
 
-		// Calculate x (column), rounding to the nearest island coordinate
-		int xCoord = Mathf.RoundToInt(x / (HexMetrics.IslandOuterRadius * 1.5f));
-
-		// Calculate z (row), considering x's contribution
-		int zCoord = Mathf.RoundToInt((z - xCoord * HexMetrics.IslandInnerRadius) / (HexMetrics.IslandInnerRadius * 2f));
-
-		return new AxialCoordinates(xCoord, zCoord);
+		// go through islands positions and get the closest distance
+		// this is not optimized but there are not too many islands, so it should work fine 
+		// optimal way would be a direct computation from coordinates
+		foreach (AxialCoordinates coord in MapIslandsPositions)
+        {
+			Vector3 islandPos = IslandToWorld(coord);
+			float sqrDist = (worldPosition - islandPos).sqrMagnitude;
+			
+			if (sqrDist < minSqrDist){
+				minSqrDist = sqrDist;
+				closestIslandCoord = coord;
+			}
+        }
+		return closestIslandCoord;
 	}
 
 	public static AxialCoordinates GetRandomPositionOnIsland()
