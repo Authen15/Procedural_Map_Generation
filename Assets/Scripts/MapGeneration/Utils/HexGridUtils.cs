@@ -73,13 +73,23 @@ public static class HexGridUtils
 		return 1 + 6 * (size * (size + 1) / 2);
 	}
 
-	public static AxialCoordinates[] GetCellNeighboursCoords(AxialCoordinates currentCell)
+	public static List<AxialCoordinates> GetCellNeighboursCoords(AxialCoordinates currentCell, bool includeCenter = false)
 	{
-		AxialCoordinates[] neighbours = new AxialCoordinates[6];
-		for (int j = 0; j < 6; j++)
+		List<AxialCoordinates> neighbours = new List<AxialCoordinates>
+        {
+            currentCell + GetDir[0],
+            currentCell + GetDir[1],
+            currentCell + GetDir[2],
+            currentCell + GetDir[3],
+            currentCell + GetDir[4],
+            currentCell + GetDir[5]
+        };
+
+		if (includeCenter)
 		{
-			neighbours[j] = currentCell + GetDir[j];
+			neighbours.Add(currentCell);
 		}
+
 		return neighbours;
 	}
 
@@ -90,8 +100,8 @@ public static class HexGridUtils
 
 	public static Vector3 CellToWorld(AxialCoordinates cellCoordinates)
 	{
-		float x = cellCoordinates.x;
-		float z = cellCoordinates.z;
+		float x = cellCoordinates.S;
+		float z = cellCoordinates.R;
 
 		Vector3 position;
 		position.x = x * (HexMetrics.InnerRadius * 2f) + z * HexMetrics.InnerRadius;
@@ -122,8 +132,8 @@ public static class HexGridUtils
 
 	public static Vector3 IslandToWorld(AxialCoordinates islandCoordinates)
 	{
-		float x = islandCoordinates.x;
-		float z = islandCoordinates.z;
+		float x = islandCoordinates.S;
+		float z = islandCoordinates.R;
 
 		Vector3 position;
 		position.x = x * (HexMetrics.IslandOuterRadius * 1.5f);
@@ -159,4 +169,16 @@ public static class HexGridUtils
 		int randomIndex = Random.Range(0, IslandCellsPositions.Length);
 		return IslandCellsPositions[randomIndex];
 	}
+
+	public static bool IsIslandOutOfMap(AxialCoordinates coord)
+    {
+		// is the absolute value of the biggest coordinate superior to the map radius 
+        return coord.MaxAbs() > HexMetrics.MapRadius;
+    }
+
+	public static bool IsCellOutOfIsland(AxialCoordinates coord)
+    {
+		// is the absolute value of the biggest coordinate superior to the map radius 
+        return coord.MaxAbs() > HexMetrics.IslandRadius;
+    }
 }

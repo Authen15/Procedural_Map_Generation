@@ -1,34 +1,42 @@
+using System;
+
 public class AxialCoordinates
 {
-    public int x;
-    public int z;
+    public int S;           // bot-left to top right diagonal   /
+    public int R;           // col
+    public int Q => -R -S;  // top left to bot right diagonal   \
 
     public AxialCoordinates(int x, int z)
     {
-        this.x = x;
-        this.z = z;
+        S = x;
+        R = z;
+    }
+
+    public int MaxAbs()
+    {
+        return Math.Max(Math.Max(Math.Abs(S), Math.Abs(R)), Math.Abs(Q));
     }
 
     public static AxialCoordinates operator +(AxialCoordinates a, AxialCoordinates b)
     {
-        return new AxialCoordinates(a.x + b.x, a.z + b.z);
+        return new AxialCoordinates(a.S + b.S, a.R + b.R);
     }
 
     public static AxialCoordinates operator -(AxialCoordinates a, AxialCoordinates b)
     {
-        return new AxialCoordinates(a.x - b.x, a.z - b.z);
+        return new AxialCoordinates(a.S - b.S, a.R - b.R);
     }
 
     public static AxialCoordinates operator *(AxialCoordinates a, int b)
     {
-        return new AxialCoordinates(a.x * b, a.z * b);
+        return new AxialCoordinates(a.S * b, a.R * b);
     }
     
     public static bool operator ==(AxialCoordinates a, AxialCoordinates b)
     {
         if (ReferenceEquals(a, b)) return true;
         if (a is null || b is null) return false;
-        return a.x == b.x && a.z == b.z;
+        return a.S == b.S && a.R == b.R;
     }
 
     public static bool operator !=(AxialCoordinates a, AxialCoordinates b)
@@ -45,11 +53,11 @@ public class AxialCoordinates
 
     public override int GetHashCode()
     {
-        return (x, z).GetHashCode();
+        return (S, R).GetHashCode();
     }
 
     public override string ToString()
     {
-        return "(" + x + ", " + z + ")";
+        return "(" + S + ", " + R + ")";
     }
 }

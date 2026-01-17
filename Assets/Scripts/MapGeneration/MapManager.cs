@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,45 +10,52 @@ public class MapManager : MonoBehaviour
 
 	public int MapSeed = 0;
 
-	public Island IslandPrefab;
-	
+	private IslandDisplay _islandDisplay;
+	private IslandPool _islandPool;
+
 	void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-    }
-	
+	{
+		if (Instance != null && Instance != this)
+		{
+			Destroy(gameObject);
+			return;
+		}
+		Instance = this;
+
+		_islandPool = GetComponent<IslandPool>();
+	}
+
 	void Start()
 	{
 		IslandDict = new Dictionary<AxialCoordinates, Island>();
-
-		float startTime = Time.realtimeSinceStartup;
-		GenerateMap();
-		Debug.Log("Generating time " + (Time.realtimeSinceStartup - startTime).ToString(".0###########"));
+		_islandDisplay = new IslandDisplay(this);
 	}
 
-	void GenerateMap()
+	public void DestroyIsland(AxialCoordinates islandCoord)
 	{
-		AxialCoordinates[] islandsPositions = HexGridUtils.MapIslandsPositions;
+		IslandDict.Remove(islandCoord);
+		_islandPool.DespawnIsland(islandCoord);
+	}
 
-		foreach (AxialCoordinates islandCoordinates in islandsPositions)
+	public IEnumerator GenerateIslands(AxialCoordinates[] islandCoords)
+	{
+		int nbIslands = islandCoords.Length;
+
+		for (int i = 0; i < nbIslands; i++)
 		{
-			// convert to vector3 for world position
-			Vector3 islandPos = HexGridUtils.IslandToWorld(islandCoordinates);
+			Island island = _islandPool.SpawnIsland(islandCoords[i]);
 
-			Island island = Instantiate(IslandPrefab, islandPos, Quaternion.identity, transform);
+			IslandDict.Add(islandCoords[i], island);
 
-			IslandDict.Add(islandCoordinates, island);
-
-			island.Initialize(islandCoordinates);
+			yield return null; // generate one per frame
 		}
 
-		foreach (Island island in IslandDict.Values){
-			island.GenerateIsland();
+		// updating bridges after islands as bridges need to know their neighbours
+		foreach (var island in IslandDict.Values)
+		{
+			island.UpdateBridges();
+			yield return null;
 		}
 	}
+
 }

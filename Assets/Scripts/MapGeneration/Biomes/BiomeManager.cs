@@ -3,15 +3,15 @@ using UnityEngine;
 
 namespace Biome {
 
-    public enum BiomeType
-    {
-        BOREAL = 0,
-        MESA = 1,
-        DESERT = 2,
-        ICE = 3,
-        TOUNDRA = 4,
-        JUNGLE = 5,
-    }
+    // public enum BiomeType
+    // {
+    //     BOREAL = 0,
+    //     MESA = 1,
+    //     DESERT = 2,
+    //     ICE = 3,
+    //     TOUNDRA = 4,
+    //     JUNGLE = 5,
+    // }
 
     public class BiomeManager : MonoBehaviour
     {

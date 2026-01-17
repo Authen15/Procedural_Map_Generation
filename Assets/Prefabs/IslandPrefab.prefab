@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 8396270859877346884}
   - component: {fileID: 6439457640324869487}
   - component: {fileID: 8484386354585192786}
+  - component: {fileID: 3303927392026640977}
   - component: {fileID: 5130931321000304902}
   - component: {fileID: 1168839157147013880}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: IslandPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,6 +62,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -82,10 +88,33 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3303927392026640977
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3088737481095849585}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!114 &5130931321000304902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,12 +127,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee4ab8bb18c035429cade7884043d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInitialised: 0
-  Biome: {fileID: 0}
   BridgeMaterial: {fileID: 2100000, guid: 75653852fb1f69a4f940acae65805032, type: 2}
-  Bridges: []
-  IslandSpawner: {fileID: 8997322268391337966}
-  NavMeshSurface: {fileID: 1168839157147013880}
+  _meshFilter: {fileID: 6439457640324869487}
+  _meshCollider: {fileID: 3303927392026640977}
+  _meshRenderer: {fileID: 8484386354585192786}
+  _islandSpawner: {fileID: 8997322268391337966}
+  _navMeshSurface: {fileID: 1168839157147013880}
 --- !u!114 &1168839157147013880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,13 +145,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
   m_AgentTypeID: 0
   m_CollectObjects: 2
   m_Size: {x: 10, y: 10, z: 10}
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -179,7 +209,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a8903097cc6f034d80266e74997f7d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CreaturePrefab: {fileID: 836330753491645796, guid: f02bc0311fbb3f547a26dc38c0a5929c,
-    type: 3}
   Island: {fileID: 5130931321000304902}
-  Player: {fileID: 0}

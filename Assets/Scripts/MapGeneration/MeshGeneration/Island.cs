@@ -2,88 +2,112 @@ using UnityEngine;
 using Biome;
 using Unity.AI.Navigation;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class Island : MonoBehaviour
 {
-
-	public bool isInitialised;
-	public AxialCoordinates coord;
-	public BiomeData Biome;
-	public float[,] HeightMap;
-
+	public bool IsInitialized { get; private set; }
+	public AxialCoordinates Coord { get; private set; }
+	public BiomeData Biome { get; private set; }
 	public Material BridgeMaterial;
-	public GameObject[] Bridges;
 
-	public IslandSpawner IslandSpawner;
+	// Cached data
+	private float[] _heightMapFlat;
+	[SerializeField] private MeshFilter _meshFilter;
+	[SerializeField] private MeshCollider _meshCollider;
+	[SerializeField] private MeshRenderer _meshRenderer;
+	[SerializeField] private IslandSpawner _islandSpawner;
+	[SerializeField] private NavMeshSurface _navMeshSurface;
 
-	public NavMeshSurface NavMeshSurface;
+	// Controlers
+	private IslandMeshController _meshController;
+	private IslandMaterialController _materialController;
+	private BridgeController _bridgeController;
+
+	private void Awake()
+	{
+		_meshController = new IslandMeshController(_meshFilter);
+		_materialController = new IslandMaterialController(_meshRenderer);
+		_bridgeController = new BridgeController();
+	}
+
+	public void Start()
+	{
+		// Update the mesh at runtime when modifying heightmap parameters
+		Biome.HeightMapSettings.UpdateIslandMesh += () =>
+		{
+			GenerateHeightMap();
+			_meshController.UpdateMesh(_heightMapFlat);
+		};
+		PlayerEventManager.Instance.OnIslandChanged.AddListener(SetMeshCollider);
+
+	}
 
 	public void Initialize(AxialCoordinates coord)
 	{
-		this.coord = coord;
-		name = "Island " + coord.ToString();
+		if (IsInitialized && Coord == coord) return;
+
+		Coord = coord;
+		name = $"Island {coord}";
+		transform.position = HexGridUtils.IslandToWorld(Coord);
+
 
 		Biome = BiomeManager.Instance.GetBiome();
 
+		// Generate (or re-generate)
 		GenerateHeightMap();
 
-		isInitialised = true;
+		_meshController.UpdateMesh(_heightMapFlat);
+
+		_materialController.ApplyMaterial(Biome);
+
+		StartCoroutine(IslandNavMeshUtils.BuildNavMeshAsync(transform, _navMeshSurface, () => _islandSpawner.SetActive(true)));
+
+		IsInitialized = true;
+	}
+
+	public void Cleanup()
+	{
+		StopAllCoroutines();
+		_islandSpawner.Cleanup();
+
+		IsInitialized = false;
+	}
+
+	public void SetMeshCollider(AxialCoordinates currentIsland)
+	{
+		if (currentIsland == Coord)
+		{
+			_meshCollider.sharedMesh = _meshFilter.mesh;
+		}
+		else
+		{
+			_meshCollider.sharedMesh = null;
+		}
 	}
 
 	private void GenerateHeightMap()
 	{
-		HeightMap = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, coord.x + coord.z * HexMetrics.MapSize);
-	}
+		if (_heightMapFlat == null) _heightMapFlat = new float[HexMetrics.MapSize * HexMetrics.MapSize];
 
-	public void GenerateIsland()
-	{
-		GenerateIslandMesh();
-		GenerateIslandBridges();
-	}
-
-	private void GenerateIslandMesh()
-	{
-		IslandMeshGenerator meshGenerator = new IslandMeshGenerator(); // TODO generate Mesh only if island is adjacent to player current island
-		meshGenerator.GenerateMesh(this, GetComponent<MeshFilter>(), GetComponent<MeshRenderer>());  // TODO add Mesh Collider only when player is on the island
-
-		gameObject.AddComponent<MeshCollider>();  // TODO add Mesh Collider only when player is on the island
-		NavMeshSurface.BuildNavMesh();
-
-
-		Biome.HeightMapSettings.UpdateIslandMesh += () =>
-		{ // Update the mesh at runtime when modifying heightmap parameters
-			GenerateHeightMap();
-			meshGenerator.UpdateMesh(this);
-		};
-	}
-
-	private void GenerateIslandBridges()
-	{
-		Bridges = new GameObject[3];
-
-		IslandBridgeGenerator islandBridgeGenerator = new IslandBridgeGenerator();
-		islandBridgeGenerator.GenerateIslandBridges(this, BridgeMaterial);
-
-		for (int i = 0; i < Bridges.Length; i++)
-		{
-			if (Bridges[i] != null)
-			{
-				Bridges[i].AddComponent<MeshCollider>();
-			}
-		}
+		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, Coord.S + Coord.R * HexMetrics.MapSize);
 	}
 
 	public float GetCellHeightMapValue(AxialCoordinates cellCoordinates)
 	{
-		//TODO change coordinates system to be able to use heightmap in shaders (right now the x axis is creating problem because of the shift)
-		// Maybe try doing a convertion from axial coord to offset https://www.redblobgames.com/grids/hexagons/
-		return HeightMap[cellCoordinates.x + HexMetrics.IslandRadius, cellCoordinates.z + HexMetrics.IslandRadius];
+		int size = HexMetrics.IslandSize;
+		int index = (cellCoordinates.R + HexMetrics.IslandRadius) * size +
+					(cellCoordinates.S + HexMetrics.IslandRadius);
+		return _heightMapFlat[index];
+	}
+
+	public void UpdateBridges()
+	{
+		_bridgeController.UpdateBridges(this);
 	}
 
 	public void PrintHeightMapDistribution()
 	{
-		NoiseGenerator.PrintNoiseDistribution(HeightMap, 10);
+		NoiseGenerator.PrintNoiseDistribution(_heightMapFlat, HexMetrics.IslandSize, 10);
 	}
 
 	// to display normals

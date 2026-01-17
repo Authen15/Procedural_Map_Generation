@@ -2,8 +2,9 @@ using UnityEngine;
 
 public static class HexMetrics {
 
-	public const int MapSize = 3; // diameter of the map in islands
-	public const int IslandSize = 85; // diameter of an island in cells, must be odd number, max size = 117
+	public const int MapSize = 15; // diameter of the map in islands
+	public const int MapRadius = MapSize / 2;
+	public const int IslandSize = 65; // diameter of an island in cells, must be odd number, max size = 117
 	public const int IslandRadius = IslandSize / 2;
 	public const float HeightMultiplier = 8f; //multiply the y scale of the hex by this value
 	public const float OuterRadius = .8f; // outer radius of hexcells
@@ -11,7 +12,7 @@ public static class HexMetrics {
 
 	public const int NbHeightSteps = 128; // cells height will be distributed in 'n' steps 
 
-	public const int DistanceBetweenIslands = 9; // must be odd if we don't want to offset the island 
+	public const int DistanceBetweenIslands = 15; // must be odd for hex cells to connect correctly (otherwise the cells are not offsetted) 
 
 	public const float IslandInnerRadius = (IslandRadius + 0.5f + // number of cells in radius + half center cell
 											DistanceBetweenIslands / 2f) // half the distance between islands
