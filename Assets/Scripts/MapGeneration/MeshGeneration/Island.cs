@@ -1,6 +1,7 @@
 using UnityEngine;
 using Biome;
 using Unity.AI.Navigation;
+using Unity.Mathematics;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class Island : MonoBehaviour
@@ -89,7 +90,7 @@ public class Island : MonoBehaviour
 	{
 		if (_heightMapFlat == null) _heightMapFlat = new float[HexMetrics.MapSize * HexMetrics.MapSize];
 
-		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, Coord.S + Coord.R * HexMetrics.MapSize);
+		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, math.hash(new int2(Coord.S, Coord.R)));
 	}
 
 	public float GetCellHeightMapValue(AxialCoordinates cellCoordinates)
@@ -107,7 +108,7 @@ public class Island : MonoBehaviour
 
 	public void PrintHeightMapDistribution()
 	{
-		NoiseGenerator.PrintNoiseDistribution(_heightMapFlat, HexMetrics.IslandSize, 10);
+		NoiseGenerator.PrintNoiseDistribution(_heightMapFlat, 10);
 	}
 
 	// to display normals

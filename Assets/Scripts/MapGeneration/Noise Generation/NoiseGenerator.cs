@@ -1,18 +1,25 @@
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 public static class NoiseGenerator
 {
-    public static void PrintNoiseDistribution(float[] noiseMap, int size, int nbStep)
+    public static void PrintNoiseDistribution(float[] noiseMap, int nbStep)
     {
         float stepSize = 1f / nbStep;
         int[] stepsValue = new int[nbStep+1];
 
-        int length = size * size;
-
-        for (int x = 0; x < length; x++)
+        int length = noiseMap.Length;
+        for (int i = 0; i < length; i++)
         {
-            int index = (int)(noiseMap[x] / stepSize);
-            if (index >= nbStep+1) Debug.Log($"index = {index}");
+            int index = (int)(noiseMap[i] / stepSize);
+            if (index >= nbStep + 1 || index < 0)
+            {
+                Debug.Log($"PrintNoiseDistribution error at index = {index}");
+                continue;
+            } 
             stepsValue[index]++;
         }
 
@@ -22,27 +29,55 @@ public static class NoiseGenerator
         }
     }
 
-    public static float[] GenerateHeightMap(HeightMapSettings heightMapSettings, int size, int customSeed = 0)
+    public static float[] GenerateHeightMap(HeightMapSettings heightMapSettings, int size, uint customSeed = 0)
     {
+        int length = size * size;
 
-        System.Random prng = new System.Random(customSeed + MapManager.Instance.MapSeed);
-        float offsetX = prng.Next(-100000, 100000);
-        float offsetY = prng.Next(-100000, 100000);
+        NativeArray<float> nativeNoiseMap = new NativeArray<float>(length, Allocator.Persistent);
 
-        float[] noiseMap = GenerateNoiseMap(size, heightMapSettings.NoiseSettings, new Vector2(offsetX, offsetY));
+        GenerateNoiseMap(heightMapSettings, nativeNoiseMap, size, customSeed);
+        ProcessNoiseMap(heightMapSettings, nativeNoiseMap, length);
+
+        float[] noiseMap = nativeNoiseMap.ToArray();
+        nativeNoiseMap.Dispose();
+        return noiseMap;
+    }
+
+    private static void GenerateNoiseMap(HeightMapSettings heightMapSettings, NativeArray<float> nativeNoiseMap, int size, uint customSeed = 0)
+    {
+        var prng = new Unity.Mathematics.Random(customSeed);
+
+        float2 offset = new float2(
+            prng.NextFloat(-100000f, 100000f),
+            prng.NextFloat(-100000f, 100000f)
+        );
+
+        var job = new NoiseGenerationJob{
+            size = size,
+            scale = heightMapSettings.NoiseSettings.scale,
+            octaves = heightMapSettings.NoiseSettings.octaves,
+            persistance = heightMapSettings.NoiseSettings.persistance,
+            lacunarity = heightMapSettings.NoiseSettings.lacunarity,
+            offset = offset,
+            noiseMap = nativeNoiseMap
+        };
+
+        JobHandle handle = job.Schedule(size*size, 64);
+        handle.Complete();
+    }
+
+    //TODO create a job friendly heightcurve and jobify this processing
+    private static NativeArray<float> ProcessNoiseMap(HeightMapSettings heightMapSettings, NativeArray<float> nativeNoiseMap, int length)
+    {
         AnimationCurve heightCurve = heightMapSettings.HeightCurve;
 
         float maxHeight = heightMapSettings.GetMaximumHeight();
         float multiplier = heightMapSettings.Multiplier;
         float invMaxHeight = 1f / maxHeight;
-        // float[,] fallOffMap = null; //TODO handle falloffmap in a better way
-        // if (heightMapSettings.UseFallOff)
-        //     fallOffMap = FallOffMapGenerator.GenerateIslandFalloffMap(heightMapSettings);
 
-        int length = size * size;
         for (int i = 0; i < length; i++)
         {
-            float rawNoise = noiseMap[i];
+            float rawNoise = nativeNoiseMap[i];
             rawNoise = NoiseUtils.CDF(rawNoise, 0.5f, 0.2f); // to uniformize the noise
 
             rawNoise *= multiplier;
@@ -52,75 +87,12 @@ public static class NoiseGenerator
             // remap between 0 and 1
             rawNoise *= invMaxHeight;
 
-            // if (heightMapSettings.UseFallOff)
-            // {
-            //     finalValue -= fallOffMap[x, y];
-            // }
             rawNoise = NoiseUtils.RoundToNearestHeightStep(rawNoise);
 
-            noiseMap[i] = rawNoise;
+            nativeNoiseMap[i] = rawNoise;
         }
-        return noiseMap;
+        return nativeNoiseMap;
     }
-
-    private static float[] GenerateNoiseMap(int size, NoiseSettings settings, Vector2 sampleCentre) {
-		int length = size*size;
-        float[] noiseMap = new float[length];
-
-		System.Random prng = new System.Random (settings.seed);
-		Vector2[] octaveOffsets = new Vector2[settings.octaves];
-
-		float amplitude = 1;
-
-		for (int i = 0; i < settings.octaves; i++) {
-			float offsetX = prng.Next (-100000, 100000) + settings.offset.x + sampleCentre.x;
-			float offsetY = prng.Next (-100000, 100000) - settings.offset.y - sampleCentre.y;
-			octaveOffsets [i] = new Vector2 (offsetX, offsetY);
-
-			amplitude *= settings.persistance;
-		}
-
-		float maxLocalNoiseHeight = float.MinValue;
-		float minLocalNoiseHeight = float.MaxValue;
-
-		float halfMapSize = size / 2f;
-
-
-		for (int y = 0; y < size; y++) {
-			for (int x = 0; x < size; x++) {
-
-				amplitude = 1;
-				float frequency = 1;
-				float noiseHeight = 0;
-
-				for (int i = 0; i < settings.octaves; i++) {
-					float sampleX = (x-halfMapSize + octaveOffsets[i].x) / settings.scale * frequency;
-					float sampleY = (y-halfMapSize + octaveOffsets[i].y) / settings.scale * frequency;
-
-					float perlinValue = Mathf.PerlinNoise (sampleX, sampleY);
-					noiseHeight += perlinValue * amplitude;
-
-					amplitude *= settings.persistance;
-					frequency *= settings.lacunarity;
-				}
-
-				if (noiseHeight > maxLocalNoiseHeight) {
-					maxLocalNoiseHeight = noiseHeight;
-				} 
-				if (noiseHeight < minLocalNoiseHeight) {
-					minLocalNoiseHeight = noiseHeight;
-				}
-				noiseMap [y * size + x] = noiseHeight;
-			}
-		}
-
-        for (int i = 0; i < length; i++) {
-                noiseMap [i] = Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, noiseMap [i]);
-	    }
-
-		return noiseMap;
-	}
-
 }
 
 [System.Serializable]
