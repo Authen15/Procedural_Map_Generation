@@ -71,9 +71,10 @@ public static class NoiseGenerator
     {
         AnimationCurve heightCurve = heightMapSettings.HeightCurve;
 
-        float maxHeight = heightMapSettings.GetMaximumHeight();
         float multiplier = heightMapSettings.Multiplier;
-        float invMaxHeight = 1f / maxHeight;
+        float invMaxCurveHeight = 1f / heightMapSettings.GetMaximumHeight();
+
+        float[] falloffMap = FallOffMapGenerator.GenerateIslandFalloffMap(heightMapSettings);
 
         for (int i = 0; i < length; i++)
         {
@@ -82,10 +83,12 @@ public static class NoiseGenerator
 
             rawNoise *= multiplier;
 
+            rawNoise  *= 1 - falloffMap[i];
+
             rawNoise = heightCurve.Evaluate(rawNoise);
 
             // remap between 0 and 1
-            rawNoise *= invMaxHeight;
+            rawNoise *= invMaxCurveHeight;
 
             rawNoise = NoiseUtils.RoundToNearestHeightStep(rawNoise);
 

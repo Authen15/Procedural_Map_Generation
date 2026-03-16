@@ -1,42 +1,53 @@
 using System;
+using UnityEngine;
 
 public class AxialCoordinates
 {
-    public int S;           // bot-left to top right diagonal   /
+    public int Q;  // top left to bot right diagonal   \
     public int R;           // col
-    public int Q => -R -S;  // top left to bot right diagonal   \
+    public int S => -Q-R;           // bot-left to top right diagonal   /
 
-    public AxialCoordinates(int x, int z)
+    public AxialCoordinates(int q, int r)
     {
-        S = x;
-        R = z;
+        Q = q;
+        R = r;
     }
 
-    public int MaxAbs()
+    public int RingNumber()
     {
-        return Math.Max(Math.Max(Math.Abs(S), Math.Abs(R)), Math.Abs(Q));
+        return Math.Max(Math.Max(Math.Abs(Q), Math.Abs(R)), Math.Abs(S));
+    }
+
+    public float HexAxialDistance(int q1, int r1)
+    {
+        return (Mathf.Abs(q1 - Q) + Mathf.Abs(q1 + r1 - Q - R) + Mathf.Abs(r1 - R)) / 2f;
+    }
+
+    public float Norm()
+    {
+        return (Mathf.Abs(Q) + Mathf.Abs(- Q - R) + Mathf.Abs(R)) / 2f;
     }
 
     public static AxialCoordinates operator +(AxialCoordinates a, AxialCoordinates b)
     {
-        return new AxialCoordinates(a.S + b.S, a.R + b.R);
+        return new AxialCoordinates(a.Q + b.Q, a.R + b.R);
     }
 
     public static AxialCoordinates operator -(AxialCoordinates a, AxialCoordinates b)
     {
-        return new AxialCoordinates(a.S - b.S, a.R - b.R);
+        return new AxialCoordinates(a.Q - b.Q, a.R - b.R);
     }
 
     public static AxialCoordinates operator *(AxialCoordinates a, int b)
     {
-        return new AxialCoordinates(a.S * b, a.R * b);
+        return new AxialCoordinates(a.Q * b, a.R * b);
     }
     
     public static bool operator ==(AxialCoordinates a, AxialCoordinates b)
     {
         if (ReferenceEquals(a, b)) return true;
         if (a is null || b is null) return false;
-        return a.S == b.S && a.R == b.R;
+        return a.Q == b.Q && a.R == b.R;
     }
 
     public static bool operator !=(AxialCoordinates a, AxialCoordinates b)
@@ -53,11 +64,11 @@ public class AxialCoordinates
 
     public override int GetHashCode()
     {
-        return (S, R).GetHashCode();
+        return (Q, R).GetHashCode();
     }
 
     public override string ToString()
     {
-        return "(" + S + ", " + R + ")";
+        return "(" + Q + ", " + R + ")";
     }
 }

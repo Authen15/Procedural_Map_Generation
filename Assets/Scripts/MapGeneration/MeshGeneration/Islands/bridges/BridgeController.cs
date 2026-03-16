@@ -4,8 +4,8 @@ using static HexGridUtils;
 
 public class BridgeController
 {
-	private GameObject[] _bridges;
-	private MeshCollider[] _meshColliders;
+	private readonly GameObject[] _bridges;
+	private readonly MeshCollider[] _meshColliders;
 
 	public BridgeController()
 	{
@@ -17,14 +17,14 @@ public class BridgeController
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			Island targetIsland = GetNeighborIsland(currentIsland.Coord, (BridgeUtils.BridgesDir)i);
+			Island targetIsland = BridgeUtils.GetNeighborIsland(currentIsland.Coord, (BridgeUtils.BridgesDir)i);
 			if (targetIsland == null)
 			{   // if there is no island in this direction, skip this iteration
 				if (_bridges[i] != null) _bridges[i].SetActive(false);
 				continue;
 			}
 
-			AxialCoordinates bridgeAnchorStartCell = BridgeUtils.BridgesAnchorCells[i, BridgeUtils.BridgeSize / 2];
+			AxialCoordinates bridgeAnchorStartCell = BridgeUtils.BridgesAnchorCells[i, BridgeUtils.BridgeWidth / 2];
 			Vector3 anchorWorldPos = CellToWorld(bridgeAnchorStartCell);
 			Vector3 position = currentIsland.transform.position + anchorWorldPos;
 			Quaternion rotation = Quaternion.LookRotation(anchorWorldPos, Vector3.up);
@@ -41,7 +41,7 @@ public class BridgeController
 
 
 			_bridges[i].SetActive(true);
-			_bridges[i].name = $"Bridge {currentIsland.Coord}";
+			_bridges[i].name = $"Bridge {currentIsland.Coord} to {targetIsland.Coord}";
 
 			Mesh mesh = _bridges[i].GetComponent<MeshFilter>().mesh;
 			mesh.vertices = UpdateBridgeVerticesHeight(currentIsland, targetIsland, mesh.vertices, (BridgeUtils.BridgesDir)i);
@@ -52,31 +52,10 @@ public class BridgeController
 		}
 	}
 
-	private Island GetNeighborIsland(AxialCoordinates coord, BridgeUtils.BridgesDir dir)
-	{
-		AxialCoordinates islandCoord;
-		switch (dir)
-		{
-			case BridgeUtils.BridgesDir.BottomRight:
-				islandCoord = new AxialCoordinates(coord.S + 1, coord.R - 1);
-				break;
-			case BridgeUtils.BridgesDir.Bottom:
-				islandCoord = new AxialCoordinates(coord.S, coord.R - 1);
-				break;
-			case BridgeUtils.BridgesDir.BottomLeft:
-				islandCoord = new AxialCoordinates(coord.S - 1, coord.R);
-				break;
-			default:
-				return null;
-		}
-		if (!MapManager.Instance.IslandDict.ContainsKey(islandCoord)) return null;
-		return MapManager.Instance.IslandDict[islandCoord];
-	}
-
-	private Vector3[] UpdateBridgeVerticesHeight(Island currentIsland, Island targetIsland, Vector3[] vertices, BridgeUtils.BridgesDir dir)
+	private static Vector3[] UpdateBridgeVerticesHeight(Island currentIsland, Island targetIsland, Vector3[] vertices, BridgeUtils.BridgesDir dir)
 	{
 
-		int bridgeSize = BridgeUtils.BridgeSize;
+		int bridgeSize = BridgeUtils.BridgeWidth;
 		float heightMultiplier = HexMetrics.HeightMultiplier;
 		int distanceBetweenIslands = HexMetrics.DistanceBetweenIslands;
 		float fenceHeight = heightMultiplier * 0.125f;

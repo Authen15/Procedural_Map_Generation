@@ -8,7 +8,7 @@ public class Island : MonoBehaviour
 {
 	public bool IsInitialized { get; private set; }
 	public AxialCoordinates Coord { get; private set; }
-	public BiomeData Biome { get; private set; }
+	public BiomeData Biome;
 	public Material BridgeMaterial;
 
 	// Cached data
@@ -19,7 +19,7 @@ public class Island : MonoBehaviour
 	[SerializeField] private IslandSpawner _islandSpawner;
 	[SerializeField] private NavMeshSurface _navMeshSurface;
 
-	// Controlers
+	// Controllers
 	private IslandMeshController _meshController;
 	private IslandMaterialController _materialController;
 	private BridgeController _bridgeController;
@@ -31,7 +31,7 @@ public class Island : MonoBehaviour
 		_bridgeController = new BridgeController();
 	}
 
-	public void Start()
+    public void Start()
 	{
 		// Update the mesh at runtime when modifying heightmap parameters
 		Biome.HeightMapSettings.UpdateIslandMesh += () =>
@@ -39,8 +39,8 @@ public class Island : MonoBehaviour
 			GenerateHeightMap();
 			_meshController.UpdateMesh(_heightMapFlat);
 		};
+		Biome.HeightMapSettings.UpdateIslandMesh += PrintHeightMapDistribution;
 		PlayerEventManager.Instance.OnIslandChanged.AddListener(SetMeshCollider);
-
 	}
 
 	public void Initialize(AxialCoordinates coord)
@@ -88,16 +88,14 @@ public class Island : MonoBehaviour
 
 	private void GenerateHeightMap()
 	{
-		if (_heightMapFlat == null) _heightMapFlat = new float[HexMetrics.MapSize * HexMetrics.MapSize];
-
-		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, math.hash(new int2(Coord.S, Coord.R)));
+		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, math.hash(new int2(Coord.Q, Coord.R)));
 	}
 
 	public float GetCellHeightMapValue(AxialCoordinates cellCoordinates)
 	{
 		int size = HexMetrics.IslandSize;
 		int index = (cellCoordinates.R + HexMetrics.IslandRadius) * size +
-					(cellCoordinates.S + HexMetrics.IslandRadius);
+					(cellCoordinates.Q + HexMetrics.IslandRadius);
 		return _heightMapFlat[index];
 	}
 

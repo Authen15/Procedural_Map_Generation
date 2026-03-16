@@ -40,7 +40,7 @@ public class IslandMeshController
             int vertexIndex = cellIndex * 6;
             
             var cellPos = HexGridUtils.IslandCellsPositions[cellIndex];
-            int heightMapIndex = (cellPos.R + islandRadius) * mapWidth + (cellPos.S + islandRadius);
+            int heightMapIndex = (cellPos.R + islandRadius) * mapWidth + (cellPos.Q + islandRadius);
             float height = heightMapFlat[heightMapIndex] * heightMultiplier;
             
             _vertices[vertexIndex].y = height;

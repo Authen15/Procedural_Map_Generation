@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee4ab8bb18c035429cade7884043d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Biome: {fileID: 0}
   BridgeMaterial: {fileID: 2100000, guid: 75653852fb1f69a4f940acae65805032, type: 2}
   _meshFilter: {fileID: 6439457640324869487}
   _meshCollider: {fileID: 3303927392026640977}

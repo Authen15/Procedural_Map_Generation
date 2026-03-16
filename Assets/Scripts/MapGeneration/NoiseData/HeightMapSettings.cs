@@ -4,9 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "DataMapSettings/HeightMapSettings")]
 public class HeightMapSettings : DataMapSettings
 {
-    public bool UseFallOff;
-    public float FallOffMapSteepness = 3;
-    public float FallOffMapOffset = 2.2f;
+    public float FallOffMapSteepness = 2;
+    public float FallOffMapOffset = 10f;
     [Range(0, 2)] public float Multiplier = 1;
     public AnimationCurve HeightCurve = AnimationCurve.Linear(0, 0, 1, 1);
 

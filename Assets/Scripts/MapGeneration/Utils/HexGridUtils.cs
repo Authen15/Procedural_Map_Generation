@@ -14,12 +14,12 @@ public static class HexGridUtils
 	};
 
 	public static AxialCoordinates[] GetDir = {
-		new AxialCoordinates(0, -1),       // bottom left
+		new AxialCoordinates(-1, 1),       // bottom left
         new AxialCoordinates(-1, 0),       // left
-        new AxialCoordinates(-1, 1),       // top left
-        new AxialCoordinates(0, 1),        // top right
+        new AxialCoordinates(0, -1),       // top left
+        new AxialCoordinates(1, -1),        // top right
         new AxialCoordinates(1, 0),        // right
-        new AxialCoordinates(1, -1)        // bottom right
+        new AxialCoordinates(0, 1)        // bottom right
     };
 
 	public static Dictionary<AxialCoordinates, int> IslandCellIndexDict; // Maps cell coordinates to indices
@@ -33,6 +33,7 @@ public static class HexGridUtils
 		MapIslandsPositions = GenerateGridPositions(HexMetrics.MapSize);
 	}
 
+	// the grid is (0,0) at center and (size,size) at bottom right corner
 	private static AxialCoordinates[] GenerateGridPositions(int size, bool populateDict = false)
 	{
 		int radius = size / 2;
@@ -100,13 +101,13 @@ public static class HexGridUtils
 
 	public static Vector3 CellToWorld(AxialCoordinates cellCoordinates)
 	{
-		float x = cellCoordinates.S;
+		float x = cellCoordinates.Q;
 		float z = cellCoordinates.R;
 
 		Vector3 position;
 		position.x = x * (HexMetrics.InnerRadius * 2f) + z * HexMetrics.InnerRadius;
 		position.y = 0;
-		position.z = z * (HexMetrics.OuterRadius * 1.5f);
+		position.z = - z * (HexMetrics.OuterRadius * 1.5f);
 
 		return position;
 	}
@@ -132,13 +133,13 @@ public static class HexGridUtils
 
 	public static Vector3 IslandToWorld(AxialCoordinates islandCoordinates)
 	{
-		float x = islandCoordinates.S;
+		float x = islandCoordinates.Q;
 		float z = islandCoordinates.R;
 
 		Vector3 position;
 		position.x = x * (HexMetrics.IslandOuterRadius * 1.5f);
 		position.y = 0;
-		position.z = z * (HexMetrics.IslandInnerRadius * 2f) + x * HexMetrics.IslandInnerRadius;
+		position.z = - (z * (HexMetrics.IslandInnerRadius * 2f) + x * HexMetrics.IslandInnerRadius);
 
 		return position;
 	}
@@ -172,13 +173,11 @@ public static class HexGridUtils
 
 	public static bool IsIslandOutOfMap(AxialCoordinates coord)
     {
-		// is the absolute value of the biggest coordinate superior to the map radius 
-        return coord.MaxAbs() > HexMetrics.MapRadius;
+        return coord.RingNumber() > HexMetrics.MapRadius;
     }
 
 	public static bool IsCellOutOfIsland(AxialCoordinates coord)
     {
-		// is the absolute value of the biggest coordinate superior to the map radius 
-        return coord.MaxAbs() > HexMetrics.IslandRadius;
+        return coord.RingNumber() > HexMetrics.IslandRadius;
     }
 }

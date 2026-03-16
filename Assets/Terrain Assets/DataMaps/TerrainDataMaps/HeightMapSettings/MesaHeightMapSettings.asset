@@ -19,9 +19,8 @@ MonoBehaviour:
     lacunarity: 2
     seed: 167
     offset: {x: 0, y: 0}
-  UseFallOff: 0
-  FallOffMapSteepness: 2.09
-  FallOffMapOffset: 9.3
+  FallOffMapSteepness: 1
+  FallOffMapOffset: 10
   Multiplier: 1
   HeightCurve:
     serializedVersion: 2

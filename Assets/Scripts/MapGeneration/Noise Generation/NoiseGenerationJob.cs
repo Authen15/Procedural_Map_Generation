@@ -20,7 +20,7 @@ struct NoiseGenerationJob : IJobParallelFor
         int x = index % size;
         int y = index / size;
 
-		float halfMapSize = size * 0.5f; // so incresing / decreasing noise size will create a (de)zoom effect starting from the center
+		float halfSize = size * 0.5f; // so increasing / decreasing noise size will create a (de)zoom effect starting from the center
         float invScale = 1f / scale;
 
         float amplitude = 1;
@@ -28,8 +28,8 @@ struct NoiseGenerationJob : IJobParallelFor
         float noiseHeight = 0;
 
         for (int i = 0; i < octaves; i++) {
-            float sampleX = (x-halfMapSize) * invScale * frequency;
-            float sampleY = (y-halfMapSize) * invScale * frequency;
+            float sampleX = (x-halfSize) * invScale * frequency;
+            float sampleY = (y-halfSize) * invScale * frequency;
 
             float n = noise.cnoise(new float2(sampleX + offset.x, sampleY + offset.y));
 

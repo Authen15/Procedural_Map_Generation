@@ -1,30 +1,42 @@
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public static class FallOffMapGenerator{
-    public static float[,] GenerateIslandFalloffMap(HeightMapSettings heightMapSettings)
+    public static float[] GenerateIslandFalloffMap(HeightMapSettings heightMapSettings)
     {
-        float[,] map = new float[HexMetrics.IslandSize, HexMetrics.IslandSize];
-
-        for (int y = 0; y < HexMetrics.IslandSize; y++)
+        int mapRadius = HexMetrics.IslandRadius;
+        float invMapRadius = 1f / mapRadius; // faster than division
+        int size = mapRadius * 2 + 1;
+        float[] falloffMap = new float[size * size];
+        
+        // Iterate through all hexes in the map
+        foreach(AxialCoordinates coord in HexGridUtils.IslandCellIndexDict.Keys)
         {
-            for (int x = 0; x < HexMetrics.IslandSize; x++)
-            {
-                float nx = x / (float)HexMetrics.IslandSize * 2 - 1;
-                float ny = y / (float)HexMetrics.IslandSize * 2 - 1;
+            int q = coord.Q;
+            int r = coord.R;
+            
+            float distance = coord.Norm();
 
-                float value = Mathf.Max(Mathf.Abs(nx), Mathf.Abs(ny));
-                map[x, y] = Evaluate(heightMapSettings, value);
-            }
+            // Normalize distance (0 at center, 1 at edge)
+            float normalizedDistance = distance * invMapRadius;
+            
+            // Apply falloff curve
+            float falloffValue = Evaluate(heightMapSettings, normalizedDistance);
+            
+            int arrayX = q + mapRadius;
+            int arrayY = r + mapRadius;
+            int index = arrayY * size + arrayX;
+            
+            falloffMap[index] = falloffValue;
         }
-
-        return map;
+        
+        return falloffMap;
     }
 
     private static float Evaluate(HeightMapSettings heightMapSettings, float value)
     {
         float a = heightMapSettings.FallOffMapSteepness;
         float b = heightMapSettings.FallOffMapOffset;
-
         return Mathf.Pow(value, a) / (Mathf.Pow(value, a) + Mathf.Pow(b - b * value, a));
     }
 }

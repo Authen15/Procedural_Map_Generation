@@ -23,6 +23,16 @@ public static class TextureGenerator {
 		return TextureFromColourMap (colourMap, size);
 	}
 
+	public static Texture2D TextureFromFlatNoiseMap(float[] noiseMap, int size) {
+		Color[] colourMap = new Color[size * size];
+		for (int y = 0; y < size; y++) {
+			for (int x = 0; x < size; x++) {
+				colourMap [y * size + x] = Color.Lerp (Color.black, Color.white, noiseMap[y * size + x]);
+			}
+		}
+		return TextureFromColourMap (colourMap, size);
+	}
+
 
     public static void WriteTexture(Texture2D texture, string pathToFile){
         // byte[] bytes = texture.EncodeToPNG();
