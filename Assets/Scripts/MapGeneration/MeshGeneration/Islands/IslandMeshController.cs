@@ -1,4 +1,5 @@
 using UnityEngine;
+using static IslandData;
 
 public class IslandMeshController
 {
@@ -35,11 +36,11 @@ public class IslandMeshController
         int mapWidth = HexMetrics.IslandSize;
         float heightMultiplier = HexMetrics.HeightMultiplier;
         
-        for (int cellIndex = 0; cellIndex < HexGridUtils.IslandCellsPositions.Length; cellIndex++)
+        for (int cellIndex = 0; cellIndex < CellCoords.Length; cellIndex++)
         {
             int vertexIndex = cellIndex * 6;
             
-            var cellPos = HexGridUtils.IslandCellsPositions[cellIndex];
+            var cellPos = CellCoords[cellIndex];
             int heightMapIndex = (cellPos.R + islandRadius) * mapWidth + (cellPos.Q + islandRadius);
             float height = heightMapFlat[heightMapIndex] * heightMultiplier;
             

@@ -2,6 +2,7 @@ using UnityEngine;
 using Biome;
 using Unity.AI.Navigation;
 using Unity.Mathematics;
+using static IslandData;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class Island : MonoBehaviour
@@ -31,7 +32,7 @@ public class Island : MonoBehaviour
 		_bridgeController = new BridgeController();
 	}
 
-    public void Start()
+	public void Start()
 	{
 		// Update the mesh at runtime when modifying heightmap parameters
 		Biome.HeightMapSettings.UpdateIslandMesh += () =>
@@ -74,9 +75,9 @@ public class Island : MonoBehaviour
 		IsInitialized = false;
 	}
 
-	public void SetMeshCollider(AxialCoordinates currentIsland)
+	public void SetMeshCollider(int currentIsland)
 	{
-		if (currentIsland == Coord)
+		if (Coord == CellCoords[currentIsland])
 		{
 			_meshCollider.sharedMesh = _meshFilter.mesh;
 		}

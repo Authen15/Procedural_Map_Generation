@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using static HexGridUtils;
+using static IslandData;
 
 public static class IslandTemplateGenerator
 {
@@ -11,41 +12,36 @@ public static class IslandTemplateGenerator
 	private static Vector2[] _uvs; // same for all islands
 
 
-	static IslandTemplateGenerator()
-    {
-        CreateTemplate();
-    }
-
-	static void CreateTemplate()
+	public static void CreateTemplate()
 	{
 		if (TemplateMesh != null)
-        {
+		{
 			Debug.LogWarning("Island Template Mesh already created");
 			return;
-        }
+		}
 
 
 		TemplateMesh = new Mesh();
-        TemplateMesh.name = "Island Mesh";
+		TemplateMesh.name = "Island Mesh";
 
-        _triangles = new List<int>();
-        _baseVertices = new List<Vector3>();
-        HexCellTriangulator.Triangulate(IslandCellIndexDict, _baseVertices, _triangles);
+		_triangles = new List<int>();
+		_baseVertices = new List<Vector3>();
+		HexCellTriangulator.Triangulate(CellCoords, CellNeighbours, _baseVertices, _triangles);
 
-        _uvs = new Vector2[_baseVertices.Count];
-        GenerateUVs();
+		_uvs = new Vector2[_baseVertices.Count];
+		GenerateUVs();
 
-		TemplateMesh.vertices = _baseVertices.ToArray();
-		TemplateMesh.triangles = _triangles.ToArray();
-		TemplateMesh.uv = _uvs;
-		TemplateMesh.normals = CalculateCustomNormals(TemplateMesh.vertices, TemplateMesh.triangles);
+		TemplateMesh.SetVertices(_baseVertices.ToArray());
+		TemplateMesh.SetTriangles(_triangles.ToArray(), 0);
+		TemplateMesh.SetUVs(0, _uvs);
+		TemplateMesh.normals = CalculateCustomNormals(_baseVertices, _triangles);
 	}
 
 	// calculate vertex normals based on adjacent triangles normals not weighted
-	static Vector3[] CalculateCustomNormals(Vector3[] vertices, int[] triangles)
+	static Vector3[] CalculateCustomNormals(List<Vector3> vertices, List<int> triangles)
 	{
-		Vector3[] normals = new Vector3[vertices.Length];
-		for (int i = 0; i < triangles.Length; i += 3)
+		Vector3[] normals = new Vector3[vertices.Count];
+		for (int i = 0; i < triangles.Count; i += 3)
 		{
 			Vector3 v0 = vertices[triangles[i]];
 			Vector3 v1 = vertices[triangles[i + 1]];
@@ -68,14 +64,13 @@ public static class IslandTemplateGenerator
 
 	static void GenerateUVs()
 	{
-
 		Vector3 localMaxPos = CellToWorld(new AxialCoordinates(HexMetrics.IslandSize, HexMetrics.IslandSize));
 		AxialCoordinates offset = new AxialCoordinates(HexMetrics.IslandSize / 2, HexMetrics.IslandSize / 2); // center is 0,0 so we offset coords
 
-		for (int cellIndex = 0; cellIndex < IslandCellsPositions.Length; cellIndex++)
+		for (int cellIndex = 0; cellIndex < CellCoords.Length; cellIndex++)
 		{
 			int vertexIndex = cellIndex * 6;
-			AxialCoordinates offsettedCoord = IslandCellsPositions[cellIndex] + offset;
+			AxialCoordinates offsettedCoord = CellCoords[cellIndex] + offset;
 			Vector3 cellLocalPos = CellToWorld(offsettedCoord);
 			Vector2 cellUvPos = new Vector2(cellLocalPos.x / localMaxPos.x, cellLocalPos.z / localMaxPos.z);
 

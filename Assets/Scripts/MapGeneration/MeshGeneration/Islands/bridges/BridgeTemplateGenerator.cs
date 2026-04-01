@@ -1,14 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static BridgeData;
 
 public static class BridgeTemplateGenerator
 {
 	public static GameObject BridgeTemplate;
-
-	static BridgeTemplateGenerator()
-	{
-		CreateTemplate();
-	}
 
 	public static void CreateTemplate()
 	{
@@ -25,13 +21,13 @@ public static class BridgeTemplateGenerator
 		List<int> bridgeTriangles = new List<int>();
 		List<Vector2> bridgeUVs = new List<Vector2>();
 
-		HexCellTriangulator.Triangulate(BridgeUtils.BridgeCellsIndexDict, bridgeVertices, bridgeTriangles, HexMetrics.HeightMultiplier / 4f);
+		HexCellTriangulator.Triangulate(BridgeCellCoords, BridgeCellNeighbours, bridgeVertices, bridgeTriangles, HexMetrics.HeightMultiplier / 4f);
 		GenerateBridgeUVs(bridgeVertices, bridgeUVs);
 
 		Mesh mesh = new Mesh();
-		mesh.vertices = bridgeVertices.ToArray();
-		mesh.triangles = bridgeTriangles.ToArray();
-		mesh.uv = bridgeUVs.ToArray();
+		mesh.SetVertices(bridgeVertices.ToArray());
+		mesh.SetTriangles(bridgeTriangles.ToArray(), 0);
+		mesh.SetUVs(0, bridgeUVs.ToArray());
 		mesh.RecalculateNormals();
 		mesh.RecalculateTangents();
 

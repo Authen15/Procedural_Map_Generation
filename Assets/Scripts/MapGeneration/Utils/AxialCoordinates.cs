@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class AxialCoordinates
+public struct AxialCoordinates
 {
     public int Q;  // top left to bot right diagonal   \
     public int R;           // col
@@ -45,26 +45,12 @@ public class AxialCoordinates
     
     public static bool operator ==(AxialCoordinates a, AxialCoordinates b)
     {
-        if (ReferenceEquals(a, b)) return true;
-        if (a is null || b is null) return false;
         return a.Q == b.Q && a.R == b.R;
     }
 
     public static bool operator !=(AxialCoordinates a, AxialCoordinates b)
     {
         return !(a == b);
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (!(obj is AxialCoordinates)) return false;
-        AxialCoordinates other = (AxialCoordinates)obj;
-        return this == other;
-    }
-
-    public override int GetHashCode()
-    {
-        return (Q, R).GetHashCode();
     }
 
     public override string ToString()

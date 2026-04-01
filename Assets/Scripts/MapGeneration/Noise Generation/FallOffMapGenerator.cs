@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Profiling;
+using static IslandData;
 
 public static class FallOffMapGenerator{
     public static float[] GenerateIslandFalloffMap(HeightMapSettings heightMapSettings)
@@ -10,7 +10,7 @@ public static class FallOffMapGenerator{
         float[] falloffMap = new float[size * size];
         
         // Iterate through all hexes in the map
-        foreach(AxialCoordinates coord in HexGridUtils.IslandCellIndexDict.Keys)
+        foreach(AxialCoordinates coord in CellCoords)
         {
             int q = coord.Q;
             int r = coord.R;

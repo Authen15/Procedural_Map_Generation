@@ -1,6 +1,6 @@
-using System.Linq;
 using UnityEngine;
 using static HexGridUtils;
+using static BridgeData;
 
 public class BridgeController
 {
@@ -24,7 +24,7 @@ public class BridgeController
 				continue;
 			}
 
-			AxialCoordinates bridgeAnchorStartCell = BridgeUtils.BridgesAnchorCells[i, BridgeUtils.BridgeWidth / 2];
+			AxialCoordinates bridgeAnchorStartCell = BridgesAnchorCellCoord[i, BridgeUtils.BridgeWidth / 2];
 			Vector3 anchorWorldPos = CellToWorld(bridgeAnchorStartCell);
 			Vector3 position = currentIsland.transform.position + anchorWorldPos;
 			Quaternion rotation = Quaternion.LookRotation(anchorWorldPos, Vector3.up);
@@ -67,27 +67,26 @@ public class BridgeController
 
 		for (int i = 0; i < bridgeSize; i++)
 		{
-			AxialCoordinates startCell = BridgeUtils.BridgesAnchorCells[dirInt, i];
+			AxialCoordinates startCell = BridgesAnchorCellCoord[dirInt, i];
 			averageStartHeight += currentIsland.GetCellHeightMapValue(startCell);
 
-			AxialCoordinates endCell = BridgeUtils.BridgesAnchorCells[oppositeDirInt, i];
+			AxialCoordinates endCell = BridgesAnchorCellCoord[oppositeDirInt, i];
 			averageEndHeight += targetIsland.GetCellHeightMapValue(endCell);
 		}
 
 		averageStartHeight = (averageStartHeight / bridgeSize) * heightMultiplier;
 		averageEndHeight = (averageEndHeight / bridgeSize) * heightMultiplier;
 
-		var bridgeCellKeys = BridgeUtils.BridgeCellsIndexDict.Keys.ToArray();
-		int cellCount = bridgeCellKeys.Length;
+		int cellCount = BridgeUtils.NbCellInBridge;
 		float lerpDivisor = 1f / (distanceBetweenIslands - 1);
 		int lastIndex = cellCount - 1;
 
 		for (int i = 0; i < cellCount; i++)
 		{
-			AxialCoordinates cellCoord = bridgeCellKeys[i];
+			AxialCoordinates cellCoord = BridgeCellCoords[i];
 			int z = cellCoord.R;
 
-			bool isNewRow = i > 0 && bridgeCellKeys[i - 1].R != z;
+			bool isNewRow = i > 0 && BridgeCellCoords[i - 1].R != z;
 
 			// Interpolate height for each cell base on it's z position in the bridge
 			float height = Mathf.Lerp(averageStartHeight, averageEndHeight, (z - 1) * lerpDivisor);
@@ -96,7 +95,7 @@ public class BridgeController
 			// if the cell is a side cell and raise it for the fence effect
 			bool isLastCell = i == lastIndex;
 			bool isFirstCell = i == 0;
-			bool isEndOfRow = i < lastIndex && bridgeCellKeys[i + 1].R != z;
+			bool isEndOfRow = i < lastIndex && BridgeCellCoords[i + 1].R != z;
 			bool isSideCell = isNewRow || isEndOfRow || isFirstCell || isLastCell;
 
 			if (isSideCell) height += fenceHeight;

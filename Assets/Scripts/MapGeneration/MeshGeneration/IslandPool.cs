@@ -5,7 +5,7 @@ public class IslandPool : MonoBehaviour
 {
     [SerializeField] private GameObject _islandPrefab;
     
-    private int _poolSize => HexGridUtils.GetIslandCellsNumber(1);
+    private int _poolSize => HexGridUtils.GetNbCellInHexGrid(1);
     private Queue<Island> _availableIslands = new Queue<Island>();
     private Dictionary<AxialCoordinates, Island> _activeIslands = new Dictionary<AxialCoordinates, Island>();
     

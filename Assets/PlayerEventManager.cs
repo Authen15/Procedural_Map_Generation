@@ -29,13 +29,13 @@ public class PlayerEventManager : MonoBehaviour
         }
     }
 
-    public UnityEvent<AxialCoordinates> OnIslandChanged; // The player entered a new island
+    public UnityEvent<int> OnIslandChanged; // The player entered a new island
 
 
     private const float _tickDelay = 0.05f;
     private float _counter = 0f;
 
-    private AxialCoordinates _previousIslandCoord;
+    private int _previousIsland = -1;
 
     public void Update()
     {
@@ -49,13 +49,13 @@ public class PlayerEventManager : MonoBehaviour
 
     void UpdateCurrentIsland()
     {
-        AxialCoordinates currentIslandCoord = WorldToIsland(transform.position);
-        if (_previousIslandCoord == null || _previousIslandCoord != currentIslandCoord)
+        int currentIsland = WorldToIsland(transform.position);
+        if (_previousIsland == -1 || _previousIsland != currentIsland)
         {
-            OnIslandChanged?.Invoke(currentIslandCoord);
-            Debug.Log($"Player has changed island to {currentIslandCoord}");
+            OnIslandChanged?.Invoke(currentIsland);
+            Debug.Log($"Player has changed island to {currentIsland}");
 
-            _previousIslandCoord = currentIslandCoord;
+            _previousIsland = currentIsland;
         }
     }
 }

@@ -27,6 +27,8 @@ public class MapManager : MonoBehaviour
 
 	void Start()
 	{
+		TemplateManager.InitializeTemplates();
+
 		IslandDict = new Dictionary<AxialCoordinates, Island>();
 		_islandDisplay = new IslandDisplay(this);
 	}
