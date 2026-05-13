@@ -17,7 +17,7 @@ public class BridgeController
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			Island targetIsland = BridgeUtils.GetNeighborIsland(currentIsland.Coord, (BridgeUtils.BridgesDir)i);
+			Island targetIsland = BridgeUtils.GetNeighbourIsland(currentIsland.Index, (BridgeUtils.BridgesDir)i);
 			if (targetIsland == null)
 			{   // if there is no island in this direction, skip this iteration
 				if (_bridges[i] != null) _bridges[i].SetActive(false);
@@ -41,7 +41,7 @@ public class BridgeController
 
 
 			_bridges[i].SetActive(true);
-			_bridges[i].name = $"Bridge {currentIsland.Coord} to {targetIsland.Coord}";
+			_bridges[i].name = $"Bridge {currentIsland.Index} to {targetIsland.Index}";
 
 			Mesh mesh = _bridges[i].GetComponent<MeshFilter>().mesh;
 			mesh.vertices = UpdateBridgeVerticesHeight(currentIsland, targetIsland, mesh.vertices, (BridgeUtils.BridgesDir)i);
@@ -101,7 +101,7 @@ public class BridgeController
 			if (isSideCell) height += fenceHeight;
 
 			// Update vertex heights for the current cell
-			int vertexIndex = i * 6; // each cell has 6 vertices
+			int vertexIndex = i * 12; // each cell has 12 vertices
 			vertices[vertexIndex].y = height;
 			vertices[vertexIndex + 1].y = height;
 			vertices[vertexIndex + 2].y = height;

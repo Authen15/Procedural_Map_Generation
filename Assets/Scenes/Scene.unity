@@ -680,7 +680,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1409306244}
   - component: {fileID: 1409306245}
-  - component: {fileID: 1409306246}
   m_Layer: 0
   m_Name: MapManager
   m_TagString: Untagged
@@ -1189,19 +1188,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSeed: 84
---- !u!114 &1409306246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 503131241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84009f2754fa2d04291a0f9833fec556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IslandPool
-  _islandPrefab: {fileID: 3088737481095849585, guid: 9f82de7d851f80f42b83a425b5d30507,
+  IslandViews: []
+  _islandPrefab: {fileID: 5130931321000304902, guid: 9f82de7d851f80f42b83a425b5d30507,
     type: 3}
 --- !u!1 &1432877232
 GameObject:
@@ -2070,6 +2058,7 @@ Transform:
   - {fileID: 1432877236}
   - {fileID: 1404248553}
   - {fileID: 456277209}
+  - {fileID: 2137992082}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1974410582
@@ -2172,6 +2161,51 @@ Transform:
   - {fileID: 700173162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2137992081
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2137992082}
+  - component: {fileID: 2137992083}
+  m_Layer: 0
+  m_Name: CorruptionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2137992082
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2137992081}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1834602241}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2137992083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2137992081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 111bb571d0c4d0e499e43cbb7dc9c066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CorruptionManager
+  isInitialized: 0
 --- !u!222 &178652801042675983
 CanvasRenderer:
   m_ObjectHideFlags: 0

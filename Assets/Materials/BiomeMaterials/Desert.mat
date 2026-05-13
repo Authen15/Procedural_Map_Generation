@@ -40,7 +40,7 @@ Material:
   stringTagMap: {}
   disabledShaderPasses:
   - MOTIONVECTORS
-  m_LockedProperties: _NoiseSmoothness
+  m_LockedProperties: _NoiseSmoothness _TEXTURETYPE
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:

@@ -25,10 +25,10 @@ public static class HexGridUtils
 	public static void PopulateNeighboursArray(ref int[] neighbourArray, Dictionary<AxialCoordinates, int> indexDict)
 	{
 
-		foreach(AxialCoordinates coord in indexDict.Keys)
+		foreach (AxialCoordinates coord in indexDict.Keys)
 		{
 			int cellIndex = indexDict[coord];
-			int neighbourIndexOffset = cellIndex*6;
+			int neighbourIndexOffset = cellIndex * 6;
 			AxialCoordinates[] neighbours = GetCellNeighboursCoords(coord);
 
 			for (int i = 0; i < 6; i++)
@@ -59,49 +59,49 @@ public static class HexGridUtils
 	public static AxialCoordinates[] GetCellNeighboursCoords(AxialCoordinates currentCell)
 	{
 		AxialCoordinates[] neighbours =
-        {
-            currentCell + GetDir[0],
-            currentCell + GetDir[1],
-            currentCell + GetDir[2],
-            currentCell + GetDir[3],
-            currentCell + GetDir[4],
-            currentCell + GetDir[5]
-        };
+		{
+			currentCell + GetDir[0],
+			currentCell + GetDir[1],
+			currentCell + GetDir[2],
+			currentCell + GetDir[3],
+			currentCell + GetDir[4],
+			currentCell + GetDir[5]
+		};
 
 		return neighbours;
 	}
 
 	public static int[] GetCellNeighbours(in int[] CellNeighbours, int index)
 	{
-		int neighbourOffset = index*6;
-		
+		int neighbourOffset = index * 6;
+
 		int[] neighbours =
-        {
-            CellNeighbours[neighbourOffset],
-            CellNeighbours[neighbourOffset+1],
-            CellNeighbours[neighbourOffset+2],
-            CellNeighbours[neighbourOffset+3],
-            CellNeighbours[neighbourOffset+4],
-            CellNeighbours[neighbourOffset+5],
-        };
+		{
+			CellNeighbours[neighbourOffset],
+			CellNeighbours[neighbourOffset+1],
+			CellNeighbours[neighbourOffset+2],
+			CellNeighbours[neighbourOffset+3],
+			CellNeighbours[neighbourOffset+4],
+			CellNeighbours[neighbourOffset+5],
+		};
 
 		return neighbours;
 	}
 
 	public static int[] GetCellAndNeighbours(in int[] CellNeighbours, int index)
 	{
-		int neighbourOffset = index*6;
+		int neighbourOffset = index * 6;
 
 		int[] neighbours =
-        {
+		{
 			index,
-            CellNeighbours[neighbourOffset],
-            CellNeighbours[neighbourOffset+1],
-            CellNeighbours[neighbourOffset+2],
-            CellNeighbours[neighbourOffset+3],
-            CellNeighbours[neighbourOffset+4],
-            CellNeighbours[neighbourOffset+5],
-        };
+			CellNeighbours[neighbourOffset],
+			CellNeighbours[neighbourOffset+1],
+			CellNeighbours[neighbourOffset+2],
+			CellNeighbours[neighbourOffset+3],
+			CellNeighbours[neighbourOffset+4],
+			CellNeighbours[neighbourOffset+5],
+		};
 
 		return neighbours;
 	}
@@ -119,7 +119,7 @@ public static class HexGridUtils
 		Vector3 position;
 		position.x = x * (HexMetrics.InnerRadius * 2f) + z * HexMetrics.InnerRadius;
 		position.y = 0;
-		position.z = - z * (HexMetrics.OuterRadius * 1.5f);
+		position.z = -z * (HexMetrics.OuterRadius * 1.5f);
 
 		return position;
 	}
@@ -151,9 +151,14 @@ public static class HexGridUtils
 		Vector3 position;
 		position.x = x * (HexMetrics.IslandOuterRadius * 1.5f);
 		position.y = 0;
-		position.z = - (z * (HexMetrics.IslandInnerRadius * 2f) + x * HexMetrics.IslandInnerRadius);
+		position.z = -(z * (HexMetrics.IslandInnerRadius * 2f) + x * HexMetrics.IslandInnerRadius);
 
 		return position;
+	}
+
+	public static Vector3 IslandToWorld(int index)
+	{
+		return IslandToWorld(IslandData.CellCoords[index]);
 	}
 
 	public static int WorldToIsland(Vector3 worldPosition)
@@ -165,15 +170,16 @@ public static class HexGridUtils
 		// this is not optimized but there are not too many islands, so it should work fine 
 		// optimal way would be a direct computation from coordinates
 		for (int i = 0; i < HexMetrics.NbCellInMap; i++)
-        {
+		{
 			Vector3 islandPos = IslandToWorld(IslandData.CellCoords[i]);
 			float sqrDist = (worldPosition - islandPos).sqrMagnitude;
-			
-			if (sqrDist < minSqrDist){
+
+			if (sqrDist < minSqrDist)
+			{
 				minSqrDist = sqrDist;
 				closestIsland = i;
 			}
-        }
+		}
 		return closestIsland;
 	}
 
@@ -184,17 +190,17 @@ public static class HexGridUtils
 	}
 
 	public static bool IsIslandOutOfMap(int index)
-    {
-        return index > HexMetrics.MapRadius;
-    }
+	{
+		return index > HexMetrics.NbCellInMap;
+	}
 
 	public static bool IsIslandOutOfMap(AxialCoordinates coord)
-    {
-        return coord.RingNumber() > HexMetrics.MapRadius;
-    }
+	{
+		return coord.RingNumber() > HexMetrics.MapRadius;
+	}
 
 	public static bool IsCellOutOfIsland(AxialCoordinates coord)
-    {
-        return coord.RingNumber() > HexMetrics.IslandRadius;
-    }
+	{
+		return coord.RingNumber() > HexMetrics.IslandRadius;
+	}
 }

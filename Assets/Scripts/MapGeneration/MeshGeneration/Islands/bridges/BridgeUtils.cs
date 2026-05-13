@@ -3,37 +3,24 @@ using System.Linq;
 
 public static class BridgeUtils
 {
-    public const int BridgeWidth = 6;
+	public const int BridgeWidth = 6;
 	public const int NbCellInBridge = HexMetrics.DistanceBetweenIslands * BridgeWidth
 									- HexMetrics.DistanceBetweenIslands / 2; // every first cell in odd row are skipped
 
-	public enum BridgesDir { 
-        BottomRight = 0,
-        Bottom = 1,
-        BottomLeft = 2, 
-        TopLeft = 3, 
-        Top = 4, 
-        TopRight = 5, 
-    };
-
-	public static Island GetNeighborIsland(AxialCoordinates coord, BridgesDir dir)
+	public enum BridgesDir
 	{
-		AxialCoordinates islandCoord;
-		switch (dir)
-		{
-			case BridgeUtils.BridgesDir.BottomRight:
-				islandCoord = new AxialCoordinates(coord.Q + 1, coord.R);
-				break;
-			case BridgeUtils.BridgesDir.Bottom:
-				islandCoord = new AxialCoordinates(coord.Q, coord.R + 1);
-				break;
-			case BridgeUtils.BridgesDir.BottomLeft:
-				islandCoord = new AxialCoordinates(coord.Q - 1, coord.R + 1);
-				break;
-			default:
-				return null;
-		}
-		if (!MapManager.Instance.IslandDict.ContainsKey(islandCoord)) return null;
-		return MapManager.Instance.IslandDict[islandCoord];
+		BottomRight = 0,
+		Bottom = 1,
+		BottomLeft = 2,
+		TopLeft = 3,
+		Top = 4,
+		TopRight = 5,
+	};
+
+	public static Island GetNeighbourIsland(int index, BridgesDir dir)
+	{
+		int[] neighbours = HexGridUtils.GetCellNeighbours(IslandData.CellNeighbours, index);
+		int neighboursIndex = neighbours[((int)dir + 4) % 6]; // the direction is reversed because we want to get the current island from the neighbour's perspective
+		return (neighboursIndex >= 0 && neighboursIndex < HexMetrics.NbCellInMap) ? MapManager.Instance.IslandViews[neighboursIndex] : null;
 	}
 }

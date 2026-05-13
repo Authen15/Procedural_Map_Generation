@@ -8,31 +8,46 @@ using static IslandData;
 public class Island : MonoBehaviour
 {
 	public bool IsInitialized { get; private set; }
-	public AxialCoordinates Coord { get; private set; }
+	// public AxialCoordinates Coord { get; private set; }
+	public int Index { get; private set; }
 	public BiomeData Biome;
 	public Material BridgeMaterial;
 
 	// Cached data
 	private float[] _heightMapFlat;
+	private MaterialPropertyBlock _mpb;
 	[SerializeField] private MeshFilter _meshFilter;
 	[SerializeField] private MeshCollider _meshCollider;
 	[SerializeField] private MeshRenderer _meshRenderer;
 	[SerializeField] private IslandSpawner _islandSpawner;
 	[SerializeField] private NavMeshSurface _navMeshSurface;
 
+
 	// Controllers
 	private IslandMeshController _meshController;
 	private IslandMaterialController _materialController;
 	private BridgeController _bridgeController;
 
-	private void Awake()
+	void Awake()
 	{
 		_meshController = new IslandMeshController(_meshFilter);
 		_materialController = new IslandMaterialController(_meshRenderer);
 		_bridgeController = new BridgeController();
+
+		_mpb = new MaterialPropertyBlock();
 	}
 
-	public void Start()
+	void OnEnable()
+	{
+		_meshController.SetMpbBuffer(_mpb, _meshRenderer);
+	}
+
+	void OnDestroy()
+	{
+		_meshController.ClearBuffers();
+	}
+
+	void Start()
 	{
 		// Update the mesh at runtime when modifying heightmap parameters
 		Biome.HeightMapSettings.UpdateIslandMesh += () =>
@@ -44,13 +59,13 @@ public class Island : MonoBehaviour
 		PlayerEventManager.Instance.OnIslandChanged.AddListener(SetMeshCollider);
 	}
 
-	public void Initialize(AxialCoordinates coord)
+	public void Initialize(int index)
 	{
-		if (IsInitialized && Coord == coord) return;
+		if (IsInitialized && Index == index) return;
 
-		Coord = coord;
-		name = $"Island {coord}";
-		transform.position = HexGridUtils.IslandToWorld(Coord);
+		Index = index;
+		name = $"Island {index}";
+		transform.position = HexGridUtils.IslandToWorld(index);
 
 
 		Biome = BiomeManager.Instance.GetBiome();
@@ -77,7 +92,7 @@ public class Island : MonoBehaviour
 
 	public void SetMeshCollider(int currentIsland)
 	{
-		if (Coord == CellCoords[currentIsland])
+		if (Index == currentIsland)
 		{
 			_meshCollider.sharedMesh = _meshFilter.mesh;
 		}
@@ -89,7 +104,13 @@ public class Island : MonoBehaviour
 
 	private void GenerateHeightMap()
 	{
-		_heightMapFlat = NoiseGenerator.GenerateHeightMap(Biome.HeightMapSettings, HexMetrics.IslandSize, math.hash(new int2(Coord.Q, Coord.R)));
+		_heightMapFlat = NoiseGenerator.GenerateHeightMap(
+			Biome.HeightMapSettings,
+			HexMetrics.IslandSize,
+			math.hash(
+				new uint2((uint)Index, (uint)MapManager.Instance.MapSeed + 0x9E3779B9) // golden ratio
+			)
+		);
 	}
 
 	public float GetCellHeightMapValue(AxialCoordinates cellCoordinates)

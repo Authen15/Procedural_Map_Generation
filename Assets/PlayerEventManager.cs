@@ -50,7 +50,7 @@ public class PlayerEventManager : MonoBehaviour
     void UpdateCurrentIsland()
     {
         int currentIsland = WorldToIsland(transform.position);
-        if (_previousIsland == -1 || _previousIsland != currentIsland)
+        if (_previousIsland < 0 || _previousIsland != currentIsland)
         {
             OnIslandChanged?.Invoke(currentIsland);
             Debug.Log($"Player has changed island to {currentIsland}");

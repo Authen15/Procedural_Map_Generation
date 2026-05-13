@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class MapManager : MonoBehaviour
 {
 	public static MapManager Instance { get; private set; }
+	public int MapSeed = 1;
 
-	public Dictionary<AxialCoordinates, Island> IslandDict;
+	public Island[] IslandViews;
 
-	public int MapSeed = 0;
+	private List<int> _activeIndices; //store the indices of currently active islands
+	private ObjectPool<Island> _islandPool;
 
+	[SerializeField] private Island _islandPrefab;
 	private IslandDisplay _islandDisplay;
-	private IslandPool _islandPool;
+
+	private Coroutine _islandGenerationCoroutine;
 
 	void Awake()
 	{
@@ -21,43 +26,71 @@ public class MapManager : MonoBehaviour
 			return;
 		}
 		Instance = this;
-
-		_islandPool = GetComponent<IslandPool>();
 	}
 
 	void Start()
 	{
 		TemplateManager.InitializeTemplates();
 
-		IslandDict = new Dictionary<AxialCoordinates, Island>();
+		_islandPool = new ObjectPool<Island>(
+			createFunc: () => Instantiate(_islandPrefab),
+			actionOnGet: island => island.gameObject.SetActive(true),
+			actionOnRelease: island => island.gameObject.SetActive(false),
+			actionOnDestroy: island => Destroy(island.gameObject),
+			defaultCapacity: HexGridUtils.GetNbCellInHexGrid(1),
+			maxSize: HexGridUtils.GetNbCellInHexGrid(2)
+		);
+
+		IslandViews = new Island[HexMetrics.NbCellInMap];
+		_activeIndices = new List<int>();
+
 		_islandDisplay = new IslandDisplay(this);
+		CorruptionManager.Instance.StartCorruption();
 	}
 
-	public void DestroyIsland(AxialCoordinates islandCoord)
-	{
-		IslandDict.Remove(islandCoord);
-		_islandPool.DespawnIsland(islandCoord);
-	}
 
-	public IEnumerator GenerateIslands(AxialCoordinates[] islandCoords)
+	public void DestroyIslands(int[] islandIds)
 	{
-		int nbIslands = islandCoords.Length;
-
-		for (int i = 0; i < nbIslands; i++)
+		if (_islandGenerationCoroutine != null)
 		{
-			Island island = _islandPool.SpawnIsland(islandCoords[i]);
+			StopCoroutine(_islandGenerationCoroutine);
+			_islandGenerationCoroutine = null;
+		}
 
-			IslandDict.Add(islandCoords[i], island);
+		foreach (int islandId in islandIds)
+		{
+			_islandPool.Release(IslandViews[islandId]);
+			_activeIndices.Remove(islandId);
+			IslandViews[islandId].Cleanup();
+			IslandViews[islandId].gameObject.SetActive(false);
+			IslandViews[islandId] = null;
+		}
+	}
 
+	public void GenerateIslands(int[] islandIds)
+	{
+		_islandGenerationCoroutine = StartCoroutine(GenerateIslandsCoroutine(islandIds));
+	}
+
+	private IEnumerator GenerateIslandsCoroutine(int[] islandIds)
+	{
+		foreach (int islandId in islandIds)
+		{
+			_activeIndices.Add(islandId);
+			IslandViews[islandId] = _islandPool.Get();
+			IslandViews[islandId].gameObject.SetActive(true);
+			IslandViews[islandId].Initialize(islandId);
 			yield return null; // generate one per frame
 		}
 
 		// updating bridges after islands as bridges need to know their neighbours
-		foreach (var island in IslandDict.Values)
+		foreach (int activeIsland in _activeIndices)
 		{
-			island.UpdateBridges();
+			IslandViews[activeIsland].UpdateBridges();
 			yield return null;
 		}
+
+		_islandGenerationCoroutine = null;
 	}
 
 }

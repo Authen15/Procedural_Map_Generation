@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public static class HexMetrics {
+public static class HexMetrics
+{
 
 	public const int MapSize = 15; // diameter of the map in islands
 	public const int MapRadius = MapSize / 2;
